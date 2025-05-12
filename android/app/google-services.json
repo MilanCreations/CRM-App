@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1035276914670",
+    "project_id": "crm-mat-ef806",
+    "storage_bucket": "crm-mat-ef806.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1035276914670:android:0dade3dd3410a7050148ff",
+        "android_client_info": {
+          "package_name": "com.matcrm"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYju4m-Jinnds3sbx7pw2E6JX_xqtELRM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

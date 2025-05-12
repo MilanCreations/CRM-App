@@ -1,0 +1,422 @@
+import 'dart:io';
+import 'package:crm_milan_creations/Auth/Login/loginScreen.dart';
+import 'package:crm_milan_creations/Employee/Apply%20Leave/applyLeaveScreen.dart';
+import 'package:crm_milan_creations/Employee/Attendance%20History/historyScreen.dart';
+import 'package:crm_milan_creations/Employee/Leave%20History/leaveHistoryScreen.dart';
+import 'package:crm_milan_creations/Employee/profile/My%20Profile/myProfileScreen.dart';
+import 'package:crm_milan_creations/HR%20App/Employee%20List/EmployeeListScreen.dart';
+import 'package:crm_milan_creations/HR%20App/Salary/SalaryScreen.dart';
+import 'package:crm_milan_creations/utils/colors.dart';
+import 'package:crm_milan_creations/utils/font-styles.dart';
+import 'package:crm_milan_creations/widgets/appBar.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  String username = "";
+  String useremail = "";
+  String userRole = "";
+  File? _profileImage;
+  final ImagePicker _picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    getUserData();
+  }
+
+  Future<void> getUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      username = prefs.getString("fullname") ?? "";
+      useremail = prefs.getString("email") ?? "";
+      userRole = prefs.getString("role_code") ?? "";
+    });
+  }
+
+  Future<void> _pickImage() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        _profileImage = File(image.path);
+      });
+      // Here you would typically upload the image to your server
+      // and save the URL in shared preferences
+    }
+  }
+
+void showLogoutDialog() {
+  showDialog(
+    context: context,
+    builder: (_) => Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      child: Container(
+        padding: const EdgeInsets.all(25),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 20,
+              spreadRadius: 5,
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Header with gradient icon
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: const Icon(
+                Icons.logout,
+                size: 40,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 20),
+            
+            // Title
+            const Text(
+              "Logout?",
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 10),
+            
+            // Subtitle
+            const Text(
+              "Are you sure you want to logout?",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.black54,
+              ),
+            ),
+            const SizedBox(height: 25),
+            
+            // Buttons
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                // Cancel Button
+                Expanded(
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: const BorderSide(color: Colors.grey),
+                      ),
+                    ),
+                    onPressed: () => Get.back(),
+                    child: const Text(
+                      "Cancel",
+                      style: TextStyle(
+                        color: Colors.black87,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 15),
+                
+                // Logout Button
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      backgroundColor: CRMColors.error,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                    ),
+                    onPressed: () async {
+                      final prefs = await SharedPreferences.getInstance();
+                      await prefs.clear();
+                      Get.back(); // Close dialog first
+                      Get.snackbar(
+                        "Success",
+                        "Logout Successfully",
+                        backgroundColor: CRMColors.error,
+                        colorText: CRMColors.textWhite,
+                      );
+                      Get.offAll(() => const LoginScreen());
+                    },
+                    child: const Text(
+                      "Logout",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+  Widget buildMenuItem({
+    required IconData icon,
+    required String text,
+    required VoidCallback onTap,
+    Color? iconColor,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Icon(icon, color: iconColor ?? CRMColors.crmMainCOlor),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  text,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: CRMColors.black,
+                  ),
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                color: iconColor ?? CRMColors.crmMainCOlor,
+                size: 18,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: CustomAppBar(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        title: CustomText(
+          text: 'Profile',
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: CRMColors.whiteColor,
+        ),
+        backgroundColor: CRMColors.crmMainCOlor,
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(height: 30),
+            // Profile image with edit button
+            GestureDetector(
+              onTap: _pickImage,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.grey.withOpacity(0.3),
+                        width: 2,
+                      ),
+                    ),
+                    child: ClipOval(
+                      child: _profileImage != null
+                          ? Image.file(
+                              _profileImage!,
+                              fit: BoxFit.cover,
+                            )
+                          : Container(
+                              color: Colors.grey[200],
+                              child: Center(
+                                child: Text(
+                                  username.isNotEmpty
+                                      ? username
+                                          .trim()
+                                          .split(" ")
+                                          .map((e) => e[0])
+                                          .take(2)
+                                          .join()
+                                          .toUpperCase()
+                                      : "",
+                                  style: const TextStyle(
+                                    fontSize: 36,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: CRMColors.crmMainCOlor,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.white,
+                          width: 2,
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.edit,
+                        size: 18,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            CustomText(
+              text: username,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              gradient: const LinearGradient(
+                colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 6,
+              ),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                useremail,
+                style: const TextStyle(color: Colors.white70, fontSize: 14),
+              ),
+            ),
+            const SizedBox(height: 30),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.only(top: 12, bottom: 20),
+              decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Column(
+                children: [
+                  buildMenuItem(
+                    icon: Icons.person_outline,
+                    text: "Profile Details",
+                    onTap: () => Get.to(const MyProfileScreen()),
+                  ),
+                   userRole != "EMPLOYEE"
+              ? buildMenuItem(
+                  icon: Icons.person_outline,
+                  text: 'Employee List',
+                  onTap: () {
+                    Get.to(EmployeeListScreen());
+                  }, // Navigate to profile detail screen if needed
+                )
+              : const SizedBox(),
+                  buildMenuItem(
+              icon: Icons.calendar_month_outlined,
+              text: 'Apply Leave',
+              onTap: () => Get.to(() => LeaveRequestScreen()),
+            ),
+                  buildMenuItem(
+              icon: Icons.calendar_month_outlined,
+              text: 'Leave History',
+              onTap: () => Get.to(() => LeavehistoryScreen()),
+            ),
+                   buildMenuItem(
+              icon: Icons.history,
+              text: 'Attendance History',
+              onTap: () => Get.to(() => const HistoryScreen()),
+            ),
+
+              buildMenuItem(
+              icon: Icons.attach_money_rounded,
+              text: 'Salary',
+              onTap: () => Get.to(() =>Salaryscreen()),
+            ),
+                 buildMenuItem(
+              icon: Icons.logout,
+              text: 'Logout',
+              iconColor: CRMColors.error,
+              onTap: showLogoutDialog,
+            ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 40),
+          ],
+        ),
+      ),
+    );
+  }
+}
