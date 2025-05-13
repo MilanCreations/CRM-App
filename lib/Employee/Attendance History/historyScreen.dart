@@ -2,6 +2,7 @@ import 'package:crm_milan_creations/Employee/Attendance%20History/attendanceHist
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
+import 'package:crm_milan_creations/widgets/dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -20,12 +21,22 @@ class _HistoryScreenState extends State<HistoryScreen> {
   );
 
   late ScrollController _scrollController;
+  DateTime? _startDate;
+  DateTime? _endDate;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController()..addListener(_onScroll);
-    attendanceHistoryController.AttendanceHistoryfunctions();
+
+    final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+    // Fetch today's attendance only
+    attendanceHistoryController.AttendanceHistoryfunctions(
+      isRefresh: true,
+      startDate: today,
+      endDate: today,
+    );
   }
 
   void _onScroll() {
@@ -42,15 +53,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
     super.dispose();
   }
 
-String formatDateTime(DateTime dateTime) {
-  try {
-    // Convert UTC time to local time
-    DateTime localDateTime = dateTime.toLocal();
-    return DateFormat('hh:mm a').format(localDateTime);
-  } catch (e) {
-    return "";
+  String formatDateTime(DateTime dateTime) {
+    try {
+      DateTime localDateTime = dateTime.toLocal();
+      return DateFormat('hh:mm a').format(localDateTime);
+    } catch (e) {
+      return "";
+    }
   }
-}
 
   String formatDateOnly(String dateString) {
     try {
@@ -71,7 +81,7 @@ String formatDateTime(DateTime dateTime) {
           end: Alignment.bottomRight,
         ),
         title: CustomText(
-          text: 'History',
+          text: 'Attendance History',
           fontSize: 20,
           fontWeight: FontWeight.bold,
           color: CRMColors.whiteColor,
@@ -106,133 +116,250 @@ String formatDateTime(DateTime dateTime) {
           );
         }
 
-        return ListView.builder(
-          controller: _scrollController,
-          physics: const BouncingScrollPhysics(),
-          itemCount:
-              attendanceHistoryController.attendanceHistoryList.length + 1,
-          itemBuilder: (context, index) {
-            if (index < attendanceHistoryController.attendanceHistoryList.length) {
-              final history =
-                  attendanceHistoryController.attendanceHistoryList[index];
+        return Column(
+          children: [
+            _buildDateFilterButtons(),
+            Expanded(
+              child: ListView.builder(
+                controller: _scrollController,
+                physics: const BouncingScrollPhysics(),
+                itemCount:
+                    attendanceHistoryController.attendanceHistoryList.length + 1,
+                itemBuilder: (context, index) {
+                  if (index <
+                      attendanceHistoryController.attendanceHistoryList.length) {
+                    final history =
+                        attendanceHistoryController.attendanceHistoryList[index];
 
-              final status = history.status?.toLowerCase() ?? '';
-              final leftBarColor =
-                  status == 'rejected' ? CRMColors.error 
-                  
-                  : status == 'pending'
-                  ?CRMColors.pending
-                  : CRMColors.succeed;
+                    final status = history.status?.toLowerCase() ?? '';
+                    final leftBarColor = status == 'rejected'
+                        ? CRMColors.error
+                        : status == 'pending'
+                            ? CRMColors.pending
+                            : CRMColors.succeed;
 
-             
-              return Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 6,
-                      height: 110,
+                    return Container(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
-                        color: leftBarColor,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(12),
-                          bottomLeft: Radius.circular(12),
-                        ),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 16,
-                          horizontal: 12,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                CustomText(
-                                  text: history.name,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 6,
+                            height: 110,
+                            decoration: BoxDecoration(
+                              color: leftBarColor,
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(12),
+                                bottomLeft: Radius.circular(12),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 16,
+                                horizontal: 12,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      CustomText(
+                                        text: history.name,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: CRMColors.black,
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  CustomText(
+                                    text: formatDateOnly(
+                                        history.attendanceDate.toString()),
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w400,
+                                    color: CRMColors.black,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: CustomText(
+                                          text:
+                                              "Clock In: ${formatDateTime(history.checkIn).isEmpty ? "-" : formatDateTime(history.checkIn)}",
+                                          fontSize: 12,
+                                          color: CRMColors.black,
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: CustomText(
+                                          text:
+                                              "Clock Out: ${formatDateTime(history.checkOut).isEmpty ? "-" : formatDateTime(history.checkOut)}",
+                                          fontSize: 12,
+                                          textAlign: TextAlign.right,
+                                          color: CRMColors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  } else {
+                    return Obx(() {
+                      return attendanceHistoryController.isLoading.value
+                          ? const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              child: Center(
+                                child: CircularProgressIndicator(
                                   color: CRMColors.black,
                                 ),
-                                // CustomText(
-                                //   text: index.toString(),
-                                //   fontSize: 14,
-                                //   fontWeight: FontWeight.w600,
-                                //   color: CRMColors.black,
-                                // ),
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            CustomText(
-                              text: formatDateOnly(
-                                history.attendanceDate.toString(),
                               ),
-                              fontSize: 13,
-                              fontWeight: FontWeight.w400,
-                              color: CRMColors.black,
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: CustomText(
-                                    text:
-                                        "Clock In ${formatDateTime(history.checkIn).isEmpty ? "-" : formatDateTime(history.checkIn)}",
-                                    fontSize: 12,
-                                    color: CRMColors.black,
-                                  ),
-                                ),
-
-
-                                Expanded(
-                                  child: CustomText(
-                                    text:
-                                        "Clock Out : ${formatDateTime(history.checkOut) =="10:37 AM" ? "" : formatDateTime(history.checkOut)}",
-                                    fontSize: 12,
-                                    textAlign: TextAlign.right,
-                                    color: CRMColors.black,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            } else {
-              return Obx(() {
-                return attendanceHistoryController.isLoading.value
-                    ? const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          color: CRMColors.black,
-                        ),
-                      ),
-                    )
-                    : const SizedBox();
-              });
-            }
-          },
+                            )
+                          : const SizedBox();
+                    });
+                  }
+                },
+              ),
+            ),
+          ],
         );
       }),
     );
   }
+
+  Widget _buildDateFilterButtons() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          // CustomDropdownButton2(hint: CustomText(text: 'Select Employee'), value: value, dropdownItems: , onChanged: (value) {
+            
+          // },),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  icon: const Icon(Icons.calendar_today, size: 16),
+                  label: Text(
+                    _startDate == null
+                        ? 'Start Date'
+                        : DateFormat('yyyy-MM-dd').format(_startDate!),
+                    style: const TextStyle(color: CRMColors.black),
+                  ),
+                  onPressed: () async {
+                    final picked = await showDatePicker(
+                      context: context,
+                      initialDate: _startDate ?? DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime.now(),
+                    );
+                    if (picked != null) {
+                      setState(() {
+                        _startDate = picked;
+                        if (_endDate != null && _endDate!.isBefore(picked)) {
+                          _endDate = null;
+                        }
+                      });
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: OutlinedButton.icon(
+                  icon: const Icon(Icons.calendar_today, size: 16),
+                  label: Text(
+                    _endDate == null
+                        ? 'End Date'
+                        : DateFormat('yyyy-MM-dd').format(_endDate!),
+                    style: const TextStyle(color: CRMColors.black),
+                  ),
+                  onPressed: () async {
+                    final picked = await showDatePicker(
+                      context: context,
+                      initialDate: _endDate ?? (_startDate ?? DateTime.now()),
+                      firstDate: _startDate ?? DateTime(2000),
+                      lastDate: DateTime.now(),
+                    );
+                    if (picked != null) {
+                      setState(() {
+                        _endDate = picked;
+                      });
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                icon: const Icon(Icons.search, color: CRMColors.black),
+                onPressed: () {
+                  if (_startDate == null || _endDate == null) {
+                    Get.snackbar(
+                      "Error",
+                      "Please select both start and end dates",
+                      backgroundColor: CRMColors.error,
+                      colorText: CRMColors.textWhite,
+                    );
+                    return;
+                  }
+          
+                  if (_endDate!.isBefore(_startDate!)) {
+                    Get.snackbar(
+                      "Error",
+                      "End date must be after start date",
+                      backgroundColor: CRMColors.error,
+                      colorText: CRMColors.textWhite,
+                    );
+                    return;
+                  }
+          
+                  final start = DateFormat('yyyy-MM-dd').format(_startDate!);
+                  final end = DateFormat('yyyy-MM-dd').format(_endDate!);
+          
+                  attendanceHistoryController.AttendanceHistoryfunctions(
+                    isRefresh: true,
+                    startDate: start,
+                    endDate: end,
+                  );
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.clear, color: CRMColors.black),
+                onPressed: () {
+                  setState(() {
+                    _startDate = null;
+                    _endDate = null;
+                  });
+                  final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+                  attendanceHistoryController.AttendanceHistoryfunctions(
+                    isRefresh: true,
+                    startDate: today,
+                    endDate: today,
+                  );
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
 }

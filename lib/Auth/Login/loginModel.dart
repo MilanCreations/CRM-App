@@ -52,12 +52,13 @@ class User {
     int roleId;
     String roleName;
     String roleCode;
-    dynamic companyId;
-    dynamic companyName;
+    int companyId;
+    String companyName;
     int employeeId;
     String profilePic;
     String name;
     String designation;
+    List<String> permissions;
 
     User({
         required this.id,
@@ -73,6 +74,7 @@ class User {
         required this.profilePic,
         required this.name,
         required this.designation,
+        required this.permissions,
     });
 
     factory User.fromJson(Map<String, dynamic> json) => User(
@@ -83,12 +85,13 @@ class User {
         roleId: json["role_id"],
         roleName: json["role_name"],
         roleCode: json["role_code"],
-        companyId: json["company_id"] ?? 0,
-        companyName: json["company_name"] ?? "",
-        employeeId: json["employee_id"]?? 0,
+        companyId: json["company_id"]?? 0,
+        companyName: json["company_name"]?? "",
+        employeeId: json["employee_id"],
         profilePic: json["profile_pic"]?? "",
-        name: json["name"]?? "",
+        name: json["name"],
         designation: json["designation"]?? "",
+        permissions: List<String>.from(json["permissions"].map((x) => x)),
     );
 
     Map<String, dynamic> toJson() => {
@@ -105,5 +108,6 @@ class User {
         "profile_pic": profilePic,
         "name": name,
         "designation": designation,
+        "permissions": List<dynamic>.from(permissions.map((x) => x)),
     };
 }

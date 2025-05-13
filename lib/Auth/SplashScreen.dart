@@ -8,7 +8,6 @@ import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:video_player/video_player.dart';
 
 class Splashscreen extends StatefulWidget {
   const Splashscreen({super.key});
@@ -21,23 +20,15 @@ class _SplashscreenState extends State<Splashscreen> {
   final CheckClockInController objCheckClockInController =
       Get.put(CheckClockInController(checkpagestatus: "splash"));
 
-  late VideoPlayerController _videoController;
-
   @override
   void initState() {
     super.initState();
-    _videoController = VideoPlayerController.asset('assets/splash.mp4')
-      ..initialize().then((_) {
-        setState(() {});
-        _videoController.play();
-      });
+    _startSplashDelay();
+  }
 
-    _videoController.setLooping(false);
-
-    _videoController.addListener(() {
-      if (_videoController.value.position == _videoController.value.duration) {
-        _checkLoginStatus();
-      }
+  void _startSplashDelay() {
+    Future.delayed(const Duration(seconds: 3), () {
+      _checkLoginStatus();
     });
   }
 
@@ -80,30 +71,17 @@ class _SplashscreenState extends State<Splashscreen> {
   }
 
   @override
-  void dispose() {
-    _videoController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: _videoController.value.isInitialized
-          ? Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  AspectRatio(
-                    aspectRatio: _videoController.value.aspectRatio,
-                    child: VideoPlayer(_videoController),
-                  ),
-                 
-                ],
-              ),
-            )
-          : const Center(child: CustomText(text: "Loading...")),
+      body: Center(
+        child: Image.asset(
+          'assets/mainlogo.png', // 🔁 Replace with your actual image path
+          width: 200,
+          height: 200,
+          fit: BoxFit.contain,
+        ),
+      ),
     );
   }
 }

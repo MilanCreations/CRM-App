@@ -40,6 +40,12 @@ static const String profile = "$baseUrls/auth/user/profile";
 // Leave history
 static const String leaveHistory = "$baseUrls/payroll/attendance/leaves";
 
+// Get All Employee Leave Data
+static const String allleaveHistory = "$baseUrls/payroll/attendance/leaves";
+
+// Get all employee list
+static const String getAllEmployeeList = "$baseUrls/payroll/employee/list";
+
 ////////////////////////////////// HR Module end points //////////////////////////////////
 static const String employeeList = "$baseUrls/payroll/employee";
 // Employee Department
@@ -57,6 +63,10 @@ static const String changeEmpStatus = "$baseUrls/payroll/employee/change/status"
 // Employee Details
 static const String employeeDetails = "$baseUrls/payroll/employee";
 static const String editEmployeeDetails = "$baseUrls/payroll/employee";
+
+// approve and reject leave
+
+static const String leaveAction = "$baseUrls/payroll/attendance/leaves";
 
 
 }

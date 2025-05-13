@@ -13,6 +13,7 @@ class EmployeeListcontroller extends GetxController{
   var employeeList = [].obs;
   var currentPage = 1.obs;
   var hasMoreData = true.obs;
+  var searchQuery = "".obs;
 
   Future<void> employeeListFunction({bool isRefresh = false}) async {
      if (isLoading.value || !hasMoreData.value) return;
@@ -35,11 +36,9 @@ class EmployeeListcontroller extends GetxController{
         employeeList.clear();
       }
 
-    // final url = Uri.parse(ApiConstants.employeeList +"?_page=" +currentPage.toString() +"&_limit=10&_sort=name&_order=asc&q=");
 final url = Uri.parse(
-  "${ApiConstants.employeeList}?_page=${currentPage.value}&_limit=10&_sort=name&_order=asc&q=");
+  "${ApiConstants.employeeList}?_page=${currentPage.value}&_limit=10&_sort=name&_order=asc&q=${searchQuery.value.trim()}");
 
-    //ApiConstants.attendanceHistory +"?_page=" +currentPage.toString() +"&_limit=20&_sort=date&_order=desc&q=&status=&department=&startDate=&endDate=",
     // print("Final employee List API URL: $url");
     final response = await http.get(url,
     headers: {"Authorization": "Bearer $token"},
@@ -101,10 +100,15 @@ final url = Uri.parse(
     Get.offAll(LoginScreen());
   }
 
-    Future<void> refreshList() async {
-  currentPage.value = 1;
-  employeeList.clear();
-  hasMoreData.value = true;
-  await employeeListFunction();
-}
+  Future<void> refreshList() async {
+    currentPage.value = 1;
+    employeeList.clear();
+    hasMoreData.value = true;
+    await employeeListFunction();
+  }
+
+    void setSearchQuery(String query) {
+    searchQuery.value = query;
+    refreshList();
+  }
 }

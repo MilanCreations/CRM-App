@@ -1,11 +1,14 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:crm_milan_creations/Auth/Login/loginScreen.dart';
 import 'package:crm_milan_creations/Employee/Apply%20Leave/applyLeaveScreen.dart';
 import 'package:crm_milan_creations/Employee/Attendance%20History/historyScreen.dart';
 import 'package:crm_milan_creations/Employee/Leave%20History/leaveHistoryScreen.dart';
 import 'package:crm_milan_creations/Employee/profile/My%20Profile/myProfileScreen.dart';
+import 'package:crm_milan_creations/HR%20App/Employee%20Leave%20Request/empLeaveRequestScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Employee%20List/EmployeeListScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Salary/SalaryScreen.dart';
+import 'package:crm_milan_creations/Lead%20Management/Create%20Leads/createLeadsScreen.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
@@ -25,13 +28,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String username = "";
   String useremail = "";
   String userRole = "";
+  // String permissions =  "";
   File? _profileImage;
   final ImagePicker _picker = ImagePicker();
+  List chartData = [];
 
   @override
   void initState() {
     super.initState();
     getUserData();
+    loadDataFromLocal();
   }
 
   Future<void> getUserData() async {
@@ -40,7 +46,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
       username = prefs.getString("fullname") ?? "";
       useremail = prefs.getString("email") ?? "";
       userRole = prefs.getString("role_code") ?? "";
+      userRole = prefs.getString("role_code") ?? "";
+     
+
     });
+  }
+
+
+  // ✅ Load chart data from SharedPreferences
+  Future<void> loadDataFromLocal() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? permissions = prefs.getString('permissions');
+    print("Chart data:- $permissions");
+    if (permissions != null) {
+      try {
+        List<dynamic> jsonData = json.decode(permissions);
+       
+     
+     chartData =  jsonData.map((e) => e).toList();
+        print("Chart data:- $chartData");
+      } catch (e) {
+        print("Error parsing chart data: $e");
+      }
+    }
   }
 
   Future<void> _pickImage() async {
@@ -393,6 +421,13 @@ void showLogoutDialog() {
               text: 'Leave History',
               onTap: () => Get.to(() => LeavehistoryScreen()),
             ),
+             userRole != "EMPLOYEE"
+              ?
+            buildMenuItem(
+              icon: Icons.schedule,
+              text: 'Leave Requests',
+              onTap: () => Get.to(() => EmpLeaveRequestScreen()),
+            ): const SizedBox(),
                    buildMenuItem(
               icon: Icons.history,
               text: 'Attendance History',
@@ -404,6 +439,9 @@ void showLogoutDialog() {
               text: 'Salary',
               onTap: () => Get.to(() =>Salaryscreen()),
             ),
+            widgetshowpermissionswise(),
+
+             
                  buildMenuItem(
               icon: Icons.logout,
               text: 'Logout',
@@ -417,6 +455,37 @@ void showLogoutDialog() {
           ],
         ),
       ),
+    );
+  }
+
+
+  Widget widgetshowpermissionswise() {
+    return Column(
+      children: chartData.map<Widget>((element) {
+        if (element == "create-leads") {
+          return buildMenuItem(
+              icon: Icons.leaderboard,
+              text: 'Create Lead',
+              onTap: () => Get.to(() =>CreateLeadsScreen()),
+            );
+        } else if (element == "view-leads") {
+          return buildMenuItem(
+              icon: Icons.lan_outlined,
+              text: 'Lead List',
+              onTap: () => Get.to(() =>Salaryscreen()),
+            );
+        } else if (element == "manage-others-leads") {
+          return buildMenuItem(
+              icon: Icons.manage_accounts_outlined,
+              text: 'Manage Leads',
+              onTap: () => Get.to(() =>Salaryscreen()),
+            );
+        }
+        
+         else {
+          return Text("No Permission");
+        }
+      }).toList(),
     );
   }
 }

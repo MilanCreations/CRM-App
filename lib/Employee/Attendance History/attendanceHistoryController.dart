@@ -14,95 +14,89 @@ class AttendanceHistoryController extends GetxController {
   var currentPage = 1.obs;
   var hasMoreData = true.obs;
 
-  Future<void> AttendanceHistoryfunctions({bool isRefresh = false}) async {
-    if (isLoading.value || !hasMoreData.value) return;
+ Future<void> AttendanceHistoryfunctions({
+  bool isRefresh = false,
+  String? startDate,
+  String? endDate,
+}) async {
+  if (isLoading.value || !hasMoreData.value) return;
 
-    try {
-      isLoading.value = true;
-      final prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString('token');
+  try {
+    
+    isLoading.value = true;
+    final prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
 
-      if (token == null) {
-        isLoading.value = false;
-        clearSharedPreferences();
-        Get.snackbar(
-          "Error",
-          "User is not authenticated. Login again!",
-          backgroundColor: CRMColors.error,
-          colorText: CRMColors.textWhite,
-        );
+    if (token == null) {
+      isLoading.value = false;
+      clearSharedPreferences();
+      Get.snackbar("Error", "User is not authenticated. Login again!",
+        backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
+      return;
+    }
+
+    if (isRefresh) {
+      currentPage.value = 1;
+      hasMoreData.value = true;
+      attendanceHistoryList.clear();
+    }
+
+    // ✅ Validate dates
+    if (startDate != null && endDate != null) {
+      print("-------");
+      DateTime start = DateTime.parse(startDate);
+      DateTime end = DateTime.parse(endDate);
+      if (end.isBefore(start)) {
+        Get.snackbar("Invalid Dates", "End date should be after start date",
+          backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
         return;
       }
-
-      if (isRefresh) {
-        currentPage.value = 1;
-        hasMoreData.value = true;
-        attendanceHistoryList.clear();
-      }
-
-      // ✅ Add page parameter to API URL
-      final uri = Uri.parse(
-        ApiConstants.attendanceHistory +"?_page=" +currentPage.toString() +"&_limit=20&_sort=date&_order=desc&q=&status=&department=&startDate=&endDate=",
-      );
-      print("Final attendance History API URL: $uri");
-
-      final response = await http.get(
-        uri,
-        headers: {"Authorization": "Bearer $token"},
-      );
-
-      print("API Status Code attendance History: ${response.statusCode}");
-      print("API Response in attendance history: ${response.body}");
-
-      if (response.statusCode == 200) {
-        var attendanceHistoryModel = attendanceHistoryModelFromJson(
-          response.body,
-        );
-
-        if (attendanceHistoryModel.data.attendance.isEmpty) {
-          hasMoreData.value = false;
-        } else {
-          // ✅ Append new data only
-          attendanceHistoryList.addAll(attendanceHistoryModel.data.attendance);
-          currentPage.value++;
-        }
-      } else if (response.statusCode == 400) {
-        Get.snackbar(
-          'Error',
-          'Bad Request',
-          backgroundColor: CRMColors.error,
-          colorText: CRMColors.textWhite,
-        );
-      } else if (response.statusCode == 401) {
-        Get.snackbar(
-          'Message',
-          'Login session expired',
-          backgroundColor: CRMColors.error,
-          colorText: CRMColors.textWhite,
-        );
-      } else if (response.statusCode == 500 || response.statusCode == 404) {
-        hasMoreData.value = false;
-        Get.snackbar(
-          'Error',
-          'No More Data',
-          backgroundColor: CRMColors.error,
-          colorText: CRMColors.textWhite,
-        );
-      } else {
-        Get.snackbar(
-          "Error",
-          "Failed to fetch attendance history",
-          backgroundColor: CRMColors.error,
-          colorText: CRMColors.textWhite,
-        );
-      }
-    } catch (error) {
-      isLoading.value = false;
-      print("Error: $error");
-    } finally {
-      isLoading.value = false;
     }
+
+    // ✅ Build query params
+    final uri = Uri.parse(
+      "${ApiConstants.attendanceHistory}?"
+      "_page=${currentPage.value}"
+      "&_limit=20"
+      "&_sort=date"
+      "&_order=desc"
+      "&q="
+      "&status="
+      "&department="
+      "&startDate=${startDate ?? ''}"
+      "&endDate=${endDate ?? ''}"
+    );
+
+    print("Final Attendance History API URL: $uri");
+
+    final response = await http.get(uri, headers: {"Authorization": "Bearer $token"});
+
+    print("API Status Code: ${response.statusCode}");
+    print("API Response: ${response.body}");
+
+    if (response.statusCode == 200) {
+      
+      var attendanceHistoryModel = attendanceHistoryModelFromJson(response.body);
+
+      if (attendanceHistoryModel.data.attendance.isEmpty) {
+        hasMoreData.value = false;
+      } else {
+        attendanceHistoryList.addAll(attendanceHistoryModel.data.attendance);
+        currentPage.value++;
+      }
+    } else if (response.statusCode == 401) {
+      Get.snackbar('Session Expired', 'Please login again.',
+          backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
+    } else {
+      Get.snackbar("Error", "Failed to fetch data",
+          backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
+    }
+  } catch (e) {
+    print("Error: $e");
+  } finally {
+    isLoading.value = false;
   }
+}
 
   static Future<void> clearSharedPreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();

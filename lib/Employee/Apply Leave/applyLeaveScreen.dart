@@ -48,8 +48,6 @@ class LeaveRequestScreen extends StatelessWidget {
     }
   }
 
- 
-
   @override
   Widget build(BuildContext context) {
     final inputDecoration = InputDecoration(
@@ -59,7 +57,19 @@ class LeaveRequestScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: CRMColors.whiteColor,
-      appBar: CustomAppBar(title: const Text('Leave Request')),
+      appBar: CustomAppBar(
+        title: const CustomText(
+          text: 'Leave Request',
+          color: CRMColors.whiteColor,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+        gradient: const LinearGradient(
+          colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(0),
         child: Padding(
@@ -148,7 +158,6 @@ class LeaveRequestScreen extends StatelessWidget {
                         ) {
                           return Row(
                             children: [
-                             
                               Text(
                                 item.name,
                                 style: const TextStyle(
@@ -175,8 +184,10 @@ class LeaveRequestScreen extends StatelessWidget {
                           }).toList(),
                       onChanged: (Datum? value) {
                         leaveTypeController.selectedLeaveType.value = value;
-                        
-                           leaveRequestcontroller .leavetypeid = RxString(value!.id.toString()) ;
+
+                        leaveRequestcontroller.leavetypeid = RxString(
+                          value!.id.toString(),
+                        );
                       },
                     ),
                   );
@@ -209,16 +220,15 @@ class LeaveRequestScreen extends StatelessWidget {
                         Colors.transparent, // Set to transparent for gradient
                     shadowColor: Colors.black45, // Optional: shadow color
                   ),
-                  onPressed:(){
-                  leaveRequestcontroller.submitLeaveRequest();
-                  } ,
+                  onPressed: () {
+                    leaveRequestcontroller.submitLeaveRequest();
+                  },
                   child: Ink(
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Color(0xFF001B7A), // Dark Blue
-                          Color(0xFF002B90), // Slightly Lighter Blue
-                        ],
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -228,14 +238,11 @@ class LeaveRequestScreen extends StatelessWidget {
                         vertical: 14,
                       ),
                       alignment: Alignment.center,
-                      child: const Text(
-                        "Submit",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          letterSpacing: 1.0,
-                        ),
+                      child: const CustomText(
+                        text: "Submit",
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
                     ),
                   ),

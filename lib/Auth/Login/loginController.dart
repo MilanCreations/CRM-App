@@ -100,10 +100,13 @@ Future<void> loginAPI() async {
       prefs.setString('profile_pic', loginModel.user.profilePic),
       prefs.setString('name', loginModel.user.name),
       prefs.setString('designation', loginModel.user.designation),
+      prefs.setString('permissions', jsonEncode(loginModel.user.permissions)),
+    
+      //String? chartDataString = prefs.getString('chart_data');
     ]);
 
     print("Full Name: ${loginModel.user.fullname}");
-
+    print("permissions: ${loginModel.user.permissions}");
    isLoading.value = false;
 
 switch (loginModel.user.roleCode) {
