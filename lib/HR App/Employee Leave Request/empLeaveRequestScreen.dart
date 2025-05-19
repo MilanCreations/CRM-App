@@ -125,6 +125,8 @@ void _handleSearch(String query) {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
+        showBackArrow: true,
+         leadingIcon: Icons.arrow_back_ios_new_sharp,
         title: CustomText(
           text: 'Leave Requests',
           fontSize: 20,

@@ -371,6 +371,8 @@ Widget _getProfileImageWidget() {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
+        showBackArrow: true,
+         leadingIcon: Icons.arrow_back_ios_new_sharp,
         gradient: const LinearGradient(
           colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
           begin: Alignment.topLeft,
@@ -378,9 +380,9 @@ Widget _getProfileImageWidget() {
         ),
         title: CustomText(
           text: 'Profile',
+          color: CRMColors.whiteColor,
           fontSize: 20,
           fontWeight: FontWeight.bold,
-          color: CRMColors.whiteColor,
         ),
         backgroundColor: CRMColors.crmMainCOlor,
       ),
@@ -465,7 +467,7 @@ Widget _getProfileImageWidget() {
                   ),
 
                   buildMenuItem(
-                    icon: Icons.attach_money_rounded,
+                    icon: Icons.currency_rupee_sharp,
                     text: 'Salary',
                     onTap: () => Get.to(() => Salaryscreen()),
                   ),

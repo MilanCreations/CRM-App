@@ -77,5 +77,8 @@ static const String creatLead = "$baseUrls/payroll/leads";
 // Get Lead List
 static const String leadList = "$baseUrls/payroll/leads/all/assignedLeads";
 
+//////////////////// Salary Management //////////////////
+static const String salaryList = "$baseUrls/payroll/employee/generate-salary-report";
+
 
 }

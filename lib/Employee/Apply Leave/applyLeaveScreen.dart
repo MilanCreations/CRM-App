@@ -58,6 +58,8 @@ class LeaveRequestScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: CRMColors.whiteColor,
       appBar: CustomAppBar(
+        showBackArrow: true,
+         leadingIcon: Icons.arrow_back_ios_new_sharp,
         title: const CustomText(
           text: 'Leave Request',
           color: CRMColors.whiteColor,

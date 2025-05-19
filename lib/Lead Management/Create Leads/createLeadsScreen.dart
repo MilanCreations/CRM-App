@@ -114,6 +114,8 @@ class _CreateLeadsScreenState extends State<CreateLeadsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
+        showBackArrow: true,
+         leadingIcon: Icons.arrow_back_ios_new_sharp,
         gradient: const LinearGradient(
           colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
           begin: Alignment.topLeft,
@@ -121,9 +123,9 @@ class _CreateLeadsScreenState extends State<CreateLeadsScreen> {
         ),
         title: CustomText(
           text: 'Create Leads',
+          color: CRMColors.whiteColor,
           fontSize: 20,
           fontWeight: FontWeight.bold,
-          color: CRMColors.whiteColor,
         ),
         backgroundColor: CRMColors.crmMainCOlor,
       ),

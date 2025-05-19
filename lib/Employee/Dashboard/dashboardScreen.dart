@@ -51,18 +51,18 @@ class _DashboardscreenState extends State<Dashboardscreen> {
     attendanceHistoryController.AttendanceHistoryfunctions();
 
     // Start timer to update working hours every second
-    workingTimeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      print("CheckIn: ${checkClockInController.checkInTime.value}");
-      print("CheckOut: ${checkClockInController.checkOutTime.value}");
-
-      if (checkClockInController.checkInTime.value.isNotEmpty &&
-          (checkClockInController.checkOutTime.value.isEmpty ||
-              checkClockInController.checkOutTime.value == "checkout")) {
-        calculateCurrentWorkingHours();
-      } else {
-        timer.cancel();
-      }
-    });
+workingTimeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+  if (checkClockInController.checkInTime.value.isNotEmpty) {
+    if (checkClockInController.checkOutTime.value.isEmpty || 
+        checkClockInController.checkOutTime.value == "checkout") {
+      calculateCurrentWorkingHours();
+    } else {
+      calculateTotalHoursToday();
+    }
+  } else {
+    timer.cancel();
+  }
+});
 
     print("Check In Time: ${checkClockInController.checkInTime}");
     super.initState();
@@ -78,7 +78,7 @@ class _DashboardscreenState extends State<Dashboardscreen> {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     setState(() {
       username = sharedPreferences.getString("fullname") ?? "";
-     name =  sharedPreferences.getString('name') ?? "";
+      name = sharedPreferences.getString('name') ?? "";
     });
   }
 
@@ -197,19 +197,23 @@ class _DashboardscreenState extends State<Dashboardscreen> {
                         decoration: BoxDecoration(
                           color: Colors.redAccent.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(8),
-                          // border: Border.all(color: const Color.fromARGB(255, 177, 228, 179)),
                         ),
                         child: Row(
                           children: [
-                            CustomText(
-                              text: "Working Time:",
-                              // fontWeight: FontWeight.bold,
-                              fontSize: 17,
-                              // color: CRMColors.black1,
-                            ),
+                            CustomText(text: "Working Time:", fontSize: 17),
                             Spacer(),
                             CustomText(
-                              text: totalWorkingHoursToday.value,
+                              text:
+                                  checkClockInController
+                                              .checkOutTime
+                                              .value
+                                              .isNotEmpty &&
+                                          checkClockInController
+                                                  .checkOutTime
+                                                  .value !=
+                                              "checkout"
+                                      ? totalHoursToday.value
+                                      : totalWorkingHoursToday.value,
                               color: CRMColors.black,
                               fontSize: 21.0,
                               fontWeight: FontWeight.bold,
@@ -218,7 +222,7 @@ class _DashboardscreenState extends State<Dashboardscreen> {
                         ),
                       ),
                     ),
-                     const SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     checkOutTime(),
 
                     const SizedBox(height: 10),
@@ -292,12 +296,9 @@ class _DashboardscreenState extends State<Dashboardscreen> {
                             color: Colors.grey.shade300,
                             shape: BoxShape.circle,
                           ),
-                          defaultTextStyle: const TextStyle(
-                            color: Colors.red,
-                          ),
+                          defaultTextStyle: const TextStyle(color: Colors.red),
                           selectedTextStyle: TextStyle(color: Colors.white),
                           weekendTextStyle: const TextStyle(color: Colors.red),
-                          
                         ),
                         calendarBuilders: CalendarBuilders(
                           defaultBuilder: (context, day, focusedDay) {
@@ -330,7 +331,6 @@ class _DashboardscreenState extends State<Dashboardscreen> {
                               default:
                                 dotColor = Colors.transparent;
                             }
-                            
 
                             return Center(
                               child: Column(
@@ -341,8 +341,8 @@ class _DashboardscreenState extends State<Dashboardscreen> {
                                     height: 28,
                                     decoration: BoxDecoration(
                                       color: dotColor,
-                                      borderRadius: BorderRadius.circular(20)
-                                       // pill shape
+                                      borderRadius: BorderRadius.circular(20),
+                                      // pill shape
                                     ),
                                     child: Center(
                                       child: Text(
@@ -353,7 +353,6 @@ class _DashboardscreenState extends State<Dashboardscreen> {
                                       ),
                                     ),
                                   ),
-                                
                                 ],
                               ),
                             );
@@ -418,84 +417,83 @@ class _DashboardscreenState extends State<Dashboardscreen> {
       final breakEndStr = checkClockInController.breackOutTime.value;
       final checkOutStr = checkClockInController.checkOutTime.value;
 
-      if (checkInStr.isEmpty || checkOutStr.isEmpty) {
+      if (checkInStr.isEmpty) {
         totalHoursToday.value = "0h 00m";
-        print("if statement in calculate Total Hours Today");
-
         return;
       }
-      final checkIn = DateTime.parse(checkInStr).toLocal();
-      final checkOut = DateTime.parse(checkOutStr).toLocal();
-      Duration totalWorkedDuration = Duration.zero;
 
+      final checkIn = DateTime.parse(checkInStr).toLocal();
+      final checkOut =
+          checkOutStr.isNotEmpty
+              ? DateTime.parse(checkOutStr).toLocal()
+              : DateTime.now();
+
+      Duration totalWorkedDuration = checkOut.difference(checkIn);
+
+      // Subtract break duration if both start and end times are available
       if (breakStartStr.isNotEmpty && breakEndStr.isNotEmpty) {
-        print("Break start if statement");
         final breakStart = DateTime.parse(breakStartStr).toLocal();
         final breakEnd = DateTime.parse(breakEndStr).toLocal();
 
-        if (checkIn.isBefore(breakStart) && breakEnd.isBefore(checkOut)) {
-          print("Check In if statement");
-          final beforeBreak = breakStart.difference(checkIn);
-          final afterBreak = checkOut.difference(breakEnd);
-          totalWorkedDuration = beforeBreak + afterBreak;
-        } else {
-          print("else statement in calculate Total Hours Today");
-          // fallback if break timing is invalid
-          totalWorkedDuration = checkOut.difference(checkIn);
+        if (breakStart.isAfter(checkIn) &&
+            breakEnd.isBefore(checkOut) &&
+            breakEnd.isAfter(breakStart)) {
+          final breakDuration = breakEnd.difference(breakStart);
+          totalWorkedDuration -= breakDuration;
         }
-      } else {
-        print("else statement in No break taken");
-        // No break taken — use total duration
-        totalWorkedDuration = checkOut.difference(checkIn);
       }
 
       final hours = totalWorkedDuration.inHours;
       final minutes = totalWorkedDuration.inMinutes.remainder(60);
 
-      totalHoursToday.value = "${hours}h ${minutes}m";
+      totalHoursToday.value =
+          "${hours}h ${minutes.toString().padLeft(2, '0')}m";
     } catch (e) {
       totalHoursToday.value = "0h 00m";
     }
   }
 
- void calculateCurrentWorkingHours() {
-  final checkInStr = checkClockInController.checkInTime.value;
-  final breakStartStr = checkClockInController.breackinTime.value;
-  final breakEndStr = checkClockInController.breackOutTime.value;
+  void calculateCurrentWorkingHours() {
+    final checkInStr = checkClockInController.checkInTime.value;
+    final breakStartStr = checkClockInController.breackinTime.value;
+    final breakEndStr = checkClockInController.breackOutTime.value;
 
-  if (checkInStr.isEmpty) {
-    totalWorkingHoursToday.value = "0h 00m";
-    return;
-  }
-
-  final checkIn = DateTime.parse(checkInStr).toLocal();
-  final now = DateTime.now();
-
-  Duration workedDuration = now.difference(checkIn);
-
-  // Subtract break duration if both start and end times are available
-  if (breakStartStr.isNotEmpty && breakEndStr.isNotEmpty) {
-    final breakStart = DateTime.parse(breakStartStr).toLocal();
-    final breakEnd = DateTime.parse(breakEndStr).toLocal();
-
-    // Ensure break time is within the working period
-    if (breakStart.isAfter(checkIn) && breakEnd.isBefore(now) && breakEnd.isAfter(breakStart)) {
-      final breakDuration = breakEnd.difference(breakStart);
-      workedDuration -= breakDuration;
+    if (checkInStr.isEmpty) {
+      totalWorkingHoursToday.value = "0h 00m";
+      return;
     }
+
+    final checkIn = DateTime.parse(checkInStr).toLocal();
+    final now = DateTime.now();
+
+    Duration workedDuration = now.difference(checkIn);
+
+    // Subtract break duration if both start and end times are available
+    if (breakStartStr.isNotEmpty && breakEndStr.isNotEmpty) {
+      final breakStart = DateTime.parse(breakStartStr).toLocal();
+      final breakEnd = DateTime.parse(breakEndStr).toLocal();
+
+      // Ensure break time is within the working period
+      if (breakStart.isAfter(checkIn) &&
+          breakEnd.isBefore(now) &&
+          breakEnd.isAfter(breakStart)) {
+        final breakDuration = breakEnd.difference(breakStart);
+        workedDuration -= breakDuration;
+      }
+    }
+
+    if (workedDuration.isNegative) {
+      // If something is wrong with timing, fallback to zero
+      totalWorkingHoursToday.value = "0h 00m";
+      return;
+    }
+
+    final hours = workedDuration.inHours;
+    final minutes = workedDuration.inMinutes.remainder(60);
+
+    totalWorkingHoursToday.value =
+        "${hours}h ${minutes.toString().padLeft(2, '0')}m";
   }
-
-  if (workedDuration.isNegative) {
-    // If something is wrong with timing, fallback to zero
-    totalWorkingHoursToday.value = "0h 00m";
-    return;
-  }
-
-  final hours = workedDuration.inHours;
-  final minutes = workedDuration.inMinutes.remainder(60);
-
-  totalWorkingHoursToday.value = "${hours}h ${minutes.toString().padLeft(2, '0')}m";
-}
 
   Widget showcheckin() {
     return Stack(
@@ -893,11 +891,10 @@ class _DashboardscreenState extends State<Dashboardscreen> {
     });
   }
 
-  void stopAndResetWorkingTime() {
-  workingTimeTimer?.cancel();               // Stop the timer
-  totalWorkingHoursToday.value = "0h 00m"; // Reset the displayed time
+void stopAndResetWorkingTime() {
+  workingTimeTimer?.cancel();
+  calculateTotalHoursToday(); // Calculate final hours when clocking out
 }
-
 }
 
 // bell_curve_painter.dart

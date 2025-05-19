@@ -103,7 +103,6 @@ Future<void> loginAPI() async {
       prefs.setString('designation', loginModel.user.designation),
       prefs.setString('permissions', jsonEncode(loginModel.user.permissions)),
     
-      //String? chartDataString = prefs.getString('chart_data');
     ]);
 
     print("Full Name: ${loginModel.user.fullname}");

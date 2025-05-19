@@ -8,9 +8,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 class ChangeEmployeeStatusController extends GetxController {
   var isLoading = false.obs;
+   var currentUpdatingId = (-1).obs;
+
 
 Future<void> changeEmployeeFunction(int employeeId) async {
   try {
+    currentUpdatingId.value = employeeId;
     isLoading.value = true;
     final prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');
@@ -115,6 +118,7 @@ Future<void> changeEmployeeFunction(int employeeId) async {
       colorText: CRMColors.textWhite,
     );
   } finally {
+    currentUpdatingId.value = -1;
     isLoading.value = false;
     print("Loading complete.");
   }

@@ -77,6 +77,8 @@ class _LeavehistoryScreenState extends State<LeavehistoryScreen> {
 Widget build(BuildContext context) {
   return Scaffold(
     appBar: CustomAppBar(
+      showBackArrow: true,
+       leadingIcon: Icons.arrow_back_ios_new_sharp,
       title: CustomText(
         text: 'Leave History',
         fontSize: 20,

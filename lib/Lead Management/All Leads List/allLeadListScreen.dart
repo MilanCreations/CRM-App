@@ -73,11 +73,13 @@ class _LeadListScreenState extends State<LeadListScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: CustomAppBar(
+        showBackArrow: true,
+         leadingIcon: Icons.arrow_back_ios_new_sharp,
         title: CustomText(
           text: 'lead list',
+       color: CRMColors.whiteColor,
           fontSize: 20,
           fontWeight: FontWeight.bold,
-          color: CRMColors.whiteColor,
         ),
 
         elevation: 1,

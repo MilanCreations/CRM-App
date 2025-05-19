@@ -16,10 +16,6 @@ class AttendanceHistoryController extends GetxController {
   var hasMoreData = true.obs;
   final tableCalendarController = Get.find<TableCalendarController>();
 
-  
-  
-
-
 
  Future<void> AttendanceHistoryfunctions({
   bool isRefresh = false,
@@ -60,7 +56,6 @@ class AttendanceHistoryController extends GetxController {
         return;
       }
     }
-    print("name"+name);
 
     // ✅ Build query params
     final uri = Uri.parse(
