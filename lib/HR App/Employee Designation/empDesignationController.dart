@@ -43,7 +43,7 @@ class DesignationListController extends GetxController {
       );
 
       // print("API Status Code Designation list: ${response.statusCode}");
-      // print("API Response in Designation list: ${response.body}");
+      print("API Response in Designation list: ${response.body}");
 
       if (response.statusCode == 200) {
         var designationModel = designationModelFromJson(response.body);

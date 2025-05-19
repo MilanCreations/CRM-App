@@ -68,6 +68,8 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
+        showBackArrow: true,
+         leadingIcon: Icons.arrow_back_ios_new_sharp,
         gradient: const LinearGradient(
           colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
           begin: Alignment.topLeft,
@@ -75,9 +77,9 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
         ),
         title: CustomText(
           text: 'Employees',
-          fontWeight: FontWeight.bold,
-          fontFamily: 'Roboto',
           color: CRMColors.whiteColor,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
         ),
         actions: [
           userRole != "EMPLOYEE"
@@ -110,13 +112,16 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
                     employeeListcontroller.setSearchQuery('');
                   },
                 ),
-                 border: OutlineInputBorder(
+                border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
                 ),
                 filled: true,
                 fillColor: Colors.grey.shade100,
-                contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 16,
+                ),
               ),
               onChanged: (value) {
                 if (value.length >= 2 || value.isEmpty) {
@@ -201,7 +206,7 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
                                     onTap:
                                         () => Get.to(
                                           ViewEmployeeDetailsScreen(
-                                            employeeId: employee.id!,
+                                            employeeId: employee.id!.toString(),
                                           ),
                                         ),
                                     child: Padding(
@@ -234,54 +239,80 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
 
                               // Status Badge
                               // Tappable Status Badge
-                              InkWell(
-                                onTap: () {
-                                  _showStatusChangeDialog(
-                                    employee.id!,
-                                    employee.status == 'active'
-                                        ? 'inactive'
-                                        : 'active',
-                                  );
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 14,
-                                    vertical: 8,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color:
-                                        employee.status == 'active'
-                                            ? Colors.green[100]
-                                            : Colors.red[100],
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.circle,
-                                        size: 10,
-                                        color:
+                              // Status Badge with Loader
+                              Obx(() {
+                                final isUpdating =
+                                    changeController.currentUpdatingId.value ==
+                                    employee.id;
+                                final isLoading =
+                                    changeController.isLoading.value &&
+                                    isUpdating;
+
+                                return InkWell(
+                                  onTap:
+                                      isLoading
+                                          ? null
+                                          : () => _showStatusChangeDialog(
+                                            employee.id!,
                                             employee.status == 'active'
-                                                ? CRMColors.success
-                                                : CRMColors.error,
-                                      ),
-                                      const SizedBox(width: 6),
-                                      Text(
-                                        employee.status == 'active'
-                                            ? "Active"
-                                            : "Inactive",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color:
-                                              employee.status == 'active'
-                                                  ? CRMColors.success
-                                                  : CRMColors.error,
+                                                ? 'inactive'
+                                                : 'active',
+                                          ),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 8,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color:
+                                          employee.status == 'active'
+                                              ? Colors.green[100]
+                                              : Colors.red[100],
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        if (isLoading)
+                                          SizedBox(
+                                            width: 16,
+                                            height: 16,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color:
+                                                  employee.status == 'active'
+                                                      ? CRMColors.success
+                                                      : CRMColors.error,
+                                            ),
+                                          )
+                                        else
+                                          Icon(
+                                            Icons.circle,
+                                            size: 10,
+                                            color:
+                                                employee.status == 'active'
+                                                    ? CRMColors.success
+                                                    : CRMColors.error,
+                                          ),
+                                        const SizedBox(width: 6),
+                                        Text(
+                                          isLoading
+                                              ? "Updating..."
+                                              : (employee.status == 'active'
+                                                  ? "Active"
+                                                  : "Inactive"),
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color:
+                                                employee.status == 'active'
+                                                    ? CRMColors.success
+                                                    : CRMColors.error,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ),
+                                );
+                              }),
                             ],
                           ),
                         ],

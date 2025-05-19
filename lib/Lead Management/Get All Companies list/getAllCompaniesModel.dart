@@ -1,23 +1,23 @@
 // To parse this JSON data, do
 //
-//     final getAllEmployeesModel = getAllEmployeesModelFromJson(jsonString);
+//     final getAllCompaniesModel = getAllCompaniesModelFromJson(jsonString);
 
 import 'dart:convert';
 
-GetAllEmployeesModel getAllEmployeesModelFromJson(String str) => GetAllEmployeesModel.fromJson(json.decode(str));
+GetAllCompaniesModel getAllCompaniesModelFromJson(String str) => GetAllCompaniesModel.fromJson(json.decode(str));
 
-String getAllEmployeesModelToJson(GetAllEmployeesModel data) => json.encode(data.toJson());
+String getAllCompaniesModelToJson(GetAllCompaniesModel data) => json.encode(data.toJson());
 
-class GetAllEmployeesModel {
+class GetAllCompaniesModel {
     String status;
     List<Result> result;
 
-    GetAllEmployeesModel({
+    GetAllCompaniesModel({
         required this.status,
         required this.result,
     });
 
-    factory GetAllEmployeesModel.fromJson(Map<String, dynamic> json) => GetAllEmployeesModel(
+    factory GetAllCompaniesModel.fromJson(Map<String, dynamic> json) => GetAllCompaniesModel(
         status: json["status"],
         result: List<Result>.from(json["result"].map((x) => Result.fromJson(x))),
     );
@@ -30,20 +30,20 @@ class GetAllEmployeesModel {
 
 class Result {
     int id;
-    String name;
+    String companyName;
 
     Result({
         required this.id,
-        required this.name,
+        required this.companyName,
     });
 
     factory Result.fromJson(Map<String, dynamic> json) => Result(
         id: json["id"],
-        name: json["name"],
+        companyName: json["companyName"],
     );
 
     Map<String, dynamic> toJson() => {
         "id": id,
-        "name": name,
+        "companyName": companyName,
     };
 }

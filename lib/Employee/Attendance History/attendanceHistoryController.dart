@@ -2,7 +2,8 @@
 
 import 'package:crm_milan_creations/API%20Services/BaseURL_&_EndPoints.dart';
 import 'package:crm_milan_creations/Auth/Login/loginScreen.dart';
-import 'package:crm_milan_creations/Employee/Attendance%20History/historyMode.dart';
+import 'package:crm_milan_creations/Employee/Attendance%20History/allendanceHistoryMode.dart';
+import 'package:crm_milan_creations/Employee/Table%20Calender%20Dashboard/tableCalenderController.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,6 +14,8 @@ class AttendanceHistoryController extends GetxController {
   var attendanceHistoryList = [].obs;
   var currentPage = 1.obs;
   var hasMoreData = true.obs;
+  final tableCalendarController = Get.find<TableCalendarController>();
+
 
  Future<void> AttendanceHistoryfunctions({
   bool isRefresh = false,
@@ -26,6 +29,7 @@ class AttendanceHistoryController extends GetxController {
     isLoading.value = true;
     final prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');
+    String name = prefs.getString('name') ?? "";
 
     if (token == null) {
       isLoading.value = false;
@@ -60,7 +64,7 @@ class AttendanceHistoryController extends GetxController {
       "&_limit=20"
       "&_sort=date"
       "&_order=desc"
-      "&q="
+      "&q=$name"
       "&status="
       "&department="
       "&startDate=${startDate ?? ''}"
@@ -73,8 +77,8 @@ class AttendanceHistoryController extends GetxController {
 
     print("API Status Code: ${response.statusCode}");
     print("API Response: ${response.body}");
-
     if (response.statusCode == 200) {
+      print("mntu");
       
       var attendanceHistoryModel = attendanceHistoryModelFromJson(response.body);
 
@@ -82,7 +86,10 @@ class AttendanceHistoryController extends GetxController {
         hasMoreData.value = false;
       } else {
         attendanceHistoryList.addAll(attendanceHistoryModel.data.attendance);
-        currentPage.value++;
+        print("attendanceHistoryList :- ${attendanceHistoryList.length}");
+            // ✅ Map to calendar
+        tableCalendarController.mapAttendanceStatus(attendanceHistoryModel.data.attendance);
+       // currentPage.value++;
       }
     } else if (response.statusCode == 401) {
       Get.snackbar('Session Expired', 'Please login again.',

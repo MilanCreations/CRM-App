@@ -75,6 +75,8 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
+        showBackArrow: true,
+        leadingIcon: Icons.arrow_back_ios_new_sharp,
         title: const CustomText(
           text: "My Profile",
           color: CRMColors.whiteColor,

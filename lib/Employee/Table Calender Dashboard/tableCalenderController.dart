@@ -1,21 +1,53 @@
+import 'package:crm_milan_creations/Employee/Attendance%20History/allendanceHistoryMode.dart';
 import 'package:get/get.dart';
+import 'package:collection/collection.dart';
 
-class CalendarController extends GetxController {
-  Rx<DateTime> selectedDay = DateTime.now().obs;
-  Rx<DateTime> focusedDay = DateTime.now().obs;
+class TableCalendarController extends GetxController {
+  var focusedDay = DateTime.now().obs;
+  var selectedDay = DateTime.now().obs;
 
-  // Sample attendance data
-  RxMap<DateTime, String> attendanceMap = <DateTime, String>{
-    DateTime.utc(2025, 5, 8): 'Present',
-    DateTime.utc(2025, 5, 9): 'Absent',
-    DateTime.utc(2025, 5, 10): 'Rejected',
-  }.obs;
+  // Map of attendance status for each date
+  var attendanceStatusMap = <DateTime, String>{}.obs;
 
   void onDaySelected(DateTime selected, DateTime focused) {
     selectedDay.value = selected;
     focusedDay.value = focused;
   }
-    String getStatus(DateTime day) {
-    return attendanceMap[DateTime(day.year, day.month, day.day)] ?? '';
+
+  /// Map attendance list to a map of DateTime -> status string
+void mapAttendanceStatus(List<Attendance> attendanceList) {
+  final map = <DateTime, String>{};
+  for (var att in attendanceList) {
+    final normalizedDate = DateTime(
+      att.attendanceDate.year,
+      att.attendanceDate.month,
+      att.attendanceDate.day,
+    );
+    print('Mapping attendance: $normalizedDate -> ${att.status}');
+    map[normalizedDate] = att.status.toLowerCase();
   }
+  attendanceStatusMap.value = map;
+}
+
+
+
+
+
+  /// Get status for a specific date
+String getStatus(DateTime date) {
+  // Normalize input date
+  final normalizedDate = DateTime(date.year, date.month, date.day);
+
+  final statusEntry = attendanceStatusMap.entries.firstWhereOrNull(
+    (entry) => entry.key.year == normalizedDate.year &&
+               entry.key.month == normalizedDate.month &&
+               entry.key.day == normalizedDate.day,
+  );
+
+  print('Checking date: $normalizedDate — Found entry: ${statusEntry?.key}, Status: ${statusEntry?.value}');
+  return statusEntry?.value ?? ''; 
+}
+
+
+
 }

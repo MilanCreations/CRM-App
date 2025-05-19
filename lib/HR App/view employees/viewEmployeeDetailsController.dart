@@ -21,8 +21,9 @@ class ViewEmployeecontroller extends GetxController {
   var selectedTab = 0.obs; // 0 = Contact Info, 1 = Employment Details, etc.
   var bankAccount = "".obs; // 0 = Contact Info, 1 = Employment Details, etc.
   var bankName = "".obs; // 0 = Contact Info, 1 = Employment Details, etc.
+  var profilePic = "".obs; // 0 = Contact Info, 1 = Employment Details, etc.
 
-  Future<void> employeeDetailsFunction(int employeeId) async {
+  Future<void> employeeDetailsFunction(String employeeId) async {
     try {
       isLoading.value = true;
       final prefs = await SharedPreferences.getInstance();
@@ -64,8 +65,10 @@ class ViewEmployeecontroller extends GetxController {
         emergencyContact = RxString(employeeDetailsModel.data.emergencyContact);
         bankAccount = RxString(employeeDetailsModel.data.bankAccount);
         bankName = RxString(employeeDetailsModel.data.bankName);
+        profilePic = RxString(employeeDetailsModel.data.profilePic);
 
         print("Email: ${employeeDetailsModel.data.email}");
+        print("Profile Pic: ${employeeDetailsModel.data.profilePic}");
         // if (employeeDetailsModel.data.companyId != null) {
         //   companyName.value = employeeDetailsModel.data.company!.name ?? "No Company";
         // } else {

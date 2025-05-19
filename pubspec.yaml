@@ -50,6 +50,9 @@ dependencies:
   modal_progress_hud_nsn:
   video_player:
   table_calendar:
+  awesome_dialog:
+  collection:
+  scrollable_clean_calendar:
 
 
   # The following adds the Cupertino Icons font to your application.

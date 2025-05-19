@@ -2,19 +2,19 @@
 
 import 'package:crm_milan_creations/API%20Services/BaseURL_&_EndPoints.dart';
 import 'package:crm_milan_creations/Auth/Login/loginScreen.dart';
-import 'package:crm_milan_creations/Employee/Get%20All%20Employees%20List/getAllEmployeeeListModel.dart';
+import 'package:crm_milan_creations/Lead%20Management/Get%20All%20Companies%20list/getAllCompaniesModel.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-class Getallemployeelistcontroller extends GetxController {
+class GetallCompanieslistcontroller extends GetxController {
   var isLoading = false.obs;
-  var employeeList = <String>[].obs; // Make it a list of employee names
+  var  companiesList = <String>[].obs; // Make it a list of employee names
 
-  Future<void> getAllEmployeeListFunction() async {
+  Future<void> getAllCompaniesListFunction() async {
     try {
-      print("getAllEmployeeListFunction called");
+      print("get All companies List Function called");
       isLoading.value = true;
       final prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
@@ -28,23 +28,26 @@ class Getallemployeelistcontroller extends GetxController {
         return;
       }
 
-      final url = Uri.parse(ApiConstants.getAllEmployeeList);
-      print("Final all employees list API URL: $url");
+      final url = Uri.parse(ApiConstants.getAllComapies);
+      print("Final all  companies list API URL: $url");
 
       final response = await http.get(
         url,
         headers: {"Authorization": "Bearer $token"},
       );
 
-      print("API Status Code in all employees list: ${response.statusCode}");
-      print("Body Response of all employees list: ${response.body}");
+      print("API Status Code in all  companies list: ${response.statusCode}");
+      print("Body Response of all  companies list: ${response.body}");
 
       if (response.statusCode == 200) {
-        var employeeListModel = getAllEmployeesModelFromJson(response.body);
-        print("all employees list fetched successfully");
+        var employeeListModel = getAllCompaniesModelFromJson(response.body);
+        print("all  companies list fetched successfully");
 
-        employeeList.value =
-            employeeListModel.result.map((e) => e.name ?? '').toList();
+      companiesList.value = employeeListModel.result
+    .map((e) => e.companyName ?? '')
+    .toSet() // remove duplicates
+    .toList();
+
       } else if (response.statusCode == 401) {
         Get.snackbar('Message', 'Login session expired',
             backgroundColor: CRMColors.error,

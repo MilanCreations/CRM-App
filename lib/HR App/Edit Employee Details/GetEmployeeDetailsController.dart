@@ -60,7 +60,7 @@ class GetEmployeeDetailsController extends GetxController{
   var company_id = ''.obs; 
   var department_id = ''.obs; 
   var designation_id = ''.obs; 
-  var profile_pic = ''.obs; 
+  RxString profile_pic = ''.obs; 
   var emergency_contact = ''.obs; 
   var role = ''.obs; 
   var shiftstart = ''.obs; 
@@ -69,7 +69,7 @@ class GetEmployeeDetailsController extends GetxController{
   var aadharCard = ''.obs; 
 
 
-  Future<void> editEmployeeFunction(int editEmployeeDetails) async {
+  Future<void> editEmployeeFunction(String editEmployeeDetails) async {
     print("Edit Employee Function called with ID: $editEmployeeDetails");
     try{
       isLoading.value = true;
@@ -117,7 +117,7 @@ class GetEmployeeDetailsController extends GetxController{
         // Set department and designation
       department.value = editEmployeeDetailsModel.data.departmentId.toString();
       designation.value = editEmployeeDetailsModel.data.designationId.toString();
-        profile_pic = RxString(editEmployeeDetailsModel.data.profilePic.toString());
+        profile_pic = RxString(editEmployeeDetailsModel.data.profilePic);
         emergencyContactController.text = (editEmployeeDetailsModel.data.emergencyContact.toString());
         roleController.text = (editEmployeeDetailsModel.data.role.code.toString());
         joinController.text = (editEmployeeDetailsModel.data.joinDate.toString());

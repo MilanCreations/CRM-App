@@ -121,4 +121,18 @@ class CRMColors {
   static const Color crmMainCOlor = Color(0xFF397BFF);
   static const Color logoBackgroundColor = Color(0xFF271E49);
   static const Color whiteColor = Color(0xFFFFFFFF);
+
+
+  // Salary list colours
+   static const Color crmMain = Color(0xFF0C46CC);
+  static const Color crmAccentColor = Color(0xFFEC32B1);
+  static const Color white = Colors.white;
+  static const Color blue = Color(0xFF0C46CC);
+  static const Color red = Colors.redAccent;
+  static const Color orange = Colors.orange;
+  static const Color teal = Colors.teal;
+  static const Color purple = Colors.purple;
+  static const Color greenLight = Color(0xFFE6F4EA);
+  static const Color greenDark = Color(0xFF1B873E);
+  static const Color textblack = Colors.black87;
 }

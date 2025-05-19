@@ -107,12 +107,12 @@ class CheckClockInController extends GetxController {
       if (token == null) {
         isLoading.value = false;
         clearSharedPreferences();
-        Get.snackbar(
-          "Error",
-          "User is not authenticated login again!",
-          backgroundColor: CRMColors.error,
-          colorText: CRMColors.textWhite,
-        );
+        // Get.snackbar(
+        //   "Error",
+        //   "User is not authenticated login again!",
+        //   backgroundColor: CRMColors.error,
+        //   colorText: CRMColors.textWhite,
+        // );
         return;
       }
 
@@ -174,12 +174,13 @@ class CheckClockInController extends GetxController {
       }
       if (response.statusCode == 401) {
         isLoading.value = false;
-        Get.snackbar(
-          'Message',
-          'Login session expired',
-          backgroundColor: CRMColors.error,
-          colorText: CRMColors.textWhite,
-        );
+        clearSharedPreferences();
+        // Get.snackbar(
+        //   'Message',
+        //   'Login session expired',
+        //   backgroundColor: CRMColors.error,
+        //   colorText: CRMColors.textWhite,
+        // );
         return;
       }
 
@@ -224,12 +225,12 @@ class CheckClockInController extends GetxController {
         static Future<void> clearSharedPreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.clear();
-    Get.snackbar(
-      'Logout',
-      'Login session expired',
-      backgroundColor: CRMColors.error,
-      colorText: CRMColors.textWhite,
-    );
+    // Get.snackbar(
+    //   'Logout',
+    //   'Login session expired',
+    //   backgroundColor: CRMColors.error,
+    //   colorText: CRMColors.textWhite,
+    // );
     Get.offAll(LoginScreen());
   }
 }
