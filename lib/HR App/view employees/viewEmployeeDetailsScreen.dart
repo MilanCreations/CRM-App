@@ -25,7 +25,7 @@ class ViewEmployeeDetailsScreen extends StatefulWidget {
 class _ViewEmployeeDetailsScreenState extends State<ViewEmployeeDetailsScreen> {
   late final ViewEmployeecontroller controller;
   String userRole = "";
-  String profilePicPath = "";
+  // String profilePicPath = "";
 
   @override
   void initState() {
@@ -39,12 +39,12 @@ class _ViewEmployeeDetailsScreenState extends State<ViewEmployeeDetailsScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       userRole = prefs.getString("role_code") ?? "";
-      profilePicPath = prefs.getString('profile_pic') ?? "";
+      // profilePicPath = prefs.getString('profile_pic') ?? "";
     });
   }
 
   Widget _getProfileImageWidget() {
-  if (profilePicPath.isEmpty) {
+  if (controller.profilePic.isEmpty) {
     return const CircleAvatar(
       radius: 50,
       backgroundColor: Colors.grey,
@@ -54,7 +54,7 @@ class _ViewEmployeeDetailsScreenState extends State<ViewEmployeeDetailsScreen> {
 
   try {
     // Check if it's a file path
-    final file = File(profilePicPath);
+    final file = File(controller.profilePic.toString());
     if (file.existsSync()) {
       return CircleAvatar(
         radius: 50,
@@ -62,15 +62,15 @@ class _ViewEmployeeDetailsScreenState extends State<ViewEmployeeDetailsScreen> {
       );
     }
     // Check if it's a network URL
-    else if (profilePicPath.startsWith('http')) {
+    else if (controller.profilePic.startsWith('http')) {
       return CircleAvatar(
         radius: 50,
-        backgroundImage: NetworkImage(profilePicPath),
+        backgroundImage: NetworkImage(controller.profilePic.toString()),
       );
     }
     // Assume it's base64 if neither
     else {
-      final imageBytes = base64Decode(profilePicPath);
+      final imageBytes = base64Decode(controller.profilePic.toString());
       return CircleAvatar(
         radius: 50,
         backgroundImage: MemoryImage(imageBytes),
@@ -105,23 +105,23 @@ class _ViewEmployeeDetailsScreenState extends State<ViewEmployeeDetailsScreen> {
 
 
 void _showFullScreenImage() {
-  if (profilePicPath.isEmpty) return;
+  if (controller.profilePic.isEmpty) return;
   
   try {
     Widget imageWidget;
     
     // Check if it's a file path
-    final file = File(profilePicPath);
+    final file = File(controller.profilePic.toString());
     if (file.existsSync()) {
       imageWidget = Image.file(file);
     } 
     // Check if it's a network URL
-    else if (profilePicPath.startsWith('http')) {
-      imageWidget = Image.network(profilePicPath);
+    else if (controller.profilePic.startsWith('http')) {
+      imageWidget = Image.network(controller.profilePic.toString());
     }
     // Assume it's base64 if neither
     else {
-      final imageBytes = base64Decode(profilePicPath);
+      final imageBytes = base64Decode(controller.profilePic.toString());
       imageWidget = Image.memory(imageBytes);
     }
 

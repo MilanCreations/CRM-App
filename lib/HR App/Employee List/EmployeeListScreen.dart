@@ -206,7 +206,7 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
                                     onTap:
                                         () => Get.to(
                                           ViewEmployeeDetailsScreen(
-                                            employeeId: employee.id!,
+                                            employeeId: employee.id!.toString(),
                                           ),
                                         ),
                                     child: Padding(
