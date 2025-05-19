@@ -236,7 +236,7 @@ class Editemployeedetailscontroller extends GetxController {
   }
 
  // API submission for editing employee
-  Future<void> editEmployeeFunction(int employeeId) async {
+  Future<void> editEmployeeFunction(String employeeId) async {
     try {
       // Validate required fields
       // if (nameController.text.isEmpty ||
@@ -399,7 +399,7 @@ class Editemployeedetailscontroller extends GetxController {
   }
 
   // Validation before submission
-  void submitAllData(int employeeId) {
+  void submitAllData(String employeeId) {
     if (nameController.text.isEmpty ||
         emailController.text.isEmpty ||
         department.value.isEmpty ||

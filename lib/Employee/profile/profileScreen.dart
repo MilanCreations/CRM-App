@@ -8,6 +8,7 @@ import 'package:crm_milan_creations/Employee/profile/My%20Profile/myProfileScree
 import 'package:crm_milan_creations/HR%20App/Employee%20Leave%20Request/empLeaveRequestScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Employee%20List/EmployeeListScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Salary/SalaryScreen.dart';
+import 'package:crm_milan_creations/HR%20App/view%20employees/viewEmployeeDetailsScreen.dart';
 import 'package:crm_milan_creations/Lead%20Management/Create%20Leads/createLeadsScreen.dart';
 import 'package:crm_milan_creations/Lead%20Management/All%20Leads%20List/allLeadListScreen.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
@@ -432,7 +433,7 @@ Widget _getProfileImageWidget() {
                   buildMenuItem(
                     icon: Icons.person_outline,
                     text: "Profile Details",
-                    onTap: () => Get.to(const MyProfileScreen()),
+                    onTap: () => Get.to( ViewEmployeeDetailsScreen(employeeId: employeeID,)),
                   ),
                   userRole != "EMPLOYEE"
                       ? buildMenuItem(

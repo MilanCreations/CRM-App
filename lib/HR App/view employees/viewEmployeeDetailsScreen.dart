@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:crm_milan_creations/HR%20App/Add%20Employee/addEmployeeScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Edit%20Employee%20Details/GetEmployeeDetailsScreen.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
@@ -10,7 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'viewEmployeeDetailsController.dart';
 
 class ViewEmployeeDetailsScreen extends StatefulWidget {
-  final int employeeId;
+  final String employeeId;
 
   const ViewEmployeeDetailsScreen({super.key, required this.employeeId});
 
@@ -22,10 +25,12 @@ class ViewEmployeeDetailsScreen extends StatefulWidget {
 class _ViewEmployeeDetailsScreenState extends State<ViewEmployeeDetailsScreen> {
   late final ViewEmployeecontroller controller;
   String userRole = "";
+  String profilePicPath = "";
 
   @override
   void initState() {
     super.initState();
+    getUserData();
     controller = Get.put(ViewEmployeecontroller());
     controller.employeeDetailsFunction(widget.employeeId);
   }
@@ -34,8 +39,116 @@ class _ViewEmployeeDetailsScreenState extends State<ViewEmployeeDetailsScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       userRole = prefs.getString("role_code") ?? "";
+      profilePicPath = prefs.getString('profile_pic') ?? "";
     });
   }
+
+  Widget _getProfileImageWidget() {
+  if (profilePicPath.isEmpty) {
+    return const CircleAvatar(
+      radius: 50,
+      backgroundColor: Colors.grey,
+      child: Icon(Icons.person, size: 50, color: Colors.white),
+    );
+  }
+
+  try {
+    // Check if it's a file path
+    final file = File(profilePicPath);
+    if (file.existsSync()) {
+      return CircleAvatar(
+        radius: 50,
+        backgroundImage: FileImage(file),
+      );
+    }
+    // Check if it's a network URL
+    else if (profilePicPath.startsWith('http')) {
+      return CircleAvatar(
+        radius: 50,
+        backgroundImage: NetworkImage(profilePicPath),
+      );
+    }
+    // Assume it's base64 if neither
+    else {
+      final imageBytes = base64Decode(profilePicPath);
+      return CircleAvatar(
+        radius: 50,
+        backgroundImage: MemoryImage(imageBytes),
+      );
+    }
+  } catch (e) {
+    print('Error loading profile image: $e');
+    return const CircleAvatar(
+      radius: 50,
+      backgroundColor: Colors.grey,
+      child: Icon(Icons.person, size: 50, color: Colors.white),
+    );
+  }
+}
+
+     Widget _buildProfileImage() {
+  return GestureDetector(
+    onTap: _showFullScreenImage,
+    child: Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: CRMColors.crmMainCOlor,
+          width: 2,
+        ),
+      ),
+      child: _getProfileImageWidget(),
+    ),
+  );
+}
+
+
+
+void _showFullScreenImage() {
+  if (profilePicPath.isEmpty) return;
+  
+  try {
+    Widget imageWidget;
+    
+    // Check if it's a file path
+    final file = File(profilePicPath);
+    if (file.existsSync()) {
+      imageWidget = Image.file(file);
+    } 
+    // Check if it's a network URL
+    else if (profilePicPath.startsWith('http')) {
+      imageWidget = Image.network(profilePicPath);
+    }
+    // Assume it's base64 if neither
+    else {
+      final imageBytes = base64Decode(profilePicPath);
+      imageWidget = Image.memory(imageBytes);
+    }
+
+    Get.dialog(
+      Dialog(
+        child: InteractiveViewer(
+          panEnabled: true,
+          minScale: 0.5,
+          maxScale: 3.0,
+          child: imageWidget,
+        ),
+      ),
+    );
+  } catch (e) {
+    print('Error showing full screen image: $e');
+    Get.snackbar(
+      "Error",
+      "Could not display image",
+      backgroundColor: CRMColors.error,
+      colorText: CRMColors.textWhite,
+    );
+  }
+}
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -86,21 +199,7 @@ class _ViewEmployeeDetailsScreenState extends State<ViewEmployeeDetailsScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
           child: Column(
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
-                  ),
-                  boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 8)],
-                ),
-                padding: const EdgeInsets.all(4),
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundColor: Colors.white,
-                  child: const Icon(Icons.person, size: 60, color: Colors.grey),
-                ),
-              ),
+               _buildProfileImage(),
               const SizedBox(height: 16),
               Text(
                 controller.name.value,

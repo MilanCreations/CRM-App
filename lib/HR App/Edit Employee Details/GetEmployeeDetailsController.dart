@@ -69,7 +69,7 @@ class GetEmployeeDetailsController extends GetxController{
   var aadharCard = ''.obs; 
 
 
-  Future<void> editEmployeeFunction(int editEmployeeDetails) async {
+  Future<void> editEmployeeFunction(String editEmployeeDetails) async {
     print("Edit Employee Function called with ID: $editEmployeeDetails");
     try{
       isLoading.value = true;

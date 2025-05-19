@@ -14,7 +14,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class EditEmployeeScreen extends StatefulWidget {
-  final int editEmployeeDetails;
+  final String editEmployeeDetails;
   EditEmployeeScreen({super.key, required this.editEmployeeDetails});
 
   @override
