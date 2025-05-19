@@ -564,7 +564,7 @@ class DashboardController extends GetxController {
   void _handleUnauthenticated() async {
     clearSharedPreferences();
     print('User is unauthenticated, clearing session...');
-    Get.snackbar(
+    Get.snackbar( 
       'Session Expired',
       'Please login again.',
       backgroundColor: CRMColors.error,

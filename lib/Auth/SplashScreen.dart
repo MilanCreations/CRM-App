@@ -3,8 +3,6 @@ import 'package:crm_milan_creations/Employee/User%20Role%20Bottom%20Bar/Employee
 import 'package:crm_milan_creations/Employee/User%20Role%20Bottom%20Bar/superadmin.dart';
 import 'package:crm_milan_creations/Employee/check%20clockin%20status/check-In-StatusController.dart';
 import 'package:crm_milan_creations/Employee/User%20Role%20Bottom%20Bar/HRbottomNavBar.dart';
-import 'package:crm_milan_creations/utils/colors.dart';
-import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';

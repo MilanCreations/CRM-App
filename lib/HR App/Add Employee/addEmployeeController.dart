@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -234,63 +235,60 @@ class AddEmployeeController extends GetxController {
       final uri = Uri.parse(ApiConstants.inviteEmployee);
       print('URI created in  add employee api controller:- $uri');
 
+      // Format the joining date properly
+   String formattedJoinDate = "";
+    if (joinDate.value != null) {
+      formattedJoinDate = DateFormat('yyyy-MM-dd').format(joinDate.value!);
+      print('Formatted joining date: $formattedJoinDate');
+    } else {
+      print('No join date selected - this should not happen as validation requires it');
+      showErrorMessage("Please select a joining date");
+      return;
+    }
+
+
       final request = http.MultipartRequest('POST', uri);
-   
+      print('joinDate set to1: ${joinDate.value.toString()}');
 
       request.headers['Authorization'] = 'Bearer $token';
-      
 
       // Add text fields
-      
+
       request.fields['name'] = nameController.text;
-      
 
       request.fields['email'] = emailController.text;
-      
 
       request.fields['department'] = department.value;
-      
 
       request.fields['designation'] = designation.value;
-      
 
       request.fields['salary'] = salaryController.text;
-     
 
       request.fields['emergency_contact'] = emergencyContactController.text;
-      
 
       request.fields['address'] = addressController.text;
-      
 
       request.fields['account_number'] = accountNumberController.text;
-    
 
       request.fields['bank_name'] = bankNameController.text;
-     
 
       request.fields['ifsc_code'] = ifscController.text;
-   
 
       request.fields['role_id'] = '4';
-   
 
-      request.fields['joining_date'] = "";
-    
-
-      request.fields['shift_start'] = "";
-    
-
-      request.fields['shift_end'] = "";
+      request.fields['joining_date'] = formattedJoinDate;
       
+      request.fields['shift_start'] = shiftStart.value != null 
+          ? shiftStart.value!.format(Get.context!) 
+          : "";
 
-   
+      request.fields['shift_end'] = shiftEnd.value != null 
+          ? shiftEnd.value!.format(Get.context!) 
+          : "";
 
       // Add profile image only if provided
       if (profileImage.value != null) {
-        
         if (!_validateFileFormat(profileImage.value!)) {
-        
           return;
         }
         final profileMediaType = _getMediaType(profileImage.value!);

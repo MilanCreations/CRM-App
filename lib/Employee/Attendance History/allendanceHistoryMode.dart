@@ -52,8 +52,8 @@ class Attendance {
     int id;
     int employeeId;
     DateTime date;
-    DateTime checkIn;
-    DateTime checkOut;
+    DateTime? checkIn;
+    DateTime? checkOut;
     DateTime? breakStart;
     DateTime? breakEnd;
     bool isLate;
@@ -103,8 +103,8 @@ class Attendance {
         id: json["id"],
         employeeId: json["employee_id"],
         date: DateTime.parse(json["date"]),
-        checkIn: DateTime.parse(json["check_in"]),
-        checkOut: DateTime.parse(json["check_out"]?? "2025-04-30T05:07:27.158Z"),
+        checkIn: json["check_in"] == null ? null : DateTime.parse(json["check_in"]),
+        checkOut: json["check_out"] == null ? null : DateTime.parse(json["check_out"]),
         breakStart: json["break_start"] == null ? null : DateTime.parse(json["break_start"]),
         breakEnd: json["break_end"] == null ? null : DateTime.parse(json["break_end"]),
         isLate: json["is_late"],
@@ -129,8 +129,8 @@ class Attendance {
         "id": id,
         "employee_id": employeeId,
         "date": date.toIso8601String(),
-        "check_in": checkIn.toIso8601String(),
-        "check_out": checkOut.toIso8601String(),
+        "check_in": checkIn?.toIso8601String(),
+        "check_out": checkOut?.toIso8601String(),
         "break_start": breakStart?.toIso8601String(),
         "break_end": breakEnd?.toIso8601String(),
         "is_late": isLate,

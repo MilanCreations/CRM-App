@@ -1,31 +1,60 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:crm_milan_creations/Employee/Get%20All%20Employees%20List/getAllEmployeeeListController.dart';
+import 'package:crm_milan_creations/Lead%20Management/Create%20Leads/createLeadController.dart';
+import 'package:crm_milan_creations/Lead%20Management/Get%20All%20Companies%20list/getAllCompaniesController.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
+import 'package:crm_milan_creations/widgets/button.dart';
 import 'package:crm_milan_creations/widgets/dropdown.dart';
 import 'package:crm_milan_creations/widgets/textfiled.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class CreateLeadsScreen extends StatefulWidget {
-  const CreateLeadsScreen({super.key});
+  final String token;
+  final String name;
+  final String companyid;
+  final String employeeid;
+  const CreateLeadsScreen({
+    super.key,
+    required this.token,
+    required this.name,
+    required this.companyid,
+    required this.employeeid,
+  });
 
   @override
   State<CreateLeadsScreen> createState() => _CreateLeadsScreenState();
 }
 
 class _CreateLeadsScreenState extends State<CreateLeadsScreen> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController dateController = TextEditingController();
-  TextEditingController timeController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
-  TextEditingController branchNameController = TextEditingController();
-  TextEditingController addressController = TextEditingController();
-  TextEditingController purposeController = TextEditingController();
-  TextEditingController queryTypeController = TextEditingController();
+  TextEditingController dateTimeController = TextEditingController();
+  TextEditingController assignToController = TextEditingController();
 
   String? selectedSource;
-  final List<String> sourceItems = ['WalkIn', 'Website', 'Referral', 'Advertisement','Social Media','Other'];
+  String? selectedCompany;
+  String? assignEmployee;
+  final List<String> sourceItems = [
+    'WalkIn',
+    'Website',
+    'Referral',
+    'Advertisement',
+    'Social Media',
+    'Other',
+  ];
+  // final List<String> company = ['Venus Studies'];
+  final Getallemployeelistcontroller getallemployeelistcontroller = Get.put(
+    Getallemployeelistcontroller(),
+  );
+  final GetallCompanieslistcontroller getallCompanieslistcontroller = Get.put(
+    GetallCompanieslistcontroller(),
+  );
+
+  final CreateLeadcontroller createLeadcontroller = Get.put(
+    CreateLeadcontroller(),
+  );
 
   Future<void> _selectDate() async {
     DateTime? picked = await showDatePicker(
@@ -37,30 +66,48 @@ class _CreateLeadsScreenState extends State<CreateLeadsScreen> {
 
     if (picked != null) {
       setState(() {
-        dateController.text = DateFormat('yyyy-MM-dd').format(picked);
+        dateTimeController.text = DateFormat('yyyy-MM-dd').format(picked);
       });
     }
   }
 
-  Future<void> _selectTime() async {
-    TimeOfDay? picked = await showTimePicker(
+  Future<void> _selectDateTime() async {
+    DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
     );
 
-    if (picked != null) {
-      final now = DateTime.now();
-      final selectedTime = DateTime(
-        now.year,
-        now.month,
-        now.day,
-        picked.hour,
-        picked.minute,
+    if (pickedDate != null) {
+      TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
       );
-      setState(() {
-        timeController.text = DateFormat('hh:mm a').format(selectedTime);
-      });
+
+      if (pickedTime != null) {
+        final DateTime finalDateTime = DateTime(
+          pickedDate.year,
+          pickedDate.month,
+          pickedDate.day,
+          pickedTime.hour,
+          pickedTime.minute,
+        );
+        setState(() {
+          dateTimeController.text = DateFormat(
+            'yyyy-MM-dd hh:mm a',
+          ).format(finalDateTime);
+        });
+      }
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    assignToController.text = widget.name;
+    getallemployeelistcontroller.getAllEmployeeListFunction();
+    getallCompanieslistcontroller.getAllCompaniesListFunction();
   }
 
   @override
@@ -87,45 +134,34 @@ class _CreateLeadsScreenState extends State<CreateLeadsScreen> {
             children: [
               CustomTextFormField(
                 label: 'Name',
-                controller: nameController,
+                controller: createLeadcontroller.nameController,
                 backgroundColor: CRMColors.whiteColor,
               ),
-              const SizedBox(height: 12),
 
+              const SizedBox(height: 12),
               GestureDetector(
-                onTap: _selectDate,
+                onTap: _selectDateTime,
                 child: AbsorbPointer(
                   child: CustomTextFormField(
                     backgroundColor: CRMColors.whiteColor,
-                    label: 'Select Date',
-                    controller: dateController,
+                    label: 'Select Date & Time',
+                    controller: dateTimeController,
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
 
-              GestureDetector(
-                onTap: _selectTime,
-                child: AbsorbPointer(
-                  child: CustomTextFormField(
-                    backgroundColor: CRMColors.whiteColor,
-                    label: 'Select Time',
-                    controller: timeController,
-                  ),
-                ),
-              ),
               const SizedBox(height: 12),
 
               CustomTextFormField(
                 label: 'Email',
-                controller: emailController,
+                controller: createLeadcontroller.emailController,
                 backgroundColor: CRMColors.whiteColor,
               ),
               const SizedBox(height: 12),
 
               CustomTextFormField(
                 label: 'Phone',
-                controller: phoneController,
+                controller: createLeadcontroller.phoneController,
                 keyboardType: TextInputType.phone,
                 backgroundColor: CRMColors.whiteColor,
               ),
@@ -133,7 +169,7 @@ class _CreateLeadsScreenState extends State<CreateLeadsScreen> {
 
               CustomTextFormField(
                 label: 'Branch Name',
-                controller: branchNameController,
+                controller: createLeadcontroller.branchNameController,
                 backgroundColor: CRMColors.whiteColor,
               ),
               const SizedBox(height: 12),
@@ -152,60 +188,87 @@ class _CreateLeadsScreenState extends State<CreateLeadsScreen> {
 
               CustomTextFormField(
                 label: 'Address',
-                controller: addressController,
+                controller: createLeadcontroller.addressController,
                 backgroundColor: CRMColors.whiteColor,
               ),
-
 
               const SizedBox(height: 12),
 
               CustomTextFormField(
                 label: 'Purpose',
-                controller: purposeController,
+                controller: createLeadcontroller.purposeController,
                 backgroundColor: CRMColors.whiteColor,
               ),
-
 
               const SizedBox(height: 12),
 
               CustomTextFormField(
                 label: 'Enter Query Type',
-                controller: queryTypeController,
+                controller: createLeadcontroller.queryTypeController,
                 backgroundColor: CRMColors.whiteColor,
               ),
 
-               const SizedBox(height: 12),
-
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomText(text: 'Assign Info',fontWeight: FontWeight.bold,fontSize: 20,),
-                ],
-              ),
-
               const SizedBox(height: 12),
-              CustomDropdownButton2(
-                hint: CustomText(text: 'Select Company'),
-                value: selectedSource,
-                dropdownItems: sourceItems,
-                onChanged: (value) {
-                  setState(() {
-                    selectedSource = value;
-                  });
-                },
-              ),
 
+              // Row(
+              //   crossAxisAlignment: CrossAxisAlignment.start,
+              //   children: [
+              //     CustomText(
+              //       text: 'Assign Info',
+              //       fontWeight: FontWeight.bold,
+              //       fontSize: 20,
+              //     ),
+              //   ],
+              // ),
 
+              // const SizedBox(height: 12),
+              // Obx(() {
+              //   return CustomDropdownButton2(
+              //     hint: CustomText(text: 'Select Company'),
+              //     value: selectedCompany,
+              //     dropdownItems:
+              //         getallCompanieslistcontroller.companiesList.toList(),
+              //     onChanged: (value) {
+              //       setState(() {
+              //         selectedCompany = value; // ✅ Correct variable
+              //         print(value);
+              //       });
+              //     },
+              //   );
+              // }),
               const SizedBox(height: 12),
-              CustomDropdownButton2(
-                hint: CustomText(text: 'Asign To'),
-                value: selectedSource,
-                dropdownItems: sourceItems,
-                onChanged: (value) {
-                  setState(() {
-                    selectedSource = value;
-                  });
+              // Obx(() {
+              //   return CustomDropdownButton2(
+              //     hint: CustomText(text: 'Asign To'),
+              //     value: assignEmployee,
+              //     dropdownItems:
+              //         getallemployeelistcontroller.employeeList.toList(),
+              //     onChanged: (value) {
+              //       setState(() {
+              //         assignEmployee = value;
+              //       });
+              //     },
+              //   );
+              // }),
+              CustomTextFormField(
+                label: '',
+                controller: assignToController,
+                backgroundColor: CRMColors.whiteColor,
+                showLabel: false,
+                readOnly: true,
+              ),
+              SizedBox(height: 15),
+              CustomButton(
+                text: 'Register',
+                onPressed: () {
+                  createLeadcontroller.createLeadCOntrollerFunction(context,selectedSource!, widget.token, widget.employeeid, widget.companyid);
+                
                 },
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
               ),
             ],
           ),

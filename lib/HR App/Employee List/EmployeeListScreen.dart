@@ -290,10 +290,12 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
                   );
                 },
               );
+            
             }),
           ),
         ],
       ),
+    
     );
   }
 
