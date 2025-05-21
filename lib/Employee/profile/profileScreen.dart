@@ -4,13 +4,13 @@ import 'package:crm_milan_creations/Auth/Login/loginScreen.dart';
 import 'package:crm_milan_creations/Employee/Apply%20Leave/applyLeaveScreen.dart';
 import 'package:crm_milan_creations/Employee/Attendance%20History/allendanceHistoryScreen.dart';
 import 'package:crm_milan_creations/Employee/Leave%20History/leaveHistoryScreen.dart';
-import 'package:crm_milan_creations/Employee/profile/My%20Profile/myProfileScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Employee%20Leave%20Request/empLeaveRequestScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Employee%20List/EmployeeListScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Salary/SalaryScreen.dart';
 import 'package:crm_milan_creations/HR%20App/view%20employees/viewEmployeeDetailsScreen.dart';
+import 'package:crm_milan_creations/Lead%20Management/All%20Lead%20list/allLeadsScreen.dart';
 import 'package:crm_milan_creations/Lead%20Management/Create%20Leads/createLeadsScreen.dart';
-import 'package:crm_milan_creations/Lead%20Management/All%20Leads%20List/allLeadListScreen.dart';
+import 'package:crm_milan_creations/Lead%20Management/My%20Leads%20List/myLeadListScreen.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
@@ -33,7 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String userRole = "";
   String token = "";
   String employeeID = "";
-  String companyId = "";
+  String visitTime = "";
   String profilePicPath = ""; // Could be local path or base64
 
   // String permissions =  "";
@@ -56,8 +56,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       userRole = prefs.getString("role_code") ?? "";
       token = prefs.getString('token') ?? "";
       employeeID = prefs.getString('employee_id') ?? "";
-      companyId = prefs.getString('company_id') ?? "";
-      name = prefs.getString('fullname') ?? "";
+      // companyId = prefs.getString('company_id') ?? "";
+      String? localName = prefs.getString('name');
+      // name = prefs.getString('name') ?? "";
+      name = (localName == null || localName.trim().isEmpty)
+      ? (prefs.getString('fullname') ?? "")
+      : localName;
+      
       profilePicPath = prefs.getString('profile_pic') ?? "";
       print("profile pic in profile screen:- $profilePicPath");
     });
@@ -372,8 +377,6 @@ Widget _getProfileImageWidget() {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        showBackArrow: true,
-         leadingIcon: Icons.arrow_back_ios_new_sharp,
         gradient: const LinearGradient(
           colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
           begin: Alignment.topLeft,
@@ -466,14 +469,18 @@ Widget _getProfileImageWidget() {
                     text: 'Attendance History',
                     onTap: () => Get.to(() => const HistoryScreen()),
                   ),
-
-                  buildMenuItem(
+                userRole != "EMPLOYEE"
+                 ? buildMenuItem(
                     icon: Icons.currency_rupee_sharp,
                     text: 'Salary',
                     onTap: () => Get.to(() => Salaryscreen()),
-                  ),
+                  ): const SizedBox(),
                   widgetshowpermissionswise(),
-
+                    buildMenuItem(
+                    icon: Icons.leak_add_sharp,
+                    text: 'All Leads',
+                    onTap: () => Get.to(() => AllLeadsScreen()),
+                  ),
                   buildMenuItem(
                     icon: Icons.logout,
                     text: 'Logout',
@@ -498,12 +505,12 @@ Widget _getProfileImageWidget() {
               return buildMenuItem(
                 icon: Icons.leaderboard,
                 text: 'Create Lead',
-                onTap: () => Get.to(() => CreateLeadsScreen(token: token,name:name ,companyid:companyId ,employeeid: employeeID,)),
+                onTap: () => Get.to(() => CreateLeadsScreen(token: token,name:name ,visitTime:visitTime ,employeeid: employeeID,)),
               );
             } else if (element == "view-leads") {
               return buildMenuItem(
                 icon: Icons.lan_outlined,
-                text: 'All Lead List',
+                text: 'My Lead List',
                 onTap: () => Get.to(() => LeadListScreen()),
               );
             } else if (element == "manage-others-leads") {

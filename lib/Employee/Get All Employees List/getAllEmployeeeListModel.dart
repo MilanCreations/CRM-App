@@ -10,7 +10,7 @@ String getAllEmployeesModelToJson(GetAllEmployeesModel data) => json.encode(data
 
 class GetAllEmployeesModel {
     String status;
-    List<Result> result;
+    List<Resultemp> result;
 
     GetAllEmployeesModel({
         required this.status,
@@ -19,7 +19,7 @@ class GetAllEmployeesModel {
 
     factory GetAllEmployeesModel.fromJson(Map<String, dynamic> json) => GetAllEmployeesModel(
         status: json["status"],
-        result: List<Result>.from(json["result"].map((x) => Result.fromJson(x))),
+        result: List<Resultemp>.from(json["result"].map((x) => Resultemp.fromJson(x))),
     );
 
     Map<String, dynamic> toJson() => {
@@ -28,16 +28,16 @@ class GetAllEmployeesModel {
     };
 }
 
-class Result {
+class Resultemp {
     int id;
     String name;
 
-    Result({
+    Resultemp({
         required this.id,
         required this.name,
     });
 
-    factory Result.fromJson(Map<String, dynamic> json) => Result(
+    factory Resultemp.fromJson(Map<String, dynamic> json) => Resultemp(
         id: json["id"],
         name: json["name"],
     );

@@ -27,16 +27,15 @@ class SalaryReportModel {
         required this.totalPages,
     });
 
-factory SalaryReportModel.fromJson(Map<String, dynamic> json) => SalaryReportModel(
-  status: json["status"],
-  result: List<Result>.from(json["result"].map((x) => Result.fromJson(x))),
-  total: json["total"].toString(), // 💡 convert to String if it’s a number
-  filterCount: json["filterCount"],
-  page: json["page"],
-  limit: json["limit"],
-  totalPages: json["totalPages"],
-);
-
+    factory SalaryReportModel.fromJson(Map<String, dynamic> json) => SalaryReportModel(
+        status: json["status"],
+        result: List<Result>.from(json["result"].map((x) => Result.fromJson(x))),
+        total: json["total"],
+        filterCount: json["filterCount"],
+        page: json["page"],
+        limit: json["limit"],
+        totalPages: json["totalPages"],
+    );
 
     Map<String, dynamic> toJson() => {
         "status": status,
@@ -57,7 +56,7 @@ class Result {
     int unpaidLeaves;
     int lateArrivals;
     int earlyLeaves;
-    int workingHours;
+    dynamic workingHours;
     String deduction;
     String payableSalary;
 
@@ -74,19 +73,18 @@ class Result {
         required this.payableSalary,
     });
 
-factory Result.fromJson(Map<String, dynamic> json) => Result(
-  employeeId: json["EmployeeID"],
-  name: json["Name"].toString(),
-  baseSalary: json["BaseSalary"].toString(), // 💡 converted to String
-  presentDays: json["PresentDays"],
-  unpaidLeaves: json["UnpaidLeaves"],
-  lateArrivals: json["LateArrivals"],
-  earlyLeaves: json["EarlyLeaves"],
-  workingHours: json["WorkingHours"],
-  deduction: json["Deduction"].toString(), // 💡 converted to String
-  payableSalary: json["PayableSalary"].toString(), // 💡 converted to String
-);
-
+    factory Result.fromJson(Map<String, dynamic> json) => Result(
+        employeeId: json["EmployeeID"],
+        name: json["Name"],
+        baseSalary: json["BaseSalary"],
+        presentDays: json["PresentDays"],
+        unpaidLeaves: json["UnpaidLeaves"],
+        lateArrivals: json["LateArrivals"],
+        earlyLeaves: json["EarlyLeaves"],
+        workingHours: json["WorkingHours"],
+        deduction: json["Deduction"],
+        payableSalary: json["PayableSalary"],
+    );
 
     Map<String, dynamic> toJson() => {
         "EmployeeID": employeeId,

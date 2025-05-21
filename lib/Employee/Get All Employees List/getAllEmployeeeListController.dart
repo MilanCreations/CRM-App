@@ -10,7 +10,7 @@ import 'package:http/http.dart' as http;
 
 class Getallemployeelistcontroller extends GetxController {
   var isLoading = false.obs;
-  var employeeList = <String>[].obs; // Make it a list of employee names
+  var employeeList = <Resultemp>[].obs; // Make it a list of employee names
 
   Future<void> getAllEmployeeListFunction() async {
     try {
@@ -41,10 +41,10 @@ class Getallemployeelistcontroller extends GetxController {
 
       if (response.statusCode == 200) {
         var employeeListModel = getAllEmployeesModelFromJson(response.body);
+        employeeList.addAll(employeeListModel.result);
         print("all employees list fetched successfully");
 
-        employeeList.value =
-            employeeListModel.result.map((e) => e.name ?? '').toList();
+      
       } else if (response.statusCode == 401) {
         Get.snackbar('Message', 'Login session expired',
             backgroundColor: CRMColors.error,
