@@ -10,19 +10,14 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
-class CreateLeadcontroller extends GetxController {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController datetimeController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
-  TextEditingController branchNameController = TextEditingController();
-  TextEditingController addressController = TextEditingController();
-  TextEditingController purposeController = TextEditingController();
-  TextEditingController queryTypeController = TextEditingController();
+class UpdateLeadcontroller extends GetxController {
+  TextEditingController feedBack = TextEditingController();
+  TextEditingController statusController = TextEditingController();
+
 
   var isLoading = false.obs;
 
-  Future<void> createLeadCOntrollerFunction(
+  Future<void> updateLeadCOntrollerFunction(
     BuildContext context,
     String selectedSource,
     String token,
@@ -37,36 +32,15 @@ class CreateLeadcontroller extends GetxController {
         isLoading.value = true;
 
         Map<String, String> newData = {
-          "name": nameController.text.trim(),
-          "email": emailController.text.trim(),
-          "phone": phoneController.text.trim(),
-          "remark": purposeController.text.trim(),
-          "branch_name": branchNameController.text.trim(),
-          "address": addressController.text.trim(),
-          "source": selectedSource,
-          "query_type": queryTypeController.text.trim(),
-          // optional fields
-          // "company_id": companyid.toString(),
-          "lead_creator": employeeID.toString(),
-          "visit_time": datetimeController.text.trim(),
+          "type": "mature",
+          "feedback": feedBack.text.trim(),
+          "status": statusController.text.trim(),
+          // "lead_id": nameController.text.trim(),
+          // "followup_date": nameController.text.trim(),
+         
         };
 
-      //    // PRINTING INDIVIDUAL PARAMETERS
-      // print("======= CREATE LEAD REQUEST =======");
-      // print("Name: ${newData['name']}");
-      // print("Email: ${newData['email']}");
-      // print("Phone: ${newData['phone']}");
-      // print("Remark: ${newData['remark']}");
-      // print("Branch Name: ${newData['branch_name']}");
-      // print("Address: ${newData['address']}");
-      // print("Source: ${newData['source']}");
-      // print("Query Type: ${newData['query_type']}");
-      // print("Company ID: ${newData['company_id']}");
-      // print("Employee ID: ${newData['employee_id']}");
-      // print("Visit time:- ${datetimeController.text.trim()}");
-      // print("Authorization Token: Bearer $token");
-      // print("API Endpoint: ${ApiConstants.creatLead}");
-      // print("Full Body JSON: ${jsonEncode(newData)}");
+      
       
       // print("===================================");
 
@@ -80,13 +54,13 @@ class CreateLeadcontroller extends GetxController {
         );
 
         final responseBody = jsonDecode(response.body);
-        print('API Response: $responseBody');
-        print('Status code: ${response.statusCode}');
+        print('API Response in update lead status: $responseBody');
+        print('Status code in update lead status: ${response.statusCode}');
 
         // Handle all non-200 status codes first
         if (response.statusCode != 200) {
-          var modelData = createLeadModelFromJson(response.body);
-          print("lead created:- $modelData");
+          // var modelData = createLeadModelFromJson(response.body);
+
           isLoading.value = false;
 
           // If the API returns status: false with errors
@@ -135,12 +109,7 @@ class CreateLeadcontroller extends GetxController {
 
         isLoading.value = false;
 
-        // Get.snackbar(
-        //   "Success",
-        //   responseBody['message'] ?? "Lead created successfully",
-        //   backgroundColor: CRMColors.succeed,
-        //   colorText: CRMColors.black,
-        // );
+      
        clearAllFields();
         AwesomeDialog(
             context: context,
@@ -178,14 +147,8 @@ class CreateLeadcontroller extends GetxController {
   }
 
   void clearAllFields() {
-  nameController.clear();
-  datetimeController.clear();
-  emailController.clear();
-  phoneController.clear();
-  branchNameController.clear();
-  addressController.clear();
-  purposeController.clear();
-  queryTypeController.clear();
+  // nameController.clear();
+ 
 }
 
 }

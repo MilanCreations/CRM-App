@@ -74,8 +74,20 @@ static const String getAllComapies = "$baseUrls/payroll/company/index";
 // Create leads
 static const String creatLead = "$baseUrls/payroll/leads";
 
-// Get Lead List
-static const String leadList = "$baseUrls/payroll/leads/all/assignedLeads";
+// Get My Lead List
+static const String myleadList = "$baseUrls/payroll/leads/all/assignedLeads";
+
+// Get All Leads List
+static const String allleadList = "$baseUrls/payroll/leads";
+
+// Assign Lead to employees
+static const String assignLeadToEmployees = "$baseUrls/payroll/leads/assignLeads";
+
+// Lead Status List
+static const String leadStatus = "$baseUrls/payroll/leads/status";
+
+// Update Lead Status
+static const String updateLeadStatus = "$baseUrls/payroll/leads/update/lead";
 
 //////////////////// Salary Management //////////////////
 static const String salaryList = "$baseUrls/payroll/employee/generate-salary-report";

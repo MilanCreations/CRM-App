@@ -51,18 +51,18 @@ class _DashboardscreenState extends State<Dashboardscreen> {
     attendanceHistoryController.AttendanceHistoryfunctions();
 
     // Start timer to update working hours every second
-workingTimeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-  if (checkClockInController.checkInTime.value.isNotEmpty) {
-    if (checkClockInController.checkOutTime.value.isEmpty || 
-        checkClockInController.checkOutTime.value == "checkout") {
-      calculateCurrentWorkingHours();
-    } else {
-      calculateTotalHoursToday();
-    }
-  } else {
-    timer.cancel();
-  }
-});
+    workingTimeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (checkClockInController.checkInTime.value.isNotEmpty) {
+        if (checkClockInController.checkOutTime.value.isEmpty ||
+            checkClockInController.checkOutTime.value == "checkout") {
+          calculateCurrentWorkingHours();
+        } else {
+          calculateTotalHoursToday();
+        }
+      } else {
+        timer.cancel();
+      }
+    });
 
     print("Check In Time: ${checkClockInController.checkInTime}");
     super.initState();
@@ -96,13 +96,17 @@ workingTimeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
           children: [
             CustomText(
               text: "Hello ",
-              fontWeight: FontWeight.w400,
+              fontWeight: FontWeight.bold,
               fontSize: 18,
               color: CRMColors.whiteColor,
             ),
             CustomText(
-              text: username.toString(),
-              fontWeight: FontWeight.bold,
+              text:
+                  username.isNotEmpty
+                      ? username[0].toUpperCase() +
+                          username.substring(1).toLowerCase()
+                      : '',
+              fontWeight: FontWeight.w400,
               fontSize: 18,
               color: CRMColors.whiteColor,
             ),
@@ -191,37 +195,61 @@ workingTimeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
                     // const SizedBox(height: 10),
                     // totalWorkingHours(),
                     // const SizedBox(height: 10),
-                    Obx(
-                      () => Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.redAccent.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          children: [
-                            CustomText(text: "Working Time:", fontSize: 17),
-                            Spacer(),
-                            CustomText(
-                              text:
-                                  checkClockInController
-                                              .checkOutTime
-                                              .value
-                                              .isNotEmpty &&
-                                          checkClockInController
-                                                  .checkOutTime
-                                                  .value !=
-                                              "checkout"
-                                      ? totalHoursToday.value
-                                      : totalWorkingHoursToday.value,
-                              color: CRMColors.black,
-                              fontSize: 21.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    Obx(() {
+                      bool isClockedOut =
+                          checkClockInController
+                              .checkOutTime
+                              .value
+                              .isNotEmpty &&
+                          checkClockInController.checkOutTime.value !=
+                              "checkout";
+
+                      if (isClockedOut) {
+                        return Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.greenAccent.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              CustomText(
+                                text: "Total Hours Today:",
+                                fontSize: 17,
+                              ),
+                              const Spacer(),
+                              CustomText(
+                                text: totalHoursToday.value,
+                                color: CRMColors.black,
+                                fontSize: 21.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ],
+                          ),
+                        );
+                      } else {
+                        return Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.redAccent.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              CustomText(text: "Working Time:", fontSize: 17),
+                              const Spacer(),
+                              CustomText(
+                                text: totalWorkingHoursToday.value,
+                                color: CRMColors.black,
+                                fontSize: 21.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                    }),
+
                     const SizedBox(height: 10),
                     checkOutTime(),
 
@@ -891,10 +919,10 @@ workingTimeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
     });
   }
 
-void stopAndResetWorkingTime() {
-  workingTimeTimer?.cancel();
-  calculateTotalHoursToday(); // Calculate final hours when clocking out
-}
+  void stopAndResetWorkingTime() {
+    workingTimeTimer?.cancel();
+    calculateTotalHoursToday(); // Calculate final hours when clocking out
+  }
 }
 
 // bell_curve_painter.dart

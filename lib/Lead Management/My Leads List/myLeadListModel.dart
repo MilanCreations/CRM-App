@@ -1,27 +1,27 @@
 // To parse this JSON data, do
 //
-//     final ownLeadsModel = ownLeadsModelFromJson(jsonString);
+//     final myLeadsModel = myLeadsModelFromJson(jsonString);
 
 import 'dart:convert';
 
-OwnLeadsModel ownLeadsModelFromJson(String str) => OwnLeadsModel.fromJson(json.decode(str));
+MyLeadsModel myLeadsModelFromJson(String str) => MyLeadsModel.fromJson(json.decode(str));
 
-String ownLeadsModelToJson(OwnLeadsModel data) => json.encode(data.toJson());
+String myLeadsModelToJson(MyLeadsModel data) => json.encode(data.toJson());
 
-class OwnLeadsModel {
+class MyLeadsModel {
     String status;
     List<Result> result;
     int total;
     String filterCount;
 
-    OwnLeadsModel({
+    MyLeadsModel({
         required this.status,
         required this.result,
         required this.total,
         required this.filterCount,
     });
 
-    factory OwnLeadsModel.fromJson(Map<String, dynamic> json) => OwnLeadsModel(
+    factory MyLeadsModel.fromJson(Map<String, dynamic> json) => MyLeadsModel(
         status: json["status"],
         result: List<Result>.from(json["result"].map((x) => Result.fromJson(x))),
         total: json["total"],
@@ -52,6 +52,7 @@ class Result {
     String source;
     String queryType;
     dynamic conversionTypeId;
+    String? leadCreator;
     String status;
     dynamic employeeRemark;
     int assignId;
@@ -74,6 +75,7 @@ class Result {
         required this.source,
         required this.queryType,
         required this.conversionTypeId,
+        required this.leadCreator,
         required this.status,
         required this.employeeRemark,
         required this.assignId,
@@ -90,15 +92,16 @@ class Result {
         visitTime: DateTime.parse(json["visit_time"]),
         remark: json["remark"],
         branchName: json["branch_name"],
-        branchId: json["branch_id"],
+        branchId: json["branch_id"]?? 0,
         phoneVerified: json["phone_verified"],
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
         source: json["source"],
         queryType: json["query_type"],
         conversionTypeId: json["conversion_type_id"],
+        leadCreator: json["lead_creator"] ?? "",
         status: json["status"],
-        employeeRemark: json["employee_remark"],
+        employeeRemark: json["employee_remark"]?? "",
         assignId: json["assign_id"],
         employeeName: json["employee_name"],
         companyName: json["companyName"],
@@ -120,6 +123,7 @@ class Result {
         "source": source,
         "query_type": queryType,
         "conversion_type_id": conversionTypeId,
+        "lead_creator": leadCreator,
         "status": status,
         "employee_remark": employeeRemark,
         "assign_id": assignId,

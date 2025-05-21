@@ -53,6 +53,7 @@ dependencies:
   awesome_dialog:
   collection:
   scrollable_clean_calendar:
+  permission_handler:
 
 
   # The following adds the Cupertino Icons font to your application.

@@ -15,13 +15,13 @@ import 'package:intl/intl.dart';
 class CreateLeadsScreen extends StatefulWidget {
   final String token;
   final String name;
-  final String companyid;
+  final String visitTime;
   final String employeeid;
   const CreateLeadsScreen({
     super.key,
     required this.token,
     required this.name,
-    required this.companyid,
+    required this.visitTime,
     required this.employeeid,
   });
 
@@ -30,8 +30,7 @@ class CreateLeadsScreen extends StatefulWidget {
 }
 
 class _CreateLeadsScreenState extends State<CreateLeadsScreen> {
-  TextEditingController dateTimeController = TextEditingController();
-  TextEditingController assignToController = TextEditingController();
+TextEditingController assignToController = TextEditingController();
 
   String? selectedSource;
   String? selectedCompany;
@@ -66,7 +65,7 @@ class _CreateLeadsScreenState extends State<CreateLeadsScreen> {
 
     if (picked != null) {
       setState(() {
-        dateTimeController.text = DateFormat('yyyy-MM-dd').format(picked);
+       createLeadcontroller.datetimeController.text = DateFormat('yyyy-MM-dd').format(picked);
       });
     }
   }
@@ -94,10 +93,11 @@ class _CreateLeadsScreenState extends State<CreateLeadsScreen> {
           pickedTime.minute,
         );
         setState(() {
-          dateTimeController.text = DateFormat(
-            'yyyy-MM-dd hh:mm a',
+         createLeadcontroller.datetimeController.text = DateFormat(
+            'MM-dd-yyyy hh:mm',
           ).format(finalDateTime);
         });
+        print("date and time:- ${createLeadcontroller.datetimeController.text}");
       }
     }
   }
@@ -147,7 +147,7 @@ class _CreateLeadsScreenState extends State<CreateLeadsScreen> {
                   child: CustomTextFormField(
                     backgroundColor: CRMColors.whiteColor,
                     label: 'Select Date & Time',
-                    controller: dateTimeController,
+                    controller: createLeadcontroller.datetimeController,
                   ),
                 ),
               ),
@@ -210,7 +210,7 @@ class _CreateLeadsScreenState extends State<CreateLeadsScreen> {
                 backgroundColor: CRMColors.whiteColor,
               ),
 
-              const SizedBox(height: 12),
+              // const SizedBox(height: 12),
 
               // Row(
               //   crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,20 +238,22 @@ class _CreateLeadsScreenState extends State<CreateLeadsScreen> {
               //     },
               //   );
               // }),
+              /* const SizedBox(height: 12),
+              Obx(() {
+                return CustomDropdownButton2(
+                  hint: CustomText(text: 'Asign To'),
+                  value: assignEmployee,
+                  dropdownItems:
+                      getallemployeelistcontroller.employeeList.toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      assignEmployee = value;
+                    });
+                  },
+                );
+              }), */
               const SizedBox(height: 12),
-              // Obx(() {
-              //   return CustomDropdownButton2(
-              //     hint: CustomText(text: 'Asign To'),
-              //     value: assignEmployee,
-              //     dropdownItems:
-              //         getallemployeelistcontroller.employeeList.toList(),
-              //     onChanged: (value) {
-              //       setState(() {
-              //         assignEmployee = value;
-              //       });
-              //     },
-              //   );
-              // }),
+
               CustomTextFormField(
                 label: '',
                 controller: assignToController,
@@ -263,7 +265,7 @@ class _CreateLeadsScreenState extends State<CreateLeadsScreen> {
               CustomButton(
                 text: 'Register',
                 onPressed: () {
-                  createLeadcontroller.createLeadCOntrollerFunction(context,selectedSource!, widget.token, widget.employeeid, widget.companyid);
+                  createLeadcontroller.createLeadCOntrollerFunction(context,selectedSource!, widget.token, widget.employeeid,widget.visitTime);
                 
                 },
                 gradient: const LinearGradient(

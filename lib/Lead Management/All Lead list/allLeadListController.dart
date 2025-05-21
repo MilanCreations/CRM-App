@@ -2,20 +2,20 @@
 
 import 'package:crm_milan_creations/API%20Services/BaseURL_&_EndPoints.dart';
 import 'package:crm_milan_creations/Auth/Login/loginScreen.dart';
-import 'package:crm_milan_creations/Lead%20Management/All%20Leads%20List/allLeadListModel.dart';
+import 'package:crm_milan_creations/Lead%20Management/All%20Lead%20list/allLeadsModel.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-class LeadListcontroller extends GetxController{
+class AllLeadListcontroller extends GetxController{
   var isLoading = false.obs;
   var leadList = [].obs;
   var currentPage = 1.obs;
   var hasMoreData = true.obs;
   var searchQuery = "".obs;
 
-Future<void> leadListFunction({
+Future<void> allLeadListFunction({
   bool isRefresh = false,
   String search = '',
   DateTime? startDate,
@@ -50,7 +50,7 @@ Future<void> leadListFunction({
       return;
     }
 
-    String baseUrl = ApiConstants.leadList;
+    String baseUrl = ApiConstants.allleadList;
     // Updated to match your API parameters
     String queryParams = '?page=${currentPage.value}&_limit=10';
 
@@ -72,11 +72,11 @@ Future<void> leadListFunction({
       headers: {"Authorization": "Bearer $token"},
     );
 
-    print('Response status: ${response.statusCode}'); // Debug status
-    print('Response body: ${response.body}'); // Debug response
+    print('Response status in all lead list: ${response.statusCode}'); // Debug status
+    print('Response body in all lead list: ${response.body}'); // Debug response
 
     if (response.statusCode == 200) {
-      var allLeadsModel = ownLeadsModelFromJson(response.body);
+      var allLeadsModel = allLeadsModelFromJson(response.body);
       print('Received ${allLeadsModel.result.length} items'); // Debug count
 
       if (allLeadsModel.result.isEmpty) {
