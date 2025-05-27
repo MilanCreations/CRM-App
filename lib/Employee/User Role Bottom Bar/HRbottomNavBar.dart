@@ -52,7 +52,7 @@ class _BottomNavBarState extends State<HRBottomNavBar> {
           _buildNavItem(Icons.dashboard, "Dashboard", 0),
           _buildNavItem(Icons.person, "Profile", 1),
           _buildNavItem(Icons.notifications, "Notifications", 2),
-          _buildNavItem(Icons.wallet, "Historyhr", 3),
+          _buildNavItem(Icons.wallet, "Historyh", 3),
         ],
       ),
     );

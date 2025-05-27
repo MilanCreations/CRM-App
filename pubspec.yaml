@@ -54,6 +54,8 @@ dependencies:
   collection:
   scrollable_clean_calendar:
   permission_handler:
+  flutter_downloader:
+  path_provider: 
 
 
   # The following adds the Cupertino Icons font to your application.

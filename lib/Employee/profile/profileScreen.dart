@@ -16,7 +16,6 @@ import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -37,8 +36,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String profilePicPath = ""; // Could be local path or base64
 
   // String permissions =  "";
-  File? _profileImage;
-  final ImagePicker _picker = ImagePicker();
+  // File? _profileImage;
+  // final ImagePicker _picker = ImagePicker();
   List chartData = [];
 
   @override
@@ -469,12 +468,11 @@ Widget _getProfileImageWidget() {
                     text: 'Attendance History',
                     onTap: () => Get.to(() => const HistoryScreen()),
                   ),
-                userRole != "EMPLOYEE"
-                 ? buildMenuItem(
+                 buildMenuItem(
                     icon: Icons.currency_rupee_sharp,
                     text: 'Salary',
                     onTap: () => Get.to(() => Salaryscreen()),
-                  ): const SizedBox(),
+                  ),
                   widgetshowpermissionswise(),
                     buildMenuItem(
                     icon: Icons.leak_add_sharp,

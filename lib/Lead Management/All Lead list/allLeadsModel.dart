@@ -52,7 +52,7 @@ class Result {
     String source;
     String queryType;
     dynamic conversionTypeId;
-    LeadCreator leadCreator;
+    LeadCreator? leadCreator;
     String totalAssigned;
     List<AssignLead> assignLeads;
 
@@ -72,7 +72,7 @@ class Result {
         required this.source,
         required this.queryType,
         required this.conversionTypeId,
-        required this.leadCreator,
+        this.leadCreator,
         required this.totalAssigned,
         required this.assignLeads,
     });
@@ -93,7 +93,7 @@ class Result {
         source: json["source"],
         queryType: json["query_type"],
         conversionTypeId: json["conversion_type_id"],
-        leadCreator: LeadCreator.fromJson(json["lead_creator"]),
+        leadCreator: json["lead_creator"] == null ? null : LeadCreator.fromJson(json["lead_creator"]),
         totalAssigned: json["total_assigned"],
         assignLeads: List<AssignLead>.from(json["assign_leads"].map((x) => AssignLead.fromJson(x))),
     );
@@ -114,7 +114,7 @@ class Result {
         "source": source,
         "query_type": queryType,
         "conversion_type_id": conversionTypeId,
-        "lead_creator": leadCreator.toJson(),
+        "lead_creator": leadCreator?.toJson(),
         "total_assigned": totalAssigned,
         "assign_leads": List<dynamic>.from(assignLeads.map((x) => x.toJson())),
     };
@@ -122,11 +122,11 @@ class Result {
 
 class AssignLead {
     int id;
-    int leadId;
-    int companyId;
-    int employeeId;
+    num leadId;
+    num companyId;
+    num employeeId;
     String status;
-    dynamic employeeRemark;
+    String? employeeRemark;
     bool converted;
     DateTime createdAt;
     DateTime updatedAt;
@@ -157,11 +157,11 @@ class AssignLead {
         companyId: json["company_id"],
         employeeId: json["employee_id"],
         status: json["status"],
-        employeeRemark: json["employee_remark"]?? "",
+        employeeRemark: json["employee_remark"],
         converted: json["converted"],
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
-        convertedBy: json["converted_by"]?? "",
+        convertedBy: json["converted_by"],
         employeeName: json["employee_name"],
         email: json["email"],
         companyName: json["companyName"],

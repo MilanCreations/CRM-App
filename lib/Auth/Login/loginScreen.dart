@@ -1,6 +1,7 @@
 import 'package:crm_milan_creations/Auth/Forgot%20Password/ForgotPasswordScreen.dart';
 import 'package:crm_milan_creations/Auth/Login/loginController.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
+import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/button.dart';
 import 'package:crm_milan_creations/widgets/loader.dart';
 import 'package:crm_milan_creations/widgets/textfiled.dart';
@@ -104,23 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
 
-                          const SizedBox(height: 10),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: GestureDetector(
-                              onTap: () {
-                                Get.to(const ForgotPasswordScreen());
-                              },
-                              child: Text(
-                                "Forgot password?",
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 13,
-                                  decoration: TextDecoration.underline,
-                                ),
-                              ),
-                            ),
-                          ),
+                         
 
                           const SizedBox(height: 30),
 
@@ -169,6 +154,23 @@ class _LoginScreenState extends State<LoginScreen> {
                               end: Alignment.bottomRight,
                             ),
                           ),
+                           const SizedBox(height: 20),
+                          Align(
+                            alignment: Alignment.center,
+                            child: GestureDetector(
+                              onTap: () {
+                                showAdminContactDialog();
+                              },
+                              child: Text(
+                                "Employee Sign Up",
+                                style: TextStyle(
+                                  color: CRMColors.white,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -184,4 +186,97 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+
+   void showAdminContactDialog() {
+  showDialog(
+    context: context,
+    builder: (_) => Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      child: Container(
+        padding: const EdgeInsets.all(25),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 20,
+              spreadRadius: 5,
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Info icon
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.blue.shade100,
+              ),
+              child: Icon(
+                Icons.info_outline,
+                size: 40,
+                color: Colors.blue.shade800,
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Title
+            const CustomText(
+             text:  "Admin Assistance Required",
+              fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+            ),
+            const SizedBox(height: 15),
+
+            // Message
+            const Text(
+              "Please contact your administrator for further assistance.",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.black54,
+              ),
+            ),
+           
+            const SizedBox(height: 25),
+
+            // OK Button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  backgroundColor: Colors.blue.shade800,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                ),
+                onPressed: () => Get.back(),
+                child: const Text(
+                  "OK",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
 }

@@ -34,31 +34,26 @@ class SalaryController extends GetxController {
       if (!hasMoreData.value) return;
 
       isLoading.value = true;
+      update();
 
       // Validate dates (optional)
-      if (month != null && year != null && month.isNotEmpty && year.isNotEmpty) {
-        // Not doing DateTime parse because month is like '01', year like '2023'
-        // Just ensure month and year are valid, you can extend here if needed
-      }
+      // if (month != null && year != null && month.isNotEmpty && year.isNotEmpty) {
+      //   // Not doing DateTime parse because month is like '01', year like '2023'
+      //   // Just ensure month and year are valid, you can extend here if needed
+      // }
 
       final prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
 
       if (token == null) {
         clearSharedPreferences();
-        Get.snackbar(
-          "Error",
-          "User is not authenticated. Login again!",
-          backgroundColor: CRMColors.error,
-          colorText: CRMColors.textWhite,
-        );
         return;
       }
 
       final url = Uri.parse(ApiConstants.salaryList).replace(
         queryParameters: {
           '_page': currentPage.value.toString(),
-          '_limit': '10',
+          '_limit': '0',
           '_sort': 'name',
           '_order': 'asc',
           'q': name,
@@ -83,6 +78,7 @@ class SalaryController extends GetxController {
         } else {
           salaryList.addAll(salaryModel.result);
           currentPage.value++;
+          
         }
       } else if (response.statusCode == 400) {
         hasMoreData.value = false;
@@ -114,6 +110,7 @@ class SalaryController extends GetxController {
       }
     } catch (error) {
       print("Error fetching salary list: $error");
+      isLoading.value = false;
       Get.snackbar(
         "Error",
         error.toString(),

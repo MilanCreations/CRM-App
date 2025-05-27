@@ -11,7 +11,7 @@ String salaryReportModelToJson(SalaryReportModel data) => json.encode(data.toJso
 class SalaryReportModel {
     String status;
     List<Result> result;
-    String total;
+    int total;
     int filterCount;
     int page;
     int limit;
@@ -49,14 +49,14 @@ class SalaryReportModel {
 }
 
 class Result {
-    int employeeId;
+    num employeeId;
     String name;
     String baseSalary;
-    int presentDays;
-    int unpaidLeaves;
-    int lateArrivals;
-    int earlyLeaves;
-    dynamic workingHours;
+    num presentDays;
+    num unpaidLeaves;
+    num lateArrivals;
+    num earlyLeaves;
+    num workingHours;
     String deduction;
     String payableSalary;
 

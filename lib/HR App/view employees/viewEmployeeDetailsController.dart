@@ -18,10 +18,13 @@ class ViewEmployeecontroller extends GetxController {
   var designation = "".obs;
   // var empID = 0.obs;
   var emergencyContact = "".obs;
-  var selectedTab = 0.obs; // 0 = Contact Info, 1 = Employment Details, etc.
-  var bankAccount = "".obs; // 0 = Contact Info, 1 = Employment Details, etc.
-  var bankName = "".obs; // 0 = Contact Info, 1 = Employment Details, etc.
-  var profilePic = "".obs; // 0 = Contact Info, 1 = Employment Details, etc.
+  var selectedTab = 0.obs;
+  var bankAccount = "".obs;
+  var bankName = "".obs;
+  var profilePic = "".obs;
+  var aadharCardPic = "".obs;
+  var panCardPic = "".obs;
+  var documents = <Map<String, String>>[].obs; // Add this line
 
   Future<void> employeeDetailsFunction(String employeeId) async {
     try {
@@ -33,7 +36,7 @@ class ViewEmployeecontroller extends GetxController {
         isLoading.value = false;
         clearSharedPreferences();
         Get.snackbar(
-          "Error",
+          "Message",
           "User is not authenticated. Login again!",
           backgroundColor: CRMColors.error,
           colorText: CRMColors.textWhite,
@@ -66,14 +69,36 @@ class ViewEmployeecontroller extends GetxController {
         bankAccount = RxString(employeeDetailsModel.data.bankAccount);
         bankName = RxString(employeeDetailsModel.data.bankName);
         profilePic = RxString(employeeDetailsModel.data.profilePic);
+        aadharCardPic = RxString(employeeDetailsModel.data.aadharCardDoc);
 
         print("Email: ${employeeDetailsModel.data.email}");
         print("Profile Pic: ${employeeDetailsModel.data.profilePic}");
-        // if (employeeDetailsModel.data.companyId != null) {
-        //   companyName.value = employeeDetailsModel.data.company!.name ?? "No Company";
-        // } else {
-        //   companyName.value = "No Company";
-        // }
+         // Debug print for documents
+      print("Total documents: ${employeeDetailsModel.data.documentType.length}");
+      
+for (var doc in employeeDetailsModel.data.documentType) {
+  print("Document Type: ${doc.documentType}, URL: ${doc.documentUrl}");
+}
+
+        documents.clear();
+        aadharCardPic.value = "";
+        panCardPic.value = "";
+        for (var doc in employeeDetailsModel.data.documentType) {
+          if (doc.documentType == 'adhaar_card') {
+            aadharCardPic.value = doc.documentUrl;
+          } else if (doc.documentType == 'pan_card') {
+            panCardPic.value = doc.documentUrl;
+          }
+           // Add all documents to the list
+          documents.add({
+            'document_type': doc.documentType,
+            'document_url': doc.documentUrl,
+          });
+        }
+
+         // Debug print after assignment
+      print("Aadhar Card URL: ${aadharCardPic.value}");
+      print("PAN Card URL: ${panCardPic.value}");
 
         isLoading.value = false;
       } else if (response.statusCode == 400) {

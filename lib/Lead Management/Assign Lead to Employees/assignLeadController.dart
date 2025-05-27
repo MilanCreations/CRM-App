@@ -74,12 +74,20 @@ class AssignLeadController extends GetxController {
           break;
 
         case 400:
-          Get.snackbar(
-            "Error 400",
-            "Bad request. Please check parameters.",
-            backgroundColor: CRMColors.error,
-            colorText: CRMColors.textWhite,
-          );
+          
+  String errorMessage = 'Failed to fetch leads';
+  try {
+    final errorResponse = jsonDecode(response.body);
+    if (errorResponse is Map<String, dynamic> && errorResponse.containsKey('message')) {
+      errorMessage = errorResponse['message'];
+    }
+  } catch (e) {
+    print('Error decoding response body: $e');
+  }
+
+  Get.snackbar("Error", errorMessage,
+      backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
+
           break;
 
         case 401:
