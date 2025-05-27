@@ -1,12 +1,11 @@
 import 'package:crm_milan_creations/Employee/Attendance%20History/attendanceHistoryController.dart';
-import 'package:crm_milan_creations/Employee/Table%20Calender%20Dashboard/tableCalenderController.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:table_calendar/table_calendar.dart';
+import 'package:lottie/lottie.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -20,27 +19,20 @@ class _HistoryScreenState extends State<HistoryScreen> {
     AttendanceHistoryController(),
   );
 
-  final TableCalendarController tableController = Get.put(
-    TableCalendarController(),
-  );
-
-  late ScrollController _scrollController;
-  DateTime? _startDate;
-  DateTime? _endDate;
+  late final ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController()..addListener(_onScroll);
-
-    // Fetch today's attendance only
-    attendanceHistoryController.AttendanceHistoryfunctions(isRefresh: true);
+    attendanceHistoryController.AllEmployeesAttendanceHistoryfunctions(isRefresh: true);
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 200) {
-      attendanceHistoryController.AttendanceHistoryfunctions();
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200 &&
+        !attendanceHistoryController.isLoading.value &&
+        attendanceHistoryController.hasMoreData.value) {
+      attendanceHistoryController.AllEmployeesAttendanceHistoryfunctions();
     }
   }
 
@@ -51,12 +43,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
     super.dispose();
   }
 
-  String formatDateTime(DateTime dateTime) {
+  String formatDateTime(DateTime? dateTime) {
     try {
+      if (dateTime == null) return "-";
       DateTime localDateTime = dateTime.toLocal();
       return DateFormat('hh:mm a').format(localDateTime);
-    } catch (e) {
-      return "";
+    } catch (_) {
+      return "-";
     }
   }
 
@@ -64,130 +57,151 @@ class _HistoryScreenState extends State<HistoryScreen> {
     try {
       DateTime date = DateTime.parse(dateString);
       return DateFormat('MMMM d, yyyy').format(date);
-    } catch (e) {
-      return "";
+    } catch (_) {
+      return "-";
     }
   }
 
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: CustomAppBar(
-      gradient: const LinearGradient(
-        colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ),
-      title: CustomText(
-        text: 'Attendance History',
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-        color: CRMColors.whiteColor,
-      ),
-    ),
-    body: PageView.builder(
-      scrollDirection: Axis.vertical,
-      controller: PageController(
-        initialPage: 0,
-      ),
-      onPageChanged: (index) {
-        final newDate = DateTime(
-          tableController.focusedDay.value.year,
-          tableController.focusedDay.value.month + index,
-        );
-        tableController.focusedDay.value = newDate;
-      },
-    itemBuilder: (context, index) {
-  return Obx(() {
-    final DateTime currentMonth = DateTime(
-      tableController.focusedDay.value.year,
-      tableController.focusedDay.value.month + index,
-    );
-
-    return TableCalendar(
-      firstDay: DateTime.utc(2020, 1, 1),
-      lastDay: DateTime.utc(2030, 12, 31),
-      focusedDay: currentMonth,
-      calendarFormat: CalendarFormat.month,
-      headerVisible: true,
-      availableCalendarFormats: const {
-        CalendarFormat.month: 'Month',
-      },
-      selectedDayPredicate: (day) =>
-          isSameDay(tableController.selectedDay.value, day),
-      onDaySelected: tableController.onDaySelected,
-      calendarStyle: CalendarStyle(
-        selectedDecoration: BoxDecoration(
-          color: Colors.blue,
-          shape: BoxShape.circle,
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: CustomAppBar(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        todayDecoration: BoxDecoration(
-          color: Colors.grey.shade300,
-          shape: BoxShape.circle,
+        title: CustomText(
+          text: 'History',
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: CRMColors.whiteColor,
         ),
-        defaultTextStyle: const TextStyle(color: Colors.red),
-        selectedTextStyle: const TextStyle(color: Colors.white),
-        weekendTextStyle: const TextStyle(color: Colors.red),
       ),
-      calendarBuilders: CalendarBuilders(
-        defaultBuilder: (context, day, focusedDay) {
-          final isSunday = day.weekday == DateTime.sunday;
-          if (isSunday) {
-            return Center(
-              child: Text(
-                '${day.day}',
-                style: const TextStyle(
-                  color: Colors.red,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            );
-          }
+      body: Obx(() {
+        if (attendanceHistoryController.isLoading.value &&
+            attendanceHistoryController.allEmployeeAttendanceHistoryList.isEmpty) {
+          return const Center(child: CircularProgressIndicator(color: CRMColors.black));
+        }
 
-          final status = tableController.getStatus(day);
-
-          Color dotColor;
-          switch (status) {
-            case 'approved':
-              dotColor = Colors.green;
-              break;
-            case 'pending':
-            case 'rejected':
-              dotColor = Colors.orange;
-              break;
-            default:
-              dotColor = Colors.transparent;
-          }
-
+        if (attendanceHistoryController.allEmployeeAttendanceHistoryList.isEmpty) {
           return Center(
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  width: 40,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    color: dotColor,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Center(
-                    child: Text(
-                      '${day.day}',
-                      style: const TextStyle(color: Colors.black),
-                    ),
-                  ),
+                Lottie.asset('assets/images/emptyfile.json', height: 200, width: 200),
+                const SizedBox(height: 16),
+                CustomText(
+                  text: "No Records Found",
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: CRMColors.black,
                 ),
               ],
             ),
           );
-        },
-      ),
+        }
+
+        return ListView.builder(
+          controller: _scrollController,
+          physics: const BouncingScrollPhysics(),
+          itemCount: attendanceHistoryController.allEmployeeAttendanceHistoryList.length + 1,
+          itemBuilder: (context, index) {
+            if (index < attendanceHistoryController.allEmployeeAttendanceHistoryList.length) {
+              final history = attendanceHistoryController.allEmployeeAttendanceHistoryList[index];
+              final status = history.status?.toLowerCase() ?? '';
+              final leftBarColor = status == 'rejected'
+                  ? CRMColors.error
+                  : status == 'pending'
+                      ? CRMColors.pending
+                      : CRMColors.succeed;
+
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 6,
+                      height: 110,
+                      decoration: BoxDecoration(
+                        color: leftBarColor,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(12),
+                          bottomLeft: Radius.circular(12),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CustomText(
+                              text: history.name,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: CRMColors.black,
+                            ),
+                            const SizedBox(height: 4),
+                            CustomText(
+                              text: formatDateOnly(history.attendanceDate.toString()),
+                              fontSize: 13,
+                              color: CRMColors.black,
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: CustomText(
+                                    text: "Clock In : ${formatDateTime(history.checkIn)}",
+                                    fontSize: 12,
+                                    color: CRMColors.black,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: CustomText(
+                                    text: "Clock Out : ${formatDateTime(history.checkOut)}",
+                                    fontSize: 12,
+                                    textAlign: TextAlign.right,
+                                    color: CRMColors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            } else {
+              return Obx(() {
+                return attendanceHistoryController.isLoading.value
+                    ? const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        child: Center(
+                          child: CircularProgressIndicator(color: CRMColors.black),
+                        ),
+                      )
+                    : const SizedBox();
+              });
+            }
+          },
+        );
+      }),
     );
-  });
-}
-
-    ),
-  );
-}
-
+  }
 }

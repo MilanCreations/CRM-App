@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:crm_milan_creations/Auth/Login/loginScreen.dart';
 import 'package:crm_milan_creations/Employee/Attendance%20History/attendanceHistoryController.dart';
 import 'package:crm_milan_creations/Employee/Dashboard/dashboardController.dart';
 import 'package:crm_milan_creations/Employee/Table%20Calender%20Dashboard/tableCalenderController.dart';
@@ -50,27 +51,30 @@ class _DashboardscreenState extends State<Dashboardscreen> {
     getUserData();
     attendanceHistoryController.AttendanceHistoryfunctions();
 
-    // Start timer to update working hours every second
     workingTimeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (checkClockInController.checkInTime.value.isNotEmpty) {
-        if (checkClockInController.checkOutTime.value.isEmpty ||
-            checkClockInController.checkOutTime.value == "checkout") {
-          calculateCurrentWorkingHours();
+      try {
+        if (checkClockInController.checkInTime.value.isNotEmpty) {
+          if (checkClockInController.checkOutTime.value.isEmpty ||
+              checkClockInController.checkOutTime.value == "checkout") {
+            calculateCurrentWorkingHours();
+          } else {
+            calculateTotalHoursToday();
+          }
         } else {
-          calculateTotalHoursToday();
+          timer.cancel();
         }
-      } else {
+      } catch (e) {
         timer.cancel();
+        debugPrint("Timer error: $e");
       }
     });
-
-    print("Check In Time: ${checkClockInController.checkInTime}");
     super.initState();
   }
 
   @override
   void dispose() {
     workingTimeTimer?.cancel();
+    controller.mapController?.dispose();
     super.dispose();
   }
 
@@ -80,6 +84,140 @@ class _DashboardscreenState extends State<Dashboardscreen> {
       username = sharedPreferences.getString("fullname") ?? "";
       name = sharedPreferences.getString('name') ?? "";
     });
+  }
+
+  void showLogoutDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (_) => Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            child: Container(
+              padding: const EdgeInsets.all(25),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 20,
+                    spreadRadius: 5,
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Header with gradient icon
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                    child: const Icon(
+                      Icons.logout,
+                      size: 40,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Title
+                  const Text(
+                    "Logout?",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Subtitle
+                  const Text(
+                    "Are you sure you want to logout?",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, color: Colors.black54),
+                  ),
+                  const SizedBox(height: 25),
+
+                  // Buttons
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      // Cancel Button
+                      Expanded(
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              side: const BorderSide(color: Colors.grey),
+                            ),
+                          ),
+                          onPressed: () => Get.back(),
+                          child: const Text(
+                            "Cancel",
+                            style: TextStyle(
+                              color: Colors.black87,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 15),
+
+                      // Logout Button
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            backgroundColor: CRMColors.error,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 0,
+                          ),
+                          onPressed: () async {
+                            final prefs = await SharedPreferences.getInstance();
+                            await prefs.clear();
+                            Get.back(); // Close dialog first
+                            Get.snackbar(
+                              "Success",
+                              "Logout Successfully",
+                              backgroundColor: CRMColors.error,
+                              colorText: CRMColors.textWhite,
+                            );
+                            Get.offAll(() => const LoginScreen());
+                          },
+                          child: const Text(
+                            "Logout",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+    );
   }
 
   @override
@@ -113,303 +251,313 @@ class _DashboardscreenState extends State<Dashboardscreen> {
           ],
         ),
         actions: [
-          Obx(() {
-            final picture = checkClockInController.pictureuser.value;
-            final pickedImage = controller.image.value;
+          Row(
+            children: [             
+              Obx(() {
+                final picture = checkClockInController.pictureuser.value;
+                final pickedImage = controller.image.value;
 
-            Widget avatar;
+                Widget avatar;
 
-            if (pickedImage != null) {
-              avatar = CircleAvatar(
-                radius: 25,
-                backgroundImage: FileImage(pickedImage),
-              );
-            } else if (picture.isNotEmpty && picture.toLowerCase() != 'null') {
-              avatar = CircleAvatar(
-                radius: 25,
-                backgroundImage: NetworkImage(picture),
-              );
-            } else {
-              avatar = const CircleAvatar(
-                radius: 25,
-                backgroundColor: CRMColors.grey,
-                child: Icon(Icons.person, color: Colors.white),
-              );
-            }
+                if (pickedImage != null) {
+                  avatar = CircleAvatar(
+                    radius: 25,
+                    backgroundImage: FileImage(pickedImage),
+                  );
+                } else if (picture.isNotEmpty &&
+                    picture.toLowerCase() != 'null') {
+                  avatar = CircleAvatar(
+                    radius: 25,
+                    backgroundImage: NetworkImage(picture),
+                  );
+                } else {
+                  avatar = const CircleAvatar(
+                    radius: 25,
+                    backgroundColor: CRMColors.grey,
+                    child: Icon(Icons.person, color: Colors.white),
+                  );
+                }
 
-            return GestureDetector(
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder:
-                      (_) => Dialog(
-                        backgroundColor: Colors.transparent,
-                        insetPadding: const EdgeInsets.all(20),
-                        child: InteractiveViewer(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(16),
-                            child:
-                                pickedImage != null
-                                    ? Image.file(pickedImage, fit: BoxFit.cover)
-                                    : (picture.isNotEmpty &&
-                                        picture.toLowerCase() != 'null')
-                                    ? Image.network(picture, fit: BoxFit.cover)
-                                    : const Icon(
-                                      Icons.person,
-                                      size: 100,
-                                      color: Colors.white,
-                                    ),
+                return GestureDetector(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder:
+                          (_) => Dialog(
+                            backgroundColor: Colors.transparent,
+                            insetPadding: const EdgeInsets.all(20),
+                            child: InteractiveViewer(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child:
+                                    pickedImage != null
+                                        ? Image.file(
+                                          pickedImage,
+                                          fit: BoxFit.cover,
+                                        )
+                                        : (picture.isNotEmpty &&
+                                            picture.toLowerCase() != 'null')
+                                        ? Image.network(
+                                          picture,
+                                          fit: BoxFit.cover,
+                                        )
+                                        : const Icon(
+                                          Icons.person,
+                                          size: 100,
+                                          color: Colors.white,
+                                        ),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: avatar,
+                  ),
                 );
-              },
-              child: Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: avatar,
+              }),
+               IconButton(
+                iconSize: 30,
+                onPressed: () => showLogoutDialog(),
+                icon: Icon(Icons.logout_rounded, color: CRMColors.whiteColor),
               ),
-            );
-          }),
+            ],
+          ),
         ],
       ),
 
       body: Obx(() {
-        if (checkClockInController.checkInTime.toString() == "checkin") {
+        final checkInStatus = checkClockInController.checkInTime.value;
+        if (checkInStatus == "checkin") {
           return showcheckin();
-        } else {
-          return Stack(
-            children: [
-              SingleChildScrollView(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    todayTime(),
-                    const SizedBox(height: 16),
-                    checkInTime(),
-                    const SizedBox(height: 10),
-                    startBreakTime(),
-                    const SizedBox(height: 10),
-                    endBreakTime(),
+        }
+        return Stack(
+          children: [
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  todayTime(),
+                  const SizedBox(height: 16),
+                  checkInTime(),
+                  const SizedBox(height: 10),
+                  startBreakTime(),
+                  const SizedBox(height: 10),
+                  endBreakTime(),
 
-                    // const SizedBox(height: 10),
-                    // totalWorkingHours(),
-                    // const SizedBox(height: 10),
-                    Obx(() {
-                      bool isClockedOut =
-                          checkClockInController
-                              .checkOutTime
-                              .value
-                              .isNotEmpty &&
-                          checkClockInController.checkOutTime.value !=
-                              "checkout";
+                  // const SizedBox(height: 10),
+                  // totalWorkingHours(),
+                  // const SizedBox(height: 10),
+                  Obx(() {
+                    bool isClockedOut =
+                        checkClockInController.checkOutTime.value.isNotEmpty &&
+                        checkClockInController.checkOutTime.value != "checkout";
 
-                      if (isClockedOut) {
-                        return Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.greenAccent.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              CustomText(
-                                text: "Total Hours Today:",
-                                fontSize: 17,
-                              ),
-                              const Spacer(),
-                              CustomText(
-                                text: totalHoursToday.value,
-                                color: CRMColors.black,
-                                fontSize: 21.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ],
-                          ),
-                        );
-                      } else {
-                        return Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.redAccent.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              CustomText(text: "Working Time:", fontSize: 17),
-                              const Spacer(),
-                              CustomText(
-                                text: totalWorkingHoursToday.value,
-                                color: CRMColors.black,
-                                fontSize: 21.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-                    }),
-
-                    const SizedBox(height: 10),
-                    checkOutTime(),
-
-                    const SizedBox(height: 10),
-                    showbuttonbreakinout(),
-                    const SizedBox(height: 20),
-
-                    CustomText(
-                      text: "Today's Attendance",
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w600,
-                    ),
-
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Row(
+                    if (isClockedOut) {
+                      return Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.greenAccent.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
                           children: [
-                            Container(
-                              width: 10,
-                              height: 10,
-                              color: Colors.green,
-                              margin: const EdgeInsets.only(right: 6),
+                            CustomText(
+                              text: "Total Hours Today:",
+                              fontSize: 17,
                             ),
-                            CustomText(text: 'Present'),
+                            const Spacer(),
+                            CustomText(
+                              text: totalHoursToday.value,
+                              color: CRMColors.black,
+                              fontSize: 21.0,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ],
                         ),
-                        Row(
+                      );
+                    } else {
+                      return Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.redAccent.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
                           children: [
-                            Container(
-                              width: 10,
-                              height: 10,
-                              color: Colors.red,
-                              margin: const EdgeInsets.only(right: 6),
+                            CustomText(text: "Working Time:", fontSize: 17),
+                            const Spacer(),
+                            CustomText(
+                              text: totalWorkingHoursToday.value,
+                              color: CRMColors.black,
+                              fontSize: 21.0,
+                              fontWeight: FontWeight.bold,
                             ),
-                            CustomText(text: 'Absent'),
                           ],
                         ),
-                        Row(
-                          children: [
-                            Container(
-                              width: 10,
-                              height: 10,
-                              color: Colors.orange,
-                              margin: const EdgeInsets.only(right: 6),
-                            ),
-                            CustomText(text: 'Pending'),
-                          ],
-                        ),
-                      ],
-                    ),
+                      );
+                    }
+                  }),
 
-                    Obx(
-                      () => TableCalendar(
-                        firstDay: DateTime.utc(2020, 1, 1),
-                        lastDay: DateTime.utc(2030, 12, 31),
+                  const SizedBox(height: 10),
+                  checkOutTime(),
 
-                        focusedDay: tableController.focusedDay.value,
-                        selectedDayPredicate:
-                            (day) => isSameDay(
-                              tableController.selectedDay.value,
-                              day,
-                            ),
-                        onDaySelected: tableController.onDaySelected,
-                        calendarStyle: CalendarStyle(
-                          selectedDecoration: BoxDecoration(
-                            color: Colors.blue,
-                            shape: BoxShape.circle,
+                  const SizedBox(height: 10),
+                  showbuttonbreakinout(),
+                  const SizedBox(height: 20),
+
+                  CustomText(
+                    text: "Today's Attendance",
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w600,
+                  ),
+
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 10,
+                            height: 10,
+                            color: Colors.green,
+                            margin: const EdgeInsets.only(right: 6),
                           ),
-                          todayDecoration: BoxDecoration(
-                            color: Colors.grey.shade300,
-                            shape: BoxShape.circle,
+                          CustomText(text: 'Present'),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            width: 10,
+                            height: 10,
+                            color: Colors.red,
+                            margin: const EdgeInsets.only(right: 6),
                           ),
-                          defaultTextStyle: const TextStyle(color: Colors.red),
-                          selectedTextStyle: TextStyle(color: Colors.white),
-                          weekendTextStyle: const TextStyle(color: Colors.red),
+                          CustomText(text: 'Absent'),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            width: 10,
+                            height: 10,
+                            color: Colors.orange,
+                            margin: const EdgeInsets.only(right: 6),
+                          ),
+                          CustomText(text: 'Pending'),
+                        ],
+                      ),
+                    ],
+                  ),
+
+                  Obx(
+                    () => TableCalendar(
+                      firstDay: DateTime.utc(2020, 1, 1),
+                      lastDay: DateTime.utc(2030, 12, 31),
+
+                      focusedDay: tableController.focusedDay.value,
+                      selectedDayPredicate:
+                          (day) =>
+                              isSameDay(tableController.selectedDay.value, day),
+                      onDaySelected: tableController.onDaySelected,
+                      calendarStyle: CalendarStyle(
+                        selectedDecoration: BoxDecoration(
+                          color: Colors.blue,
+                          shape: BoxShape.circle,
                         ),
-                        calendarBuilders: CalendarBuilders(
-                          defaultBuilder: (context, day, focusedDay) {
-                            final isSunday = day.weekday == DateTime.sunday;
-                            if (isSunday) {
-                              return Center(
-                                child: Text(
-                                  '${day.day}',
-                                  style: const TextStyle(
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              );
-                            }
-
-                            final status = tableController.getStatus(day);
-
-                            Color dotColor;
-                            switch (status) {
-                              case 'approved':
-                                dotColor = Colors.green;
-                                break;
-                              case 'pending':
-                                dotColor = Colors.orange;
-                                break;
-                              case 'rejected':
-                                dotColor = Colors.orange;
-                                break;
-                              default:
-                                dotColor = Colors.transparent;
-                            }
-
+                        todayDecoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          shape: BoxShape.circle,
+                        ),
+                        defaultTextStyle: const TextStyle(color: Colors.red),
+                        selectedTextStyle: TextStyle(color: Colors.white),
+                        weekendTextStyle: const TextStyle(color: Colors.red),
+                      ),
+                      calendarBuilders: CalendarBuilders(
+                        defaultBuilder: (context, day, focusedDay) {
+                          final isSunday = day.weekday == DateTime.sunday;
+                          if (isSunday) {
                             return Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Container(
-                                    width: 40,
-                                    height: 28,
-                                    decoration: BoxDecoration(
-                                      color: dotColor,
-                                      borderRadius: BorderRadius.circular(20),
-                                      // pill shape
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        '${day.day}',
-                                        style: const TextStyle(
-                                          color: Colors.black,
-                                        ),
+                              child: Text(
+                                '${day.day}',
+                                style: const TextStyle(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            );
+                          }
+
+                          final status = tableController.getStatus(day);
+
+                          Color dotColor;
+                          switch (status) {
+                            case 'approved':
+                              dotColor = Colors.green;
+                              break;
+                            case 'pending':
+                              dotColor = Colors.orange;
+                              break;
+                            case 'rejected':
+                              dotColor = Colors.orange;
+                              break;
+                            default:
+                              dotColor = Colors.transparent;
+                          }
+
+                          return Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 40,
+                                  height: 28,
+                                  decoration: BoxDecoration(
+                                    color: dotColor,
+                                    borderRadius: BorderRadius.circular(20),
+                                    // pill shape
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      '${day.day}',
+                                      style: const TextStyle(
+                                        color: Colors.black,
                                       ),
                                     ),
                                   ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
                     ),
+                  ),
 
-                    const SizedBox(height: 20),
-                    CustomText(
-                      text: "Today's Task",
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ],
+                  const SizedBox(height: 20),
+                  CustomText(
+                    text: "Today's Task",
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ],
+              ),
+            ),
+
+            // API Loader
+            if (controller.isLoading.value)
+              Container(
+                color: Colors.black.withOpacity(0.3),
+                child: const Center(
+                  child: CircularProgressIndicator(color: Colors.blue),
                 ),
               ),
-
-              // API Loader
-              if (controller.isLoading.value)
-                Container(
-                  color: Colors.black.withOpacity(0.3),
-                  child: const Center(
-                    child: CircularProgressIndicator(color: Colors.blue),
-                  ),
-                ),
-            ],
-          );
-        }
+          ],
+        );
       }),
     );
   }

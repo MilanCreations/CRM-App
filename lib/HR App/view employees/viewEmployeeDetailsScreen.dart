@@ -5,10 +5,13 @@ import 'package:crm_milan_creations/HR%20App/Add%20Employee/addEmployeeScreen.da
 import 'package:crm_milan_creations/HR%20App/Edit%20Employee%20Details/GetEmployeeDetailsScreen.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:get/get.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'viewEmployeeDetailsController.dart';
 
@@ -44,111 +47,99 @@ class _ViewEmployeeDetailsScreenState extends State<ViewEmployeeDetailsScreen> {
   }
 
   Widget _getProfileImageWidget() {
-  if (controller.profilePic.isEmpty) {
-    return const CircleAvatar(
-      radius: 50,
-      backgroundColor: Colors.grey,
-      child: Icon(Icons.person, size: 50, color: Colors.white),
-    );
+    if (controller.profilePic.isEmpty) {
+      return const CircleAvatar(
+        radius: 50,
+        backgroundColor: Colors.grey,
+        child: Icon(Icons.person, size: 50, color: Colors.white),
+      );
+    }
+
+    try {
+      // Check if it's a file path
+      final file = File(controller.profilePic.toString());
+      if (file.existsSync()) {
+        return CircleAvatar(radius: 50, backgroundImage: FileImage(file));
+      }
+      // Check if it's a network URL
+      else if (controller.profilePic.startsWith('http')) {
+        return CircleAvatar(
+          radius: 50,
+          backgroundImage: NetworkImage(controller.profilePic.toString()),
+        );
+      }
+      // Assume it's base64 if neither
+      else {
+        final imageBytes = base64Decode(controller.profilePic.toString());
+        return CircleAvatar(
+          radius: 50,
+          backgroundImage: MemoryImage(imageBytes),
+        );
+      }
+    } catch (e) {
+      print('Error loading profile image: $e');
+      return const CircleAvatar(
+        radius: 50,
+        backgroundColor: Colors.grey,
+        child: Icon(Icons.person, size: 50, color: Colors.white),
+      );
+    }
   }
 
-  try {
-    // Check if it's a file path
-    final file = File(controller.profilePic.toString());
-    if (file.existsSync()) {
-      return CircleAvatar(
-        radius: 50,
-        backgroundImage: FileImage(file),
-      );
-    }
-    // Check if it's a network URL
-    else if (controller.profilePic.startsWith('http')) {
-      return CircleAvatar(
-        radius: 50,
-        backgroundImage: NetworkImage(controller.profilePic.toString()),
-      );
-    }
-    // Assume it's base64 if neither
-    else {
-      final imageBytes = base64Decode(controller.profilePic.toString());
-      return CircleAvatar(
-        radius: 50,
-        backgroundImage: MemoryImage(imageBytes),
-      );
-    }
-  } catch (e) {
-    print('Error loading profile image: $e');
-    return const CircleAvatar(
-      radius: 50,
-      backgroundColor: Colors.grey,
-      child: Icon(Icons.person, size: 50, color: Colors.white),
-    );
-  }
-}
-
-     Widget _buildProfileImage() {
-  return GestureDetector(
-    onTap: _showFullScreenImage,
-    child: Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: CRMColors.crmMainCOlor,
-          width: 2,
+  Widget _buildProfileImage() {
+    return GestureDetector(
+      onTap: _showFullScreenImage,
+      child: Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: CRMColors.crmMainCOlor, width: 2),
         ),
-      ),
-      child: _getProfileImageWidget(),
-    ),
-  );
-}
-
-
-
-void _showFullScreenImage() {
-  if (controller.profilePic.isEmpty) return;
-  
-  try {
-    Widget imageWidget;
-    
-    // Check if it's a file path
-    final file = File(controller.profilePic.toString());
-    if (file.existsSync()) {
-      imageWidget = Image.file(file);
-    } 
-    // Check if it's a network URL
-    else if (controller.profilePic.startsWith('http')) {
-      imageWidget = Image.network(controller.profilePic.toString());
-    }
-    // Assume it's base64 if neither
-    else {
-      final imageBytes = base64Decode(controller.profilePic.toString());
-      imageWidget = Image.memory(imageBytes);
-    }
-
-    Get.dialog(
-      Dialog(
-        child: InteractiveViewer(
-          panEnabled: true,
-          minScale: 0.5,
-          maxScale: 3.0,
-          child: imageWidget,
-        ),
+        child: _getProfileImageWidget(),
       ),
     );
-  } catch (e) {
-    print('Error showing full screen image: $e');
-    Get.snackbar(
-      "Error",
-      "Could not display image",
-      backgroundColor: CRMColors.error,
-      colorText: CRMColors.textWhite,
-    );
   }
-}
 
+  void _showFullScreenImage() {
+    if (controller.profilePic.isEmpty) return;
 
+    try {
+      Widget imageWidget;
 
+      // Check if it's a file path
+      final file = File(controller.profilePic.toString());
+      if (file.existsSync()) {
+        imageWidget = Image.file(file);
+      }
+      // Check if it's a network URL
+      else if (controller.profilePic.startsWith('http')) {
+        imageWidget = Image.network(controller.profilePic.toString());
+      }
+      // Assume it's base64 if neither
+      else {
+        final imageBytes = base64Decode(controller.profilePic.toString());
+        imageWidget = Image.memory(imageBytes);
+      }
 
+      Get.dialog(
+        Dialog(
+          child: InteractiveViewer(
+            panEnabled: true,
+            minScale: 0.5,
+            maxScale: 3.0,
+            child: imageWidget,
+          ),
+        ),
+      );
+    } catch (e) {
+      print('Error showing full screen image: $e');
+      Get.snackbar(
+        "Error",
+        "Could not display image",
+        backgroundColor: CRMColors.error,
+        colorText: CRMColors.textWhite,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +190,7 @@ void _showFullScreenImage() {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
           child: Column(
             children: [
-               _buildProfileImage(),
+              _buildProfileImage(),
               const SizedBox(height: 16),
               Text(
                 controller.name.value,
@@ -297,10 +288,39 @@ void _showFullScreenImage() {
                       ),
                     ]);
                   case 3:
-                    return _sectionCard("Documents", [
-                      _contactRow(Icons.credit_card, "Aadhar", "Uploaded"),
-                      _contactRow(Icons.assignment_ind, "PAN", "Uploaded"),
-                    ]);
+                    return Obx(
+                      () => _sectionCard("Documents", [
+                        // Show Aadhar card if available
+                        if (controller.aadharCardPic.isNotEmpty)
+                          _documentRow(
+                            "Aadhar Card",
+                            controller.aadharCardPic.value,
+                          ),
+
+                        // Show PAN card if available
+                        if (controller.panCardPic.isNotEmpty)
+                          _documentRow("PAN Card", controller.panCardPic.value),
+
+                        // Show other documents
+                        ...controller.documents
+                            .where(
+                              (doc) =>
+                                  doc['document_type'] != 'adhaar_card' &&
+                                  doc['document_type'] != 'aadhar_card' &&
+                                  doc['document_type'] != 'pan_card',
+                            )
+                            .map(
+                              (doc) => _documentRow(
+                                doc['type']
+                                        ?.replaceAll('_', ' ')
+                                        .toUpperCase() ??
+                                    'Document',
+                                doc['url'] ?? '',
+                              ),
+                            )
+                            .toList(),
+                      ]),
+                    );
                   default:
                     return Container();
                 }
@@ -312,6 +332,257 @@ void _showFullScreenImage() {
     );
   }
 
+  // Add this new widget method for document rows
+Widget _documentRow(String label, String imageUrl) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 12),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+            if (imageUrl.isNotEmpty) ...[
+              IconButton(
+                icon: const Icon(Icons.remove_red_eye, color: Colors.blue),
+                onPressed: () => _showFullDocumentImage(imageUrl),
+              ),
+              IconButton(
+                icon: const Icon(Icons.download, color: Colors.green),
+                onPressed: () => _downloadDocument(imageUrl, label),
+              ),
+            ],
+          ],
+        ),
+        // const SizedBox(height: 8),
+        // GestureDetector(
+        //   onTap: () => imageUrl.isNotEmpty ? _showFullDocumentImage(imageUrl) : null,
+        //   child: Container(
+        //     height: 180,
+        //     decoration: BoxDecoration(
+        //       borderRadius: BorderRadius.circular(8),
+        //       color: Colors.grey.shade100,
+        //     ),
+        //     child: imageUrl.isEmpty
+        //         ? Center(
+        //             child: Text(
+        //               'No $label uploaded',
+        //               style: TextStyle(color: Colors.grey.shade500),
+        //             ),
+        //           )
+        //         : ClipRRect(
+        //             borderRadius: BorderRadius.circular(8),
+        //             child: _getDocumentImageWidget(imageUrl),
+        //           ),
+        //   ),
+        // ),
+      ],
+    ),
+  );
+}
+
+Future<void> _downloadDocument(String url, String fileName) async {
+  try {
+    // Check and request storage permission
+    var status = await Permission.storage.request();
+    if (!status.isGranted) {
+      Get.snackbar(
+        "Permission Required",
+        "Storage permission is needed to download files",
+        backgroundColor: CRMColors.error,
+        colorText: CRMColors.textWhite,
+      );
+      return;
+    }
+
+    // Get the download directory
+    final directory = await getExternalStorageDirectory();
+    final downloadPath = '${directory?.path}/$fileName${_getFileExtension(url)}';
+
+    // Start download
+    final taskId = await FlutterDownloader.enqueue(
+      url: url,
+      savedDir: directory!.path,
+      fileName: '$fileName${_getFileExtension(url)}',
+      showNotification: true,
+      openFileFromNotification: true,
+    );
+
+    // Listen for download completion
+    FlutterDownloader.registerCallback((id, status, progress) {
+      if (taskId == id && status == DownloadTaskStatus.complete) {
+        Get.snackbar(
+          "Download Complete",
+          "File saved to $downloadPath",
+          backgroundColor: Colors.green,
+          colorText: CRMColors.textWhite,
+        );
+      } else if (taskId == id && status == DownloadTaskStatus.failed) {
+        Get.snackbar(
+          "Download Failed",
+          "Failed to download file",
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+      }
+    });
+  } catch (e) {
+    print('Error downloading file: $e');
+    Get.snackbar(
+      "Error",
+      "Failed to download document",
+      backgroundColor: CRMColors.error,
+      colorText: CRMColors.textWhite,
+    );
+  }
+}
+
+String _getFileExtension(String url) {
+  try {
+    if (url.toLowerCase().contains('.jpg') || url.toLowerCase().contains('.jpeg')) {
+      return '.jpg';
+    } else if (url.toLowerCase().contains('.png')) {
+      return '.png';
+    } else if (url.toLowerCase().contains('.pdf')) {
+      return '.pdf';
+    } else if (url.toLowerCase().contains('.doc')) {
+      return '.doc';
+    } else if (url.toLowerCase().contains('.docx')) {
+      return '.docx';
+    }
+    return '.jpg'; // default extension
+  } catch (e) {
+    return '.jpg';
+  }
+}
+
+  Widget _getDocumentImageWidget(String imageUrl, {bool isFullScreen = false}) {
+    try {
+      if (imageUrl.startsWith('http')) {
+        return Image.network(
+          imageUrl,
+          fit: isFullScreen ? BoxFit.contain : BoxFit.cover,
+          width: isFullScreen ? null : double.infinity,
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Center(
+              child: CircularProgressIndicator(
+                value:
+                    loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                        : null,
+              ),
+            );
+          },
+          errorBuilder: (context, error, stackTrace) {
+            return _buildErrorWidget(isFullScreen);
+          },
+        );
+      } else if (File(imageUrl).existsSync()) {
+        return Image.file(
+          File(imageUrl),
+          fit: isFullScreen ? BoxFit.contain : BoxFit.cover,
+          width: isFullScreen ? null : double.infinity,
+        );
+      } else {
+        try {
+          final imageBytes = base64Decode(imageUrl);
+          return Image.memory(
+            imageBytes,
+            fit: isFullScreen ? BoxFit.contain : BoxFit.cover,
+            width: isFullScreen ? null : double.infinity,
+          );
+        } catch (e) {
+          return _buildErrorWidget(isFullScreen);
+        }
+      }
+    } catch (e) {
+      return _buildErrorWidget(isFullScreen);
+    }
+  }
+
+  Widget _buildErrorWidget(bool isFullScreen) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.error, color: Colors.red, size: 40),
+          const SizedBox(height: 10),
+          Text(
+            'Failed to load document',
+            style: TextStyle(
+              color: Colors.grey.shade500,
+              fontSize: isFullScreen ? 18 : 14,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+void _showFullDocumentImage(String imageUrl) {
+  if (imageUrl.isEmpty) return;
+
+  Get.dialog(
+    Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.all(10),
+      child: Stack(
+        children: [
+          Center(
+            child: InteractiveViewer(
+              panEnabled: true,
+              minScale: 0.5,
+              maxScale: 3.0,
+              child: Container(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.8,
+                  maxWidth: MediaQuery.of(context).size.width * 0.9,
+                ),
+                child: _getDocumentImageWidget(imageUrl, isFullScreen: true),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 10,
+            right: 10,
+            child: Row(
+              children: [
+                 FloatingActionButton(
+                mini: true,
+                backgroundColor: Colors.green,
+                child: const Icon(Icons.download, color: Colors.white),
+                onPressed: () {
+                  Get.back();
+                  _downloadDocument(imageUrl, 'document_${DateTime.now().millisecondsSinceEpoch}');
+                },
+              ),
+              const SizedBox(width: 10),
+              FloatingActionButton(
+                mini: true,
+                backgroundColor: Colors.red,
+                child: const Icon(Icons.close, color: Colors.white),
+                onPressed: () => Get.back(),
+              ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+ 
   Widget _infoBox(IconData icon, String label, String value) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),

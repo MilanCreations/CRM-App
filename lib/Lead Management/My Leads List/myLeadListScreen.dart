@@ -1,12 +1,14 @@
-import 'package:crm_milan_creations/Lead%20Management/Get%20All%20Companies%20list/getAllCompaniesController.dart';
+import 'dart:async';
+
 import 'package:crm_milan_creations/Lead%20Management/Lead%20Status/leadStatusController.dart';
 import 'package:crm_milan_creations/Lead%20Management/Lead%20Status/leadStatusModel.dart';
 import 'package:crm_milan_creations/Lead%20Management/My%20Leads%20List/myLeadListController.dart';
+import 'package:crm_milan_creations/Lead%20Management/Update%20Lead%20Status/UpdateLeadStatusController.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
 import 'package:crm_milan_creations/widgets/button.dart';
-import 'package:crm_milan_creations/widgets/dropdown.dart';
+import 'package:crm_milan_creations/widgets/textfiled.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -25,21 +27,24 @@ class _LeadListScreenState extends State<LeadListScreen> {
   final LeadStatuscontroller leadStatuscontroller = Get.put(
     LeadStatuscontroller(),
   );
-  final GetallCompanieslistcontroller getallCompanieslistcontroller = Get.put(
-    GetallCompanieslistcontroller(),
-  );
+
+  UpdateLeadcontroller updateLeadcontroller = Get.put(UpdateLeadcontroller());
 
   DateTime? startDate;
   DateTime? endDate;
+  DateTime? followUpDate;
   Status? statusAssign;
   String? selectedCompany;
+  String? statusAssignName;
+  bool checkfollowup = false;
+  Timer? _debounce;
 
   final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    getallCompanieslistcontroller.getAllCompaniesListFunction();
+    // getallCompanieslistcontroller.getAllCompaniesListFunction();
     leadStatuscontroller.leadStatusFunction();
     leadController.leadListFunction(isRefresh: true);
     _scrollController.addListener(_onScroll);
@@ -56,6 +61,16 @@ class _LeadListScreenState extends State<LeadListScreen> {
         endDate: endDate,
       );
     }
+  }
+
+  void _onSearchChanged() {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      leadController.leadListFunction(
+        isRefresh: true,
+        search: searchController.text.trim(),
+      );
+    });
   }
 
   Future<void> _selectStartDate() async {
@@ -125,94 +140,44 @@ class _LeadListScreenState extends State<LeadListScreen> {
                   ),
                   child: TextField(
                     controller: searchController,
+                    onChanged: (value) => _onSearchChanged(),
                     decoration: InputDecoration(
                       hintText: 'Search leads...',
                       prefixIcon: const Icon(Icons.search),
                       border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                      ),
+                      suffixIcon:
+                          searchController.text.isNotEmpty
+                              ? IconButton(
+                                icon: const Icon(Icons.clear),
+                                onPressed: () {
+                                  searchController.clear();
+                                  leadController.leadListFunction(
+                                    isRefresh: true,
+                                  );
+                                },
+                              )
+                              : null,
+                      // contentPadding: const EdgeInsets.symmetric(
+                      //   horizontal: 16,
+                      // ),
                     ),
                   ),
                 ),
                 const SizedBox(height: 12),
-
-                // Date pickers
-                Row(
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: _selectStartDate,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 14,
-                            horizontal: 12,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade100,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.grey.shade400),
-                          ),
-                          child: Text(
-                            startDate != null
-                                ? 'From: ${formatDate(startDate)}'
-                                : 'Select Start Date',
-                            style: TextStyle(
-                              color:
-                                  startDate != null
-                                      ? Colors.black
-                                      : Colors.grey.shade600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: _selectEndDate,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 14,
-                            horizontal: 12,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade100,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.grey.shade400),
-                          ),
-                          child: Text(
-                            endDate != null
-                                ? 'To: ${formatDate(endDate)}'
-                                : 'Select End Date',
-                            style: TextStyle(
-                              color:
-                                  endDate != null
-                                      ? Colors.black
-                                      : Colors.grey.shade600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 14),
 
                 // Filter button
                 SizedBox(
                   width: double.infinity,
                   child: CustomButton(
                     text: 'Search',
-                    backgroundColor: CRMColors.dividerCOlor,
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                     onPressed: () {
                       FocusScope.of(context).unfocus();
-                      leadController.leadListFunction(
-                        isRefresh: true,
-                        search: searchController.text.trim(),
-                        startDate: startDate,
-                        endDate: endDate,
-                      );
+                      _onSearchChanged();
                     },
                     // style: ElevatedButton.styleFrom(
                     //   padding: const EdgeInsets.symmetric(vertical: 14),
@@ -252,68 +217,158 @@ class _LeadListScreenState extends State<LeadListScreen> {
                 itemBuilder: (context, index) {
                   if (index < leadController.leadList.length) {
                     final lead = leadController.leadList[index];
-                    return Card(
+                    return Container(
                       margin: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
+                        horizontal: 16,
+                        vertical: 8,
                       ),
-                      shape: RoundedRectangleBorder(
+                      decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
+                        gradient: LinearGradient(
+                          colors: [Colors.white, Colors.grey.shade50],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
-                      elevation: 2,
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 8,
-                          horizontal: 16,
-                        ),
-                        title: CustomText(
-                          text: lead.name ?? 'No Name',
-                          fontWeight: FontWeight.w600,
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CustomText(text: 'Email: ${lead.email}'),
-                            CustomText(text: 'Source: ${lead.source}'),
-                            CustomText(text: 'Contact: ${lead.phone}'),
-                            CustomText(text: 'Purpose: ${lead.remark}'),
-                            CustomText(text: 'Current Status: ${lead.status}'),
-                            CustomText(text: 'Created by: ${lead.leadCreator}'),
-                            // Assign button
-                            Align(
-                              alignment: Alignment.topRight,
-                              child: ElevatedButton(
-                                onPressed:
-                                    () => showAssignLeadDialog(
-                                      lead.id.toString(),
-                                    ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: CRMColors.dividerCOlor,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 10,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'Update Status',
-                                  style: TextStyle(color: Colors.white),
-                                ),
+                      child: Column(
+                        children: [
+                          // Header with name and date
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(12),
                               ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 2,
+                                  offset: const Offset(0, 1),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        trailing: CustomText(
-                          text:
-                              lead.createdAt != null
-                                  ? DateFormat(
-                                    'yyyy-MM-dd',
-                                  ).format(lead.createdAt!)
-                                  : '',
-                          color: Colors.grey.shade700,
-                        ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    lead.name ?? 'No Name',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black87,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Text(
+                                  lead.createdAt != null
+                                      ? DateFormat(
+                                        'MMM dd, yyyy',
+                                      ).format(lead.createdAt!)
+                                      : '',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey.shade600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Lead details
+                          Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildDetailRow(
+                                  Icons.email,
+                                  'Email:',
+                                  lead.email ?? 'N/A',
+                                ),
+                                const SizedBox(height: 8),
+                                _buildDetailRow(
+                                  Icons.phone,
+                                  'Contact:',
+                                  lead.phone ?? 'N/A',
+                                ),
+                                const SizedBox(height: 8),
+                                _buildDetailRow(
+                                  Icons.source,
+                                  'Source:',
+                                  lead.source ?? 'N/A',
+                                ),
+                                const SizedBox(height: 8),
+                                _buildDetailRow(
+                                  Icons.note,
+                                  'Purpose:',
+                                  lead.remark ?? 'N/A',
+                                ),
+                                const SizedBox(height: 8),
+                                _buildStatusChip(lead.status ?? ''),
+                                const SizedBox(height: 16),
+
+                                // Update Status Button
+                                SizedBox(
+                                  width: double.infinity,
+                                  height: Get.height * 0.09,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      showAssignLeadDialog(
+                                        lead.id.toString(),
+                                        lead.status,
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.transparent,
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 12,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      elevation: 0,
+                                      shadowColor: Colors.transparent,
+                                    ),
+                                    child: Ink(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        gradient: const LinearGradient(
+                                          colors: [
+                                            Color(0xFFEC32B1),
+                                            Color(0xFF0C46CC),
+                                          ],
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                        ),
+                                      ),
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        child: const Text(
+                                          'Update Status',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   } else {
@@ -331,7 +386,79 @@ class _LeadListScreenState extends State<LeadListScreen> {
     );
   }
 
-  void showAssignLeadDialog(String leadid) {
+  // Helper widget for detail rows
+  Widget _buildDetailRow(IconData icon, String label, String value) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 18, color: Colors.grey.shade600),
+        const SizedBox(width: 8),
+        Flexible(
+          child: RichText(
+            text: TextSpan(
+              style: const TextStyle(fontSize: 14, color: Colors.black87),
+              children: [
+                TextSpan(
+                  text: '$label ',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey.shade700,
+                  ),
+                ),
+                TextSpan(
+                  text: value,
+                  style: const TextStyle(fontWeight: FontWeight.w400),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Helper widget for status chip
+  Widget _buildStatusChip(String status) {
+    Color backgroundColor;
+    Color textColor;
+
+    switch (status.toLowerCase()) {
+      case 'new':
+        backgroundColor = Colors.blue.shade100;
+        textColor = Colors.blue.shade800;
+        break;
+      case 'followup':
+        backgroundColor = Colors.orange.shade100;
+        textColor = Colors.orange.shade800;
+        break;
+      case 'mature':
+        backgroundColor = Colors.green.shade100;
+        textColor = Colors.green.shade800;
+        break;
+      case 'client':
+        backgroundColor = Colors.purple.shade100;
+        textColor = Colors.purple.shade800;
+        break;
+      default:
+        backgroundColor = Colors.grey.shade200;
+        textColor = Colors.grey.shade800;
+    }
+
+    return Chip(
+      label: Text(
+        status,
+        style: TextStyle(color: textColor, fontWeight: FontWeight.w500),
+      ),
+      backgroundColor: backgroundColor,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      side: BorderSide.none,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    );
+  }
+
+  void showAssignLeadDialog(String leadid, String leadstatus) {
+    DateTime? dialogFollowUpDate = followUpDate;
+
     showDialog(
       context: context,
       builder:
@@ -356,165 +483,288 @@ class _LeadListScreenState extends State<LeadListScreen> {
                       ),
                     ],
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // header
-                      Container(
-                        width: 70,
-                        height: 70,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // header
+                        Container(
+                          width: 70,
+                          height: 70,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.assignment_ind_outlined,
+                            color: Colors.white,
+                            size: 35,
                           ),
                         ),
-                        child: const Icon(
-                          Icons.assignment_ind_outlined,
-                          color: Colors.white,
-                          size: 35,
+                        const SizedBox(height: 16),
+                        const Text(
+                          "Update Lead",
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        "Update Lead",
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                        const SizedBox(height: 10),
+                        const Text(
+                          "Update Lead Status",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 14, color: Colors.black54),
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      const Text(
-                        "Update Lead Status",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 14, color: Colors.black54),
-                      ),
-                      const SizedBox(height: 20),
+                        const SizedBox(height: 20),
 
-                      const SizedBox(height: 12),
-                      Obx(() {
-                        return CustomDropdownButton2(
-                          hint: CustomText(text: 'Select Company'),
-                          value: selectedCompany,
-                          dropdownItems:
-                              getallCompanieslistcontroller.companiesList
-                                  .toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              selectedCompany = value;
-                            });
-                          },
-                        );
-                      }),
-                SizedBox(height: 10,),
-                      // Assign to Employee
-                      Obx(() {
-                        return DropdownButtonHideUnderline(
-                          child: DropdownButton2<Status?>(
-                            buttonStyleData: ButtonStyleData(
-                              height: 60,
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
+                        CustomTextFormField(
+                          label: 'Enter feedback',
+                          controller: updateLeadcontroller.feedBack,
+                          backgroundColor: CRMColors.white,
+                          labelStyle: TextStyle(color: Colors.grey),
+                          borderColor: CRMColors.black1,
+                        ),
+
+                        // Select Status Dropdown
+                        Padding(
+                          padding: const EdgeInsets.only(top: 12.0),
+                          child: Obx(() {
+                            return DropdownButtonHideUnderline(
+                              child: DropdownButton2<Status?>(
+                                isExpanded: true,
+                                buttonStyleData: ButtonStyleData(
+                                  height: 60,
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: CRMColors.black1),
+                                  ),
+                                ),
+                                hint: const Text(
+                                  'Select Status',
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                                items:
+                                    leadStatuscontroller.leadstatus
+                                        .map<DropdownMenuItem<Status?>>(
+                                          (status) => DropdownMenuItem<Status?>(
+                                            value: status,
+                                            child: Text(status.name ?? ''),
+                                          ),
+                                        )
+                                        .toList(),
+                                value: statusAssign,
+                                onChanged: (Status? value) {
+                                  setState(() {
+                                    statusAssign = value;
+                                    statusAssignName = value?.name;
+                                    if (statusAssignName == "followup") {
+                                      checkfollowup = true;
+                                    } else {
+                                      checkfollowup = false;
+                                    }
+                                    // Track status name
+                                  });
+                                },
+                                dropdownStyleData: DropdownStyleData(
+                                  maxHeight: 200,
+                                ),
                               ),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: CRMColors.black1),
+                            );
+                          }),
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Date Picker Visibility
+                        Visibility(
+                          visible: checkfollowup,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 10),
+                              const Text(
+                                "Follow-up Date",
+                                style: TextStyle(fontWeight: FontWeight.bold),
                               ),
-                              // elevation: widget.buttonElevation,
-                            ),
-                            isExpanded: true,
-                            hint: Text(
-                              'Select Status',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                            items:
-                                leadStatuscontroller.leadstatus
-                                    .map<DropdownMenuItem<Status?>>(
-                                      (employee) => DropdownMenuItem<Status?>(
-                                        value: employee,
-                                        child: Text(employee.name ?? ''),
+                              const SizedBox(height: 8),
+                              GestureDetector(
+                                onTap: () async {
+                                  final DateTime? picked = await showDatePicker(
+                                    context: context,
+                                    initialDate:
+                                        dialogFollowUpDate ?? DateTime.now(),
+                                    firstDate: DateTime(1900),
+                                    lastDate: DateTime(2100),
+                                  );
+                                  if (picked != null &&
+                                      picked != dialogFollowUpDate) {
+                                    setState(() {
+                                      dialogFollowUpDate = picked;
+                                    });
+                                  }
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                    horizontal: 12,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade100,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: Colors.grey.shade400,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.calendar_today,
+                                        size: 20,
+                                        color: Colors.grey.shade600,
                                       ),
-                                    )
-                                    .toList(),
-                            value: statusAssign,
-                            onChanged: (Status? value) {
-                              setState(() {
-                                statusAssign = value;
-                              });
-                            },
-
-                            dropdownStyleData: DropdownStyleData(
-                              maxHeight: 200,
-                            ),
-                          ),
-                        );
-                      }),
-
-                      const SizedBox(height: 25),
-
-                      // Buttons
-                      Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton(
-                              onPressed: () => Get.back(),
-                              style: OutlinedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 14,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                side: const BorderSide(color: Colors.grey),
-                              ),
-                              child: const Text(
-                                "Cancel",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black87,
-                                  fontWeight: FontWeight.w500,
+                                      const SizedBox(width: 10),
+                                      Text(
+                                        dialogFollowUpDate != null
+                                            ? DateFormat(
+                                              'yyyy-MM-dd',
+                                            ).format(dialogFollowUpDate!)
+                                            : 'Select Follow-up Date',
+                                        style: TextStyle(
+                                          color:
+                                              dialogFollowUpDate != null
+                                                  ? Colors.black
+                                                  : Colors.grey.shade600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
+                            ],
                           ),
-                          const SizedBox(width: 15),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                // assignLeadController.assignLeadFunction(leadid,selectedCompany!,employeeID!);
-                                leadStatuscontroller.leadStatusFunction();
-                                setState(() {
+                        ),
+
+                        // const SizedBox(height: 25),
+
+                        // Buttons
+                        Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton(
+                                onPressed: () {
+                                  // RESET all fields
+                                  updateLeadcontroller.feedBack.clear();
                                   statusAssign = null;
-                                });
-                                Get.back();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 14,
+                                  statusAssignName = null;
+                                  checkfollowup = false;
+                                  followUpDate = null;
+
+                                  Get.back();
+                                },
+                                style: OutlinedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  side: const BorderSide(color: Colors.grey),
                                 ),
-                                backgroundColor: CRMColors.primary,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: const Text(
-                                "Save Changes",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500,
+                                child: const Text(
+                                  "Cancel",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                            const SizedBox(width: 15),
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  updateLeadcontroller
+                                      .updateLeadCOntrollerFunction(
+                                        leadid,
+                                        followUpDate != null
+                                            ? followUpDate
+                                            : null,
+                                        statusAssignName!,
+                                        leadstatus == "mature" ? "client" : "",
+                                      );
+                                  // RESET all fields
+                                  updateLeadcontroller.feedBack.clear();
+                                  statusAssign = null;
+                                  statusAssignName = null;
+                                  checkfollowup = false;
+                                  followUpDate = null;
+
+                                  await leadController.leadListFunction(
+                                    isRefresh: true,
+                                  );
+                                  Get.back();
+
+                                  setState(() {
+                                    statusAssign = null;
+                                  });
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                  backgroundColor:
+                                      Colors
+                                          .transparent, // Important for gradient to show
+                                  shadowColor: Colors.transparent,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                child: Ink(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    gradient: const LinearGradient(
+                                      colors: [
+                                        Color(0xFFEC32B1),
+                                        Color(0xFF0C46CC),
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                  ),
+                                  child: Container(
+                                    constraints: const BoxConstraints(
+                                      minWidth: 88.0,
+                                      minHeight: 48.0,
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: const Text(
+                                      "Save Changes",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },

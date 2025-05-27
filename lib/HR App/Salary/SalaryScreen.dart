@@ -61,8 +61,11 @@ class _SalaryscreenState extends State<Salaryscreen> {
   }
 
   void _onScroll() {
+    print("scroll called");
     if (scrollController.position.pixels >=
-        scrollController.position.maxScrollExtent - 200) {
+            scrollController.position.maxScrollExtent - 200 &&
+        !salarycontroller.isLoading.value &&
+        salarycontroller.hasMoreData.value) {
       salarycontroller.salaryReportFunction(
         name: searchController.text.trim(),
         month: selectedMonth.isEmpty ? null : selectedMonth,
@@ -142,7 +145,6 @@ class _SalaryscreenState extends State<Salaryscreen> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  // 🔍 Search
                   TextField(
                     controller: searchController,
                     decoration: InputDecoration(
@@ -174,8 +176,6 @@ class _SalaryscreenState extends State<Salaryscreen> {
                     onChanged: _onSearchChanged,
                   ),
                   const SizedBox(height: 12),
-
-                  // 📆 Filters
                   Row(
                     children: [
                       Expanded(
@@ -189,15 +189,13 @@ class _SalaryscreenState extends State<Salaryscreen> {
                             filled: true,
                             fillColor: Colors.grey.shade100,
                           ),
-                          items:
-                              months.map((month) {
-                                String label =
-                                    month.isEmpty ? 'All Months' : month;
-                                return DropdownMenuItem(
-                                  value: month,
-                                  child: Text(label),
-                                );
-                              }).toList(),
+                          items: months.map((month) {
+                            String label = month.isEmpty ? 'All Months' : month;
+                            return DropdownMenuItem(
+                              value: month,
+                              child: Text(label),
+                            );
+                          }).toList(),
                           onChanged: _onMonthChanged,
                         ),
                       ),
@@ -213,15 +211,13 @@ class _SalaryscreenState extends State<Salaryscreen> {
                             filled: true,
                             fillColor: Colors.grey.shade100,
                           ),
-                          items:
-                              years.map((year) {
-                                String label =
-                                    year.isEmpty ? 'All Years' : year;
-                                return DropdownMenuItem(
-                                  value: year,
-                                  child: Text(label),
-                                );
-                              }).toList(),
+                          items: years.map((year) {
+                            String label = year.isEmpty ? 'All Years' : year;
+                            return DropdownMenuItem(
+                              value: year,
+                              child: Text(label),
+                            );
+                          }).toList(),
                           onChanged: _onYearChanged,
                         ),
                       ),
@@ -230,26 +226,47 @@ class _SalaryscreenState extends State<Salaryscreen> {
                 ],
               ),
             ),
-
-          // 📋 Salary List
           Expanded(
             child: Obx(() {
-              if (salarycontroller.isLoading.value &&
+              if (salarycontroller.isLoading.value && 
                   salarycontroller.salaryList.isEmpty) {
                 return const Center(child: CircularProgressIndicator());
-              } else if (salarycontroller.salaryList.isEmpty) {
+              }
+              
+              if (salarycontroller.salaryList.isEmpty) {
                 return const Center(child: Text("No salary data found"));
-              } else {
-                return ListView.separated(
-                  controller: scrollController,
-                  padding: const EdgeInsets.all(12),
-                  itemCount:
-                      salarycontroller.salaryList.length +
-                      (salarycontroller.hasMoreData.value ? 1 : 0),
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
-               itemBuilder: (context, index) {
-  if (index < salarycontroller.salaryList.length) {
-    final item = salarycontroller.salaryList[index];
+              }
+              
+              return ListView.separated(
+                controller: scrollController,
+                padding: const EdgeInsets.all(12),
+                itemCount: salarycontroller.salaryList.length + 
+                         (salarycontroller.hasMoreData.value ? 1 : 0),
+                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  if (index < salarycontroller.salaryList.length) {
+                    final item = salarycontroller.salaryList[index];
+                    return _buildSalaryItem(item);
+                  } else {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Center(
+                        child: salarycontroller.isLoading.value
+                            ? const CircularProgressIndicator()
+                            : Container(),
+                      ),
+                    );
+                  }
+                },
+              );
+            }),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSalaryItem(dynamic item) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Container(
@@ -269,7 +286,6 @@ class _SalaryscreenState extends State<Salaryscreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 👤 Header Row with Avatar and Name
             Row(
               children: [
                 CircleAvatar(
@@ -295,15 +311,18 @@ class _SalaryscreenState extends State<Salaryscreen> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
-                    color: CRMColors.greenLight, // Define in `CRMColors`
+                    color: CRMColors.greenLight,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     "₹${item.baseSalary}",
                     style: TextStyle(
-                      color: CRMColors.greenDark, // Define in `CRMColors`
+                      color: CRMColors.greenDark,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -311,81 +330,80 @@ class _SalaryscreenState extends State<Salaryscreen> {
               ],
             ),
             const SizedBox(height: 16),
-
-            // 📊 Attendance Grid
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _statBox("Present", "${item.presentDays}", Icons.check_circle, CRMColors.blue),
-                _statBox("Unpaid", "${item.unpaidLeaves}", Icons.cancel, CRMColors.red),
-                _statBox("Late", "${item.lateArrivals}", Icons.schedule, CRMColors.orange),
+                _statBox("Present", "${item.presentDays}", 
+                    Icons.check_circle, CRMColors.blue),
+                _statBox("Unpaid", "${item.unpaidLeaves}", 
+                    Icons.cancel, CRMColors.red),
+                _statBox("Late", "${item.lateArrivals}", 
+                    Icons.schedule, CRMColors.orange),
               ],
             ),
             const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _statBox("Early Leave", "${item.earlyLeaves}", Icons.exit_to_app, CRMColors.purple),
-                _statBox("Hours", "${item.workingHours.toStringAsFixed(1)}", Icons.work_outline, CRMColors.teal),
-                _statBox("Deduction", "₹${item.deduction}", Icons.currency_rupee_sharp, CRMColors.crmMainCOlor),
+                _statBox("Early Leave", "${item.earlyLeaves}", 
+                    Icons.exit_to_app, CRMColors.purple),
+                _statBox("Hours", "${item.workingHours.toStringAsFixed(1)}", 
+                    Icons.work_outline, CRMColors.teal),
+                _statBox("Deduction", "₹${item.deduction}", 
+                    Icons.currency_rupee_sharp, CRMColors.crmMainCOlor),
               ],
             ),
             Padding(
-              padding: const EdgeInsets.only(top:8.0,left: 5.0),
-              child: CustomText(text: 'Total Payable',fontWeight: FontWeight.bold,),
+              padding: const EdgeInsets.only(top: 8.0, left: 5.0),
+              child: CustomText(
+                text: 'Total Payable',
+                fontWeight: FontWeight.bold,
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(left: 5.0),
-              child: CustomText(text: "${item.payableSalary}/-",fontWeight: FontWeight.bold,color: CRMColors.greenDark,fontSize: 20,),
-            )
+              child: CustomText(
+                text: "${item.payableSalary}/-",
+                fontWeight: FontWeight.bold,
+                color: CRMColors.greenDark,
+                fontSize: 20,
+              ),
+            ),
           ],
         ),
       ),
     );
-  } else {
-    return const Center(child: CircularProgressIndicator());
   }
-},
 
-                );
-              }
-            }),
-          ),
-        ],
+  Widget _statBox(String label, String value, IconData icon, Color color) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+        margin: const EdgeInsets.symmetric(horizontal: 4),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: color, size: 20),
+            const SizedBox(height: 6),
+            Text(
+              value,
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 12, color: Colors.black87),
+            ),
+          ],
+        ),
       ),
     );
   }
-
-Widget _statBox(String label, String value, IconData icon, Color color) {
-  return Expanded(
-    child: Container(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-      margin: const EdgeInsets.symmetric(horizontal: 4),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: color, size: 20),
-          const SizedBox(height: 6),
-          Text(
-            value,
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: const TextStyle(fontSize: 12, color: Colors.black87),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
 }

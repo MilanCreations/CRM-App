@@ -18,6 +18,7 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:math';
@@ -129,8 +130,14 @@ class DashboardController extends GetxController {
         print("Full Name: ${prefs.getString('fullname')}");
   }
 
-  Future<void> pickImageFromCamera() async {
-    print('Picking image from camera...');
+Future<void> pickImageFromCamera() async {
+  print('Requesting camera permission...');
+  
+  final status = await Permission.camera.request();
+
+  if (status.isGranted) {
+    print('Camera permission granted. Picking image from camera...');
+    
     final ImagePicker picker = ImagePicker();
     final XFile? pickedFile = await picker.pickImage(
       source: ImageSource.camera,
@@ -144,7 +151,24 @@ class DashboardController extends GetxController {
       Get.snackbar("No Image", "Please capture an image to proceed.");
       print('No image captured');
     }
+
+  } else if (status.isDenied) {
+    // Permission denied but not permanently
+    Get.snackbar("Permission Denied", "Camera permission is needed to take pictures.");
+    print('Camera permission denied.');
+  } else if (status.isPermanentlyDenied) {
+    // Permission denied permanently, open app settings
+    Get.snackbar(
+      "Permission Required",
+      "Please enable camera permission from settings.",
+      snackPosition: SnackPosition.BOTTOM,
+      duration: Duration(seconds: 5),
+    );
+    print('Camera permission permanently denied. Opening app settings...');
+    await openAppSettings();
   }
+}
+
 
   Future<void> clockInProcess(BuildContext context) async {
     print('Starting clock in process...');
