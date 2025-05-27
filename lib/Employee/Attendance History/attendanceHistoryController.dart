@@ -22,6 +22,7 @@ class AttendanceHistoryController extends GetxController {
     super.onInit();
     // Initial call to fetch attendance history
     AttendanceHistoryfunctions();
+    AllEmployeesAttendanceHistoryfunctions();
   }
 
   @override

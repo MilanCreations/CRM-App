@@ -26,8 +26,11 @@ void mapAttendanceStatus(List<Attendance> attendanceList) {
     print('Mapping attendance: $normalizedDate -> ${att.status}');
     map[normalizedDate] = att.status.toLowerCase();
   }
-  attendanceStatusMap.value = map;
+
+  // ✅ Merge with existing map instead of replacing
+  attendanceStatusMap.addAll(map);
 }
+
 
 
 
