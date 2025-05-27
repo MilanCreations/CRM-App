@@ -370,27 +370,21 @@ Widget _documentRow(String label, String imageUrl) {
 }
 
 Future<void> _downloadDocument(String url, String fileName) async {
-  print('Download URL: $url');
-  print('File name: $fileName');
-  print('File extension: ${_getFileExtension(url)}');
   try {
-    // For Android 10+ we don't need WRITE_EXTERNAL_STORAGE permission
+    // Clean up the filename
+    fileName = fileName.replaceAll(RegExp(r'[^\w\s-]'), '').trim();
+    
+    // Request permissions based on platform and Android version
     if (Platform.isAndroid) {
       final androidInfo = await DeviceInfoPlugin().androidInfo;
-      print("Android info: ${androidInfo.version.sdkInt}");
-      var status = await Permission.storage.request();
+      if (androidInfo.version.sdkInt <= 28) {
+        // Android 9 and below
+        var status = await Permission.storage.request();
         if (!status.isGranted) {
-          
-          Get.snackbar(
-            "Permission Required",
-            "Storage permission is needed to download files",
-            backgroundColor: CRMColors.error,
-            colorText: CRMColors.textWhite,
-          );
-          return;
+          await openAppSettings();
+          throw Exception('Storage permission not granted');
         }
-       else {
-        // For Android 10+ we need to request manage external storage
+      } else {
         // Android 10 and above
         if (!await Permission.manageExternalStorage.isGranted) {
           final status = await Permission.manageExternalStorage.request();
@@ -399,85 +393,137 @@ Future<void> _downloadDocument(String url, String fileName) async {
           }
         }
       }
+    } else if (Platform.isIOS) {
+      // iOS permission handling if needed
     }
 
     // Get download directory
     Directory? directory;
-    if (Platform.isAndroid) {
-      directory = await getExternalStorageDirectory();
-    } else {
-      directory = await getApplicationDocumentsDirectory();
+    try {
+      if (Platform.isAndroid) {
+        directory = Directory('/storage/emulated/0/Download');
+        if (!await directory.exists()) {
+          directory = await getExternalStorageDirectory();
+        }
+      } else {
+        directory = await getApplicationDocumentsDirectory();
+      }
+    } catch (e) {
+      directory = await getApplicationDownloadsDirectory();
     }
 
     if (directory == null) {
-      Get.snackbar(
-        "Error",
-        "Cannot access download directory",
-        backgroundColor: CRMColors.error,
-        colorText: CRMColors.textWhite,
-      );
-      return;
+      throw Exception('Could not access download directory');
     }
 
-    // Create download path
-    final downloadPath = '${directory.path}/$fileName${_getFileExtension(url)}';
+    // Ensure directory exists
+    if (!await directory.exists()) {
+      await directory.create(recursive: true);
+    }
+
+    // Get file extension
+    final extension = _getFileExtension(url);
+    final safeFileName = '$fileName${DateTime.now().millisecondsSinceEpoch}$extension';
+    final savePath = '${directory.path}/$safeFileName';
+
+    // Show download starting message
+    Get.snackbar(
+      "Downloading",
+      "Starting download of $fileName",
+      backgroundColor: Colors.blue,
+      colorText: CRMColors.textWhite,
+    );
 
     // Start download
     final taskId = await FlutterDownloader.enqueue(
       url: url,
       savedDir: directory.path,
-      fileName: '$fileName${_getFileExtension(url)}',
+      fileName: safeFileName,
       showNotification: true,
       openFileFromNotification: true,
     );
 
-    // Listen for download completion
+    if (taskId == null) {
+      throw Exception('Failed to start download');
+    }
+
+    // Listen for download progress
     FlutterDownloader.registerCallback((id, status, progress) {
-      if (taskId == id && status == DownloadTaskStatus.complete) {
-        Get.snackbar(
-          "Download Complete",
-          "File saved to $downloadPath",
-          backgroundColor: Colors.green,
-          colorText: CRMColors.textWhite,
-        );
-      } else if (taskId == id && status == DownloadTaskStatus.failed) {
-        Get.snackbar(
-          "Download Failed",
-          "Failed to download file",
-          backgroundColor: CRMColors.error,
-          colorText: CRMColors.textWhite,
-        );
+      if (id == taskId) {
+        if (status == DownloadTaskStatus.running) {
+          // You could update a progress indicator here
+          print('Download progress: $progress%');
+        } else if (status == DownloadTaskStatus.complete) {
+          Get.snackbar(
+            "Download Complete",
+            "File saved to Downloads folder",
+            backgroundColor: Colors.green,
+            colorText: CRMColors.textWhite,
+            duration: Duration(seconds: 3),
+          );
+        } else if (status == DownloadTaskStatus.failed) {
+          Get.snackbar(
+            "Download Failed",
+            "Please try again",
+            backgroundColor: CRMColors.error,
+            colorText: CRMColors.textWhite,
+          );
+        }
       }
     });
   } catch (e) {
-    print('Error downloading file: $e');
+    print('Download error: $e');
     Get.snackbar(
-      "Error",
-      "Failed to download document: ${e.toString()}",
+      "Download Error",
+      e.toString(),
       backgroundColor: CRMColors.error,
       colorText: CRMColors.textWhite,
     );
   }
 }
 
+  // Helper function to get downloads directory
+Future<Directory?> getApplicationDownloadsDirectory() async {
+  if (Platform.isAndroid) {
+    return Directory('/storage/emulated/0/Download');
+  } else if (Platform.isIOS) {
+    return await getApplicationDocumentsDirectory();
+  }
+  return null;
+}
+
+
+
+// Improved file extension detection
 String _getFileExtension(String url) {
   try {
     final uri = Uri.parse(url);
     final path = uri.path.toLowerCase();
     
+    // Check common image extensions
     if (path.endsWith('.jpg') || path.endsWith('.jpeg')) return '.jpg';
     if (path.endsWith('.png')) return '.png';
+    if (path.endsWith('.gif')) return '.gif';
+    if (path.endsWith('.webp')) return '.webp';
+    
+    // Check document extensions
     if (path.endsWith('.pdf')) return '.pdf';
     if (path.endsWith('.doc')) return '.doc';
     if (path.endsWith('.docx')) return '.docx';
+    if (path.endsWith('.xls')) return '.xls';
+    if (path.endsWith('.xlsx')) return '.xlsx';
+    if (path.endsWith('.ppt')) return '.ppt';
+    if (path.endsWith('.pptx')) return '.pptx';
+    if (path.endsWith('.txt')) return '.txt';
     
-    // Try to get extension from content type if available
-    final contentType = uri.queryParameters['contentType'] ?? '';
+    // Check content type if available in URL parameters
+    final contentType = uri.queryParameters['contentType']?.toLowerCase() ?? '';
     if (contentType.contains('jpeg') || contentType.contains('jpg')) return '.jpg';
     if (contentType.contains('png')) return '.png';
     if (contentType.contains('pdf')) return '.pdf';
     
-    return '.jpg'; // default extension
+    // Default to .jpg if we can't determine (common for images served without extension)
+    return '.jpg';
   } catch (e) {
     return '.jpg';
   }
@@ -499,6 +545,7 @@ String _getFileExtension(String url) {
                         ? loadingProgress.cumulativeBytesLoaded /
                             loadingProgress.expectedTotalBytes!
                         : null,
+                        color: CRMColors.white,
               ),
             );
           },
