@@ -14,6 +14,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'viewEmployeeDetailsController.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 class ViewEmployeeDetailsScreen extends StatefulWidget {
   final String employeeId;
@@ -363,55 +364,68 @@ Widget _documentRow(String label, String imageUrl) {
             ],
           ],
         ),
-        // const SizedBox(height: 8),
-        // GestureDetector(
-        //   onTap: () => imageUrl.isNotEmpty ? _showFullDocumentImage(imageUrl) : null,
-        //   child: Container(
-        //     height: 180,
-        //     decoration: BoxDecoration(
-        //       borderRadius: BorderRadius.circular(8),
-        //       color: Colors.grey.shade100,
-        //     ),
-        //     child: imageUrl.isEmpty
-        //         ? Center(
-        //             child: Text(
-        //               'No $label uploaded',
-        //               style: TextStyle(color: Colors.grey.shade500),
-        //             ),
-        //           )
-        //         : ClipRRect(
-        //             borderRadius: BorderRadius.circular(8),
-        //             child: _getDocumentImageWidget(imageUrl),
-        //           ),
-        //   ),
-        // ),
       ],
     ),
   );
 }
 
 Future<void> _downloadDocument(String url, String fileName) async {
+  print('Download URL: $url');
+  print('File name: $fileName');
+  print('File extension: ${_getFileExtension(url)}');
   try {
-    // Check and request storage permission
-    var status = await Permission.storage.request();
-    if (!status.isGranted) {
+    // For Android 10+ we don't need WRITE_EXTERNAL_STORAGE permission
+    if (Platform.isAndroid) {
+      final androidInfo = await DeviceInfoPlugin().androidInfo;
+      print("Android info: ${androidInfo.version.sdkInt}");
+      var status = await Permission.storage.request();
+        if (!status.isGranted) {
+          
+          Get.snackbar(
+            "Permission Required",
+            "Storage permission is needed to download files",
+            backgroundColor: CRMColors.error,
+            colorText: CRMColors.textWhite,
+          );
+          return;
+        }
+       else {
+        // For Android 10+ we need to request manage external storage
+        // Android 10 and above
+        if (!await Permission.manageExternalStorage.isGranted) {
+          final status = await Permission.manageExternalStorage.request();
+          if (!status.isGranted) {
+            throw Exception('Manage external storage permission not granted');
+          }
+        }
+      }
+    }
+
+    // Get download directory
+    Directory? directory;
+    if (Platform.isAndroid) {
+      directory = await getExternalStorageDirectory();
+    } else {
+      directory = await getApplicationDocumentsDirectory();
+    }
+
+    if (directory == null) {
       Get.snackbar(
-        "Permission Required",
-        "Storage permission is needed to download files",
+        "Error",
+        "Cannot access download directory",
         backgroundColor: CRMColors.error,
         colorText: CRMColors.textWhite,
       );
       return;
     }
 
-    // Get the download directory
-    final directory = await getExternalStorageDirectory();
-    final downloadPath = '${directory?.path}/$fileName${_getFileExtension(url)}';
+    // Create download path
+    final downloadPath = '${directory.path}/$fileName${_getFileExtension(url)}';
 
     // Start download
     final taskId = await FlutterDownloader.enqueue(
       url: url,
-      savedDir: directory!.path,
+      savedDir: directory.path,
       fileName: '$fileName${_getFileExtension(url)}',
       showNotification: true,
       openFileFromNotification: true,
@@ -439,7 +453,7 @@ Future<void> _downloadDocument(String url, String fileName) async {
     print('Error downloading file: $e');
     Get.snackbar(
       "Error",
-      "Failed to download document",
+      "Failed to download document: ${e.toString()}",
       backgroundColor: CRMColors.error,
       colorText: CRMColors.textWhite,
     );
@@ -448,17 +462,21 @@ Future<void> _downloadDocument(String url, String fileName) async {
 
 String _getFileExtension(String url) {
   try {
-    if (url.toLowerCase().contains('.jpg') || url.toLowerCase().contains('.jpeg')) {
-      return '.jpg';
-    } else if (url.toLowerCase().contains('.png')) {
-      return '.png';
-    } else if (url.toLowerCase().contains('.pdf')) {
-      return '.pdf';
-    } else if (url.toLowerCase().contains('.doc')) {
-      return '.doc';
-    } else if (url.toLowerCase().contains('.docx')) {
-      return '.docx';
-    }
+    final uri = Uri.parse(url);
+    final path = uri.path.toLowerCase();
+    
+    if (path.endsWith('.jpg') || path.endsWith('.jpeg')) return '.jpg';
+    if (path.endsWith('.png')) return '.png';
+    if (path.endsWith('.pdf')) return '.pdf';
+    if (path.endsWith('.doc')) return '.doc';
+    if (path.endsWith('.docx')) return '.docx';
+    
+    // Try to get extension from content type if available
+    final contentType = uri.queryParameters['contentType'] ?? '';
+    if (contentType.contains('jpeg') || contentType.contains('jpg')) return '.jpg';
+    if (contentType.contains('png')) return '.png';
+    if (contentType.contains('pdf')) return '.pdf';
+    
     return '.jpg'; // default extension
   } catch (e) {
     return '.jpg';
