@@ -1,13 +1,14 @@
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:crm_milan_creations/Employee/Get%20All%20Employees%20List/getAllEmployeeeListController.dart';
+import 'package:crm_milan_creations/Lead%20Management/Creat%20lead%20Source%20List/SourcesInLeadController.dart';
+import 'package:crm_milan_creations/Lead%20Management/Creat%20lead%20Source%20List/SourcesInLeadModel.dart';
 import 'package:crm_milan_creations/Lead%20Management/Create%20Leads/createLeadController.dart';
 import 'package:crm_milan_creations/Lead%20Management/Get%20All%20Companies%20list/getAllCompaniesController.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
 import 'package:crm_milan_creations/widgets/button.dart';
-import 'package:crm_milan_creations/widgets/dropdown.dart';
 import 'package:crm_milan_creations/widgets/textfiled.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -30,19 +31,18 @@ class CreateLeadsScreen extends StatefulWidget {
 }
 
 class _CreateLeadsScreenState extends State<CreateLeadsScreen> {
-TextEditingController assignToController = TextEditingController();
+  TextEditingController assignToController = TextEditingController();
 
-  String? selectedSource;
   String? selectedCompany;
   String? assignEmployee;
-  final List<String> sourceItems = [
-    'WalkIn',
-    'Website',
-    'Referral',
-    'Advertisement',
-    'Social Media',
-    'Other',
-  ];
+  // final List<String> sourceItems = [
+  //   'WalkIn',
+  //   'Website',
+  //   'Referral',
+  //   'Advertisement',
+  //   'Social Media',
+  //   'Other',
+  // ];
   // final List<String> company = ['Venus Studies'];
   final Getallemployeelistcontroller getallemployeelistcontroller = Get.put(
     Getallemployeelistcontroller(),
@@ -55,6 +55,10 @@ TextEditingController assignToController = TextEditingController();
     CreateLeadcontroller(),
   );
 
+  final SourcesInLeadcontroller sourcesInLeadcontroller = Get.put(
+    SourcesInLeadcontroller(),
+  );
+
   Future<void> _selectDate() async {
     DateTime? picked = await showDatePicker(
       context: context,
@@ -65,7 +69,9 @@ TextEditingController assignToController = TextEditingController();
 
     if (picked != null) {
       setState(() {
-       createLeadcontroller.datetimeController.text = DateFormat('yyyy-MM-dd').format(picked);
+        createLeadcontroller.datetimeController.text = DateFormat(
+          'yyyy-MM-dd',
+        ).format(picked);
       });
     }
   }
@@ -93,11 +99,13 @@ TextEditingController assignToController = TextEditingController();
           pickedTime.minute,
         );
         setState(() {
-         createLeadcontroller.datetimeController.text = DateFormat(
+          createLeadcontroller.datetimeController.text = DateFormat(
             'MM-dd-yyyy hh:mm',
           ).format(finalDateTime);
         });
-        print("date and time:- ${createLeadcontroller.datetimeController.text}");
+        print(
+          "date and time:- ${createLeadcontroller.datetimeController.text}",
+        );
       }
     }
   }
@@ -108,6 +116,7 @@ TextEditingController assignToController = TextEditingController();
     assignToController.text = widget.name;
     getallemployeelistcontroller.getAllEmployeeListFunction();
     getallCompanieslistcontroller.getAllCompaniesListFunction();
+    sourcesInLeadcontroller.sourceListFunction();
   }
 
   @override
@@ -115,7 +124,7 @@ TextEditingController assignToController = TextEditingController();
     return Scaffold(
       appBar: CustomAppBar(
         showBackArrow: true,
-         leadingIcon: Icons.arrow_back_ios_new_sharp,
+        leadingIcon: Icons.arrow_back_ios_new_sharp,
         gradient: const LinearGradient(
           colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
           begin: Alignment.topLeft,
@@ -176,16 +185,58 @@ TextEditingController assignToController = TextEditingController();
               ),
               const SizedBox(height: 12),
 
-              CustomDropdownButton2(
-                hint: CustomText(text: 'Select Source'),
-                value: selectedSource,
-                dropdownItems: sourceItems,
-                onChanged: (value) {
-                  setState(() {
-                    selectedSource = value;
-                  });
-                },
-              ),
+             Obx(() {
+  if (sourcesInLeadcontroller.isLoading.value) {
+    return const Center(child: CircularProgressIndicator());
+  }
+  if (sourcesInLeadcontroller.sourceList.isEmpty) {
+    return const Center(
+      child: CustomText(text: 'No Source list found'),
+    );
+  }
+
+  return Container(
+    height: Get.height * 0.067,
+    decoration: BoxDecoration(
+      color: CRMColors.white,
+      borderRadius: BorderRadius.circular(10),
+      border: Border.all(color: Colors.grey),
+    ),
+    child: DropdownButtonHideUnderline(
+      child: DropdownButton2<Source>(
+        isExpanded: true,
+        hint: const Text(
+          'Select Source',
+          style: TextStyle(color: Colors.grey),
+        ),
+        items: sourcesInLeadcontroller.sourceList
+            .map<DropdownMenuItem<Source>>((source) {
+              return DropdownMenuItem<Source>(
+                value: source,
+                child: Text(
+                  source.name,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              );
+            })
+            .toList(),
+        value: sourcesInLeadcontroller.selectedSource.value,
+        onChanged: (Source? newValue) {
+          if (newValue != null) {
+            sourcesInLeadcontroller.selectedSource.value = newValue;
+          }
+        },
+        buttonStyleData: const ButtonStyleData(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          height: 50,
+        ),
+        dropdownStyleData: const DropdownStyleData(
+          maxHeight: 200,
+        ),
+      ),
+    ),
+  );
+}),
               const SizedBox(height: 12),
 
               CustomTextFormField(
@@ -265,8 +316,23 @@ TextEditingController assignToController = TextEditingController();
               CustomButton(
                 text: 'Register',
                 onPressed: () {
-                  createLeadcontroller.createLeadCOntrollerFunction(context,selectedSource!, widget.token, widget.employeeid,widget.visitTime);
-                
+                  if(sourcesInLeadcontroller.selectedSource.value != null){
+                    createLeadcontroller.createLeadCOntrollerFunction(
+                    context,
+                   sourcesInLeadcontroller.selectedSource.value!.name,
+                    widget.token,
+                    widget.employeeid,
+                    widget.visitTime,
+                  );
+                  } else{
+                     Get.snackbar(
+      "Validation Error",
+      "Please select a lead source.",
+      backgroundColor: Colors.redAccent,
+      colorText: Colors.white,
+    );
+                  }
+                  
                 },
                 gradient: const LinearGradient(
                   colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],

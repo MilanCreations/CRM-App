@@ -508,7 +508,7 @@ Widget _getProfileImageWidget() {
             } else if (element == "view-leads") {
               return buildMenuItem(
                 icon: Icons.lan_outlined,
-                text: 'My Lead List',
+                text: 'My Leads',
                 onTap: () => Get.to(() => LeadListScreen()),
               );
             } else if (element == "manage-others-leads") {

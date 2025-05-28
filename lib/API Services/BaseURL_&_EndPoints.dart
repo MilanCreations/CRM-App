@@ -89,6 +89,12 @@ static const String leadStatus = "$baseUrls/payroll/leads/status";
 // Update Lead Status
 static const String updateLeadStatus = "$baseUrls/payroll/leads/update/lead";
 
+// Lead Details
+static const String leadDetails = "$baseUrls/payroll/leads/history";
+
+// Sources list in lead create
+static const String sourceList = "$baseUrls/payroll/leads/sources";
+
 //////////////////// Salary Management //////////////////
 static const String salaryList = "$baseUrls/payroll/employee/generate-salary-report";
 

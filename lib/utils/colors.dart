@@ -135,4 +135,14 @@ class CRMColors {
   static const Color greenLight = Color(0xFFE6F4EA);
   static const Color greenDark = Color(0xFF1B873E);
   static const Color textblack = Colors.black87;
+
+  static const Color hot = Color(0xFFFF5252);            // Red Accent
+  static const Color cold = Color(0xFF607D8B);           // Blue Grey
+  static const Color valid = Color(0xFF4CAF50);          // Green
+  static const Color invalid = Color(0xFFF44336);        // Red
+  static const Color followup = Color(0xFFFF9800);       // Orange
+  static const Color notInterested = Color(0xFF9E9E9E);  // Grey
+  static const Color mature = Color(0xFF673AB7);         // Deep Purple
+
+
 }
