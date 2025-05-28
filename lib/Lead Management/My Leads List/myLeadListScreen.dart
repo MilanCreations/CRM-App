@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:crm_milan_creations/Lead%20Management/Lead%20Details/leadDetailsScreen.dart';
 import 'package:crm_milan_creations/Lead%20Management/Lead%20Status/leadStatusController.dart';
 import 'package:crm_milan_creations/Lead%20Management/Lead%20Status/leadStatusModel.dart';
 import 'package:crm_milan_creations/Lead%20Management/My%20Leads%20List/myLeadListController.dart';
@@ -318,52 +319,115 @@ class _LeadListScreenState extends State<LeadListScreen> {
                                 const SizedBox(height: 16),
 
                                 // Update Status Button
-                                SizedBox(
-                                  width: double.infinity,
-                                  height: Get.height * 0.09,
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      showAssignLeadDialog(
-                                        lead.id.toString(),
-                                        lead.status,
-                                      );
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.transparent,
-                                      foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 12,
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      elevation: 0,
-                                      shadowColor: Colors.transparent,
-                                    ),
-                                    child: Ink(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(8),
-                                        gradient: const LinearGradient(
-                                          colors: [
-                                            Color(0xFFEC32B1),
-                                            Color(0xFF0C46CC),
-                                          ],
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                        ),
-                                      ),
-                                      child: Container(
-                                        alignment: Alignment.center,
-                                        child: const Text(
-                                          'Update Status',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: SizedBox(
+                                        height: Get.height * 0.08,
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            showAssignLeadDialog(
+                                              lead.id.toString(),
+                                              lead.status,
+                                            );
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.transparent,
+                                            foregroundColor: Colors.white,
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 12,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            elevation: 0,
+                                            shadowColor: Colors.transparent,
+                                          ),
+                                          child: Ink(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              gradient: const LinearGradient(
+                                                colors: [
+                                                  Color(0xFFEC32B1),
+                                                  Color(0xFF0C46CC),
+                                                ],
+                                                begin: Alignment.topLeft,
+                                                end: Alignment.bottomRight,
+                                              ),
+                                            ),
+                                            child: Container(
+                                              alignment: Alignment.center,
+                                              child: const Text(
+                                                'Update Status',
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ),
-                                  ),
+                                    const SizedBox(
+                                      width: 12,
+                                    ), // Space between buttons
+                                    Expanded(
+                                      child: SizedBox(
+                                        height: Get.height * 0.08,
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            print("Navigating with lead ID: ${lead.id}");
+                                            Get.to(
+                                              () => LeadDetailsScreen(
+                                               assignId: '${lead.assignId}',
+                                                // leadId: '${lead.id}',
+                                              ),
+                                            );
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.transparent,
+                                            foregroundColor: Colors.white,
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 12,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            elevation: 0,
+                                            shadowColor: Colors.transparent,
+                                          ),
+                                          child: Ink(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              gradient: const LinearGradient(
+                                                colors: [
+                                                  Color(0xFF0C46CC),
+                                                  Color(0xFFEC32B1),
+                                                ],
+                                                begin: Alignment.topLeft,
+                                                end: Alignment.bottomRight,
+                                              ),
+                                            ),
+                                            child: Container(
+                                              alignment: Alignment.center,
+                                              child: const Text(
+                                                'View Details',
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -423,25 +487,47 @@ class _LeadListScreenState extends State<LeadListScreen> {
     Color textColor;
 
     switch (status.toLowerCase()) {
-      case 'new':
-        backgroundColor = Colors.blue.shade100;
-        textColor = Colors.blue.shade800;
+      case 'hot':
+        backgroundColor = CRMColors.hot;
+        textColor = CRMColors.white;
         break;
       case 'followup':
-        backgroundColor = Colors.orange.shade100;
-        textColor = Colors.orange.shade800;
+        backgroundColor = CRMColors.followup;
+        textColor = CRMColors.white;
         break;
       case 'mature':
-        backgroundColor = Colors.green.shade100;
-        textColor = Colors.green.shade800;
+        backgroundColor = CRMColors.mature;
+        textColor = CRMColors.white;
         break;
-      case 'client':
-        backgroundColor = Colors.purple.shade100;
-        textColor = Colors.purple.shade800;
+      case 'cold':
+        backgroundColor = CRMColors.cold;
+        textColor = CRMColors.white;
         break;
+
+        case 'not interested':
+        backgroundColor = CRMColors.notInterested;
+        textColor = CRMColors.white;
+        break;
+
+        case 'valid':
+        backgroundColor = CRMColors.valid;
+        textColor = CRMColors.white;
+        break;
+
+        case 'invalid':
+        backgroundColor = CRMColors.invalid;
+        textColor = CRMColors.white;
+        break;
+
+        case 'assigned':
+        backgroundColor = CRMColors.dividerCOlor;
+        textColor = CRMColors.white;
+        break;
+
+
       default:
         backgroundColor = Colors.grey.shade200;
-        textColor = Colors.grey.shade800;
+        textColor = CRMColors.white;
     }
 
     return Chip(

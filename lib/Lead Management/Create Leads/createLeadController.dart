@@ -51,22 +51,22 @@ class CreateLeadcontroller extends GetxController {
           "visit_time": datetimeController.text.trim(),
         };
 
-      //    // PRINTING INDIVIDUAL PARAMETERS
-      // print("======= CREATE LEAD REQUEST =======");
-      // print("Name: ${newData['name']}");
-      // print("Email: ${newData['email']}");
-      // print("Phone: ${newData['phone']}");
-      // print("Remark: ${newData['remark']}");
-      // print("Branch Name: ${newData['branch_name']}");
-      // print("Address: ${newData['address']}");
-      // print("Source: ${newData['source']}");
-      // print("Query Type: ${newData['query_type']}");
-      // print("Company ID: ${newData['company_id']}");
-      // print("Employee ID: ${newData['employee_id']}");
-      // print("Visit time:- ${datetimeController.text.trim()}");
-      // print("Authorization Token: Bearer $token");
-      // print("API Endpoint: ${ApiConstants.creatLead}");
-      // print("Full Body JSON: ${jsonEncode(newData)}");
+         // PRINTING INDIVIDUAL PARAMETERS
+      print("======= CREATE LEAD REQUEST =======");
+      print("Name: ${newData['name']}");
+      print("Email: ${newData['email']}");
+      print("Phone: ${newData['phone']}");
+      print("Remark: ${newData['remark']}");
+      print("Branch Name: ${newData['branch_name']}");
+      print("Address: ${newData['address']}");
+      print("Source: ${newData['source']}");
+      print("Query Type: ${newData['query_type']}");
+      print("Company ID: ${newData['company_id']}");
+      print("Employee ID: ${newData['employee_id']}");
+      print("Visit time:- ${datetimeController.text.trim()}");
+      print("Authorization Token: Bearer $token");
+      print("API Endpoint: ${ApiConstants.creatLead}");
+      print("Full Body JSON: ${jsonEncode(newData)}");
       
       // print("===================================");
 
