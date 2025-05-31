@@ -99,4 +99,11 @@ static const String sourceList = "$baseUrls/payroll/leads/sources";
 static const String salaryList = "$baseUrls/payroll/employee/generate-salary-report";
 
 
+/////////////////// Inventory Management ////////////////
+// Call api inside this:- Get employee list to issue oinventory
+
+// static const String salaryList = "$baseUrls/payroll/employee/generate-salary-report";
+
+
+
 }

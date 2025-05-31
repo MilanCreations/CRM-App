@@ -49,8 +49,8 @@ class Data {
 }
 
 class Attendance {
-    int id;
-    int employeeId;
+    num id;
+    num employeeId;
     DateTime date;
     DateTime? checkIn;
     DateTime? checkOut;
@@ -61,17 +61,17 @@ class Attendance {
     dynamic notes;
     dynamic shiftStartTime;
     dynamic shiftEndTime;
-    int totalBreakMinutes;
+    num totalBreakMinutes;
     DateTime createdAt;
     DateTime updatedAt;
     String latitude;
     String longitude;
     String picture;
-    int markedBy;
+    num markedBy;
     String status;
     DateTime attendanceDate;
     String name;
-    int departmentId;
+    num departmentId;
 
     Attendance({
         required this.id,

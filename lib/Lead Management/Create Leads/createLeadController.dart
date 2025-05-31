@@ -151,7 +151,7 @@ class CreateLeadcontroller extends GetxController {
             btnCancelOnPress: () {},
             btnOkOnPress: () {},
             ).show();
-            Get.off(LeadListScreen());
+            // Get.off(LeadListScreen());
      
       } catch (error) {
         isLoading.value = false;

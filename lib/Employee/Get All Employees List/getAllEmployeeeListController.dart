@@ -11,6 +11,8 @@ import 'package:http/http.dart' as http;
 class Getallemployeelistcontroller extends GetxController {
   var isLoading = false.obs;
   var employeeList = <Resultemp>[].obs; // Make it a list of employee names
+  var selectedEmployee = Rxn<Resultemp>(); // Rxn allows null values
+
 
   Future<void> getAllEmployeeListFunction() async {
     try {

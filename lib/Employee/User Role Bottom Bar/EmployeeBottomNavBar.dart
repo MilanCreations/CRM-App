@@ -4,6 +4,7 @@ import 'package:crm_milan_creations/Employee/Dashboard/dashboardScreen.dart';
 import 'package:crm_milan_creations/Employee/Attendance%20History/allendanceHistoryScreen.dart';
 import 'package:crm_milan_creations/Employee/Notifications/notificationsScreen.dart';
 import 'package:crm_milan_creations/Employee/profile/profileScreen.dart';
+import 'package:crm_milan_creations/Task%20Management/TaskScreen.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:flutter/material.dart';
 class EmployeeBottomNavBar extends StatefulWidget {
@@ -26,6 +27,7 @@ class _EmployeeBottomNavBarState extends State<EmployeeBottomNavBar> {
       Dashboardscreen(checkpagestatus: widget.checkpagestatuss),
       ProfileScreen(),
       NotificationsScreen(),
+      TaskScreen(),
       HistoryScreen(),
     ];
   }
@@ -54,7 +56,8 @@ class _EmployeeBottomNavBarState extends State<EmployeeBottomNavBar> {
           _buildNavItem(Icons.dashboard, "Dashboard", 0),
           _buildNavItem(Icons.person, "Profile", 1),
           _buildNavItem(Icons.notifications, "Notification", 2),
-          _buildNavItem(Icons.wallet, "History", 3),
+          _buildNavItem(Icons.task, "Task", 3),
+          _buildNavItem(Icons.wallet, "History", 4),
         ],
       ),
     );

@@ -106,7 +106,7 @@ class _LeadListScreenState extends State<LeadListScreen> {
         showBackArrow: true,
         leadingIcon: Icons.arrow_back_ios_new_sharp,
         title: CustomText(
-          text: 'My  Lead list',
+          text: 'My Leads',
           color: CRMColors.whiteColor,
           fontSize: 20,
           fontWeight: FontWeight.bold,
@@ -167,36 +167,36 @@ class _LeadListScreenState extends State<LeadListScreen> {
                 const SizedBox(height: 12),
 
                 // Filter button
-                SizedBox(
-                  width: double.infinity,
-                  child: CustomButton(
-                    text: 'Search',
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    onPressed: () {
-                      FocusScope.of(context).unfocus();
-                      _onSearchChanged();
-                    },
-                    // style: ElevatedButton.styleFrom(
-                    //   padding: const EdgeInsets.symmetric(vertical: 14),
-                    //   shape: RoundedRectangleBorder(
-                    //     borderRadius: BorderRadius.circular(10),
-                    //   ),
-                    //   backgroundColor: theme.primaryColor,
-                    //   foregroundColor: Colors.white,
-                    // ),
+                // SizedBox(
+                //   width: double.infinity,
+                //   child: CustomButton(
+                //     text: 'Search',
+                //     gradient: const LinearGradient(
+                //       colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
+                //       begin: Alignment.topLeft,
+                //       end: Alignment.bottomRight,
+                //     ),
+                //     onPressed: () {
+                //       FocusScope.of(context).unfocus();
+                //       _onSearchChanged();
+                //     },
+                //     // style: ElevatedButton.styleFrom(
+                //     //   padding: const EdgeInsets.symmetric(vertical: 14),
+                //     //   shape: RoundedRectangleBorder(
+                //     //     borderRadius: BorderRadius.circular(10),
+                //     //   ),
+                //     //   backgroundColor: theme.primaryColor,
+                //     //   foregroundColor: Colors.white,
+                //     // ),
 
-                    // icon: const Icon(Icons.filter_list),
-                    // label: const CustomText(text:"Search",color: CRMColors.whiteColor,),
-                  ),
-                ),
+                //     // icon: const Icon(Icons.filter_list),
+                //     // label: const CustomText(text:"Search",color: CRMColors.whiteColor,),
+                //   ),
+                // ),
               ],
             ),
           ),
-          const Divider(height: 1),
+          // const Divider(height: 1),
 
           // List view
           Expanded(

@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:crm_milan_creations/API%20Services/BaseURL_&_EndPoints.dart';
 import 'package:crm_milan_creations/Auth/Login/loginModel.dart';
 import 'package:crm_milan_creations/Employee/User%20Role%20Bottom%20Bar/EmployeeBottomNavBar.dart';
-import 'package:crm_milan_creations/Employee/User%20Role%20Bottom%20Bar/superadmin.dart';
+import 'package:crm_milan_creations/Employee/User%20Role%20Bottom%20Bar/CompanyAdminBottomBar.dart';
 import 'package:crm_milan_creations/Employee/check%20clockin%20status/check-In-StatusController.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/Employee/User%20Role%20Bottom%20Bar/HRbottomNavBar.dart';
@@ -113,7 +113,7 @@ switch (loginModel.user.roleCode) {
   case "HR_MANAGER":
     Get.offAll(() => HRBottomNavBar(checkpagestatuss: "login"));
     break;
-  case "SUPER_ADMIN":
+  case "COMPANY_ADMIN":
     Get.to(() => SuperAdminBottomNavBar(checkpagestatuss: "login"));
     break;
   case "Manager":

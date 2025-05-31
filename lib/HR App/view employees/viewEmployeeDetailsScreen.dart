@@ -161,7 +161,7 @@ class _ViewEmployeeDetailsScreenState extends State<ViewEmployeeDetailsScreen> {
           fontWeight: FontWeight.bold,
         ),
         actions: [
-          userRole != "EMPLOYEE"
+          userRole != "EMPLOYEE" && userRole != "COMPANY_ADMIN"
               ? TextButton(
                 onPressed: () {
                   Get.to(AddemployeeScreen());
@@ -277,16 +277,22 @@ class _ViewEmployeeDetailsScreenState extends State<ViewEmployeeDetailsScreen> {
                     ]);
                   case 2:
                     return _sectionCard("Bank Details", [
+                       _contactRow(
+                        Icons.confirmation_number,
+                        "Account No",
+                        controller.bankAccount.value,
+                      ),
                       _contactRow(
                         Icons.account_balance,
                         "Bank Name",
                         controller.bankName.value,
                       ),
-                      _contactRow(
+                       _contactRow(
                         Icons.confirmation_number,
-                        "Account No",
-                        controller.bankAccount.value,
+                        "IFSC Code",
+                        controller.ifscCode.value ,
                       ),
+                     
                     ]);
                   case 3:
                     return Obx(

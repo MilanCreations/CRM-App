@@ -27,7 +27,7 @@ class _SuperAdminBottomNavBarState extends State<SuperAdminBottomNavBar> {
       // Dashboardscreen(checkpagestatus: widget.checkpagestatuss),
       ProfileScreen(),
       // NotificationsScreen(),
-      HistoryScreen(),
+      NotificationsScreen(),
     ];
   }
 
@@ -55,7 +55,7 @@ class _SuperAdminBottomNavBarState extends State<SuperAdminBottomNavBar> {
           // _buildNavItem(Icons.dashboard, "Dashboard", 0),
           _buildNavItem(Icons.person, "Profile", 1),
           // _buildNavItem(Icons.notifications, "super", 2),
-          _buildNavItem(Icons.wallet, "super", 3),  
+          _buildNavItem(Icons.notifications_active, "Notification", 3),  
         ],
       ),
     );

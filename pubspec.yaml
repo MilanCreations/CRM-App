@@ -52,11 +52,16 @@ dependencies:
   table_calendar:
   awesome_dialog:
   collection:
-  scrollable_clean_calendar:
+  # scrollable_clean_calendar:
   permission_handler:
   flutter_downloader:
   path_provider:
   device_info_plus:
+  fade_shimmer:
+  # socket_io_client:
+  # firebase_core:
+  # firebase_auth:
+  # cloud_firestore:
 
 
   # The following adds the Cupertino Icons font to your application.

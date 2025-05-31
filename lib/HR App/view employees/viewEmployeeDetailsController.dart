@@ -24,6 +24,7 @@ class ViewEmployeecontroller extends GetxController {
   var profilePic = "".obs;
   var aadharCardPic = "".obs;
   var panCardPic = "".obs;
+  var ifscCode = "".obs;
   var documents = <Map<String, String>>[].obs; // Add this line
 
   Future<void> employeeDetailsFunction(String employeeId) async {
@@ -70,12 +71,13 @@ class ViewEmployeecontroller extends GetxController {
         bankName = RxString(employeeDetailsModel.data.bankName);
         profilePic = RxString(employeeDetailsModel.data.profilePic);
         aadharCardPic = RxString(employeeDetailsModel.data.aadharCardDoc);
+        ifscCode = RxString(employeeDetailsModel.data.ifscCode);
 
         print("Email: ${employeeDetailsModel.data.email}");
         print("Profile Pic: ${employeeDetailsModel.data.profilePic}");
          // Debug print for documents
       print("Total documents: ${employeeDetailsModel.data.documentType.length}");
-      
+      print("Employee ID fo admin:- ${employeeDetailsModel.data.employeeNumber}");
 for (var doc in employeeDetailsModel.data.documentType) {
   print("Document Type: ${doc.documentType}, URL: ${doc.documentUrl}");
 }
