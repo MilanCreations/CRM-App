@@ -7,6 +7,9 @@ import 'package:permission_handler/permission_handler.dart';
 void main() async {
   runApp(const MyApp());
     WidgetsFlutterBinding.ensureInitialized();
+    // await Firebase.initializeApp(
+    //   options: DefaultFirebaseOptions.currentPlatform
+    // );
   await FlutterDownloader.initialize(
     debug: true, // Set to false in production
   );

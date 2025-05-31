@@ -156,7 +156,7 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
                       if (lead.visitTime != null) {
                         try {
                           formattedVisit = DateFormat(
-                            'd MMM y',
+                            'd MMM y hh mm a',
                           ).format(lead.visitTime!.toLocal());
                         } catch (_) {
                           formattedVisit = 'Invalid Date';
@@ -166,7 +166,7 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
                       String updatedAt =
                           lead.updatedAt != null
                               ? DateFormat(
-                                'd MMM y',
+                                'd MMM y hh mm a',
                               ).format(lead.updatedAt!.toLocal())
                               : "Not Available";
 

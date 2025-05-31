@@ -477,6 +477,7 @@ class _DashboardscreenState extends State<Dashboardscreen> {
                         selectedTextStyle: TextStyle(color: Colors.white),
                         weekendTextStyle: const TextStyle(color: Colors.red),
                       ),
+                      availableGestures: AvailableGestures.none,
                       calendarBuilders: CalendarBuilders(
                         defaultBuilder: (context, day, focusedDay) {
                           final isSunday = day.weekday == DateTime.sunday;
@@ -539,11 +540,7 @@ class _DashboardscreenState extends State<Dashboardscreen> {
                   ),
 
                   const SizedBox(height: 20),
-                  CustomText(
-                    text: "Today's Task",
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  
                 ],
               ),
             ),

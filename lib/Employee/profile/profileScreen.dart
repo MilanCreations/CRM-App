@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:crm_milan_creations/Auth/Login/loginScreen.dart';
+import 'package:crm_milan_creations/Chat%20App/Chat%20Home%20Page/chatHomeScreen.dart';
 import 'package:crm_milan_creations/Employee/Apply%20Leave/applyLeaveScreen.dart';
 import 'package:crm_milan_creations/Employee/Attendance%20History/allendanceHistoryScreen.dart';
 import 'package:crm_milan_creations/Employee/Leave%20History/leaveHistoryScreen.dart';
@@ -8,6 +9,8 @@ import 'package:crm_milan_creations/HR%20App/Employee%20Leave%20Request/empLeave
 import 'package:crm_milan_creations/HR%20App/Employee%20List/EmployeeListScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Salary/SalaryScreen.dart';
 import 'package:crm_milan_creations/HR%20App/view%20employees/viewEmployeeDetailsScreen.dart';
+import 'package:crm_milan_creations/Inventory%20Management/Issue%20Inventory%20History/issueInventoryScreen.dart';
+import 'package:crm_milan_creations/Inventory%20Management/Issue%20Inventory/IssueInventoryScreen.dart';
 import 'package:crm_milan_creations/Lead%20Management/All%20Lead%20list/allLeadsScreen.dart';
 import 'package:crm_milan_creations/Lead%20Management/Create%20Leads/createLeadsScreen.dart';
 import 'package:crm_milan_creations/Lead%20Management/My%20Leads%20List/myLeadListScreen.dart';
@@ -58,10 +61,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       // companyId = prefs.getString('company_id') ?? "";
       String? localName = prefs.getString('name');
       // name = prefs.getString('name') ?? "";
-      name = (localName == null || localName.trim().isEmpty)
-      ? (prefs.getString('fullname') ?? "")
-      : localName;
-      
+      name =
+          (localName == null || localName.trim().isEmpty)
+              ? (prefs.getString('fullname') ?? "")
+              : localName;
+
       profilePicPath = prefs.getString('profile_pic') ?? "";
       print("profile pic in profile screen:- $profilePicPath");
     });
@@ -84,8 +88,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-
-  
   void showLogoutDialog() {
     showDialog(
       context: context,
@@ -270,108 +272,101 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
- Widget _buildProfileImage() {
-  return GestureDetector(
-    onTap: _showFullScreenImage,
-    child: Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: CRMColors.crmMainCOlor,
-          width: 2,
+  Widget _buildProfileImage() {
+    return GestureDetector(
+      onTap: _showFullScreenImage,
+      child: Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: CRMColors.crmMainCOlor, width: 2),
         ),
-      ),
-      child: _getProfileImageWidget(),
-    ),
-  );
-}
-
-
-
-void _showFullScreenImage() {
-  if (profilePicPath.isEmpty) return;
-  
-  try {
-    Widget imageWidget;
-    
-    // Check if it's a file path
-    final file = File(profilePicPath);
-    if (file.existsSync()) {
-      imageWidget = Image.file(file);
-    } 
-    // Check if it's a network URL
-    else if (profilePicPath.startsWith('http')) {
-      imageWidget = Image.network(profilePicPath);
-    }
-    // Assume it's base64 if neither
-    else {
-      final imageBytes = base64Decode(profilePicPath);
-      imageWidget = Image.memory(imageBytes);
-    }
-
-    Get.dialog(
-      Dialog(
-        child: InteractiveViewer(
-          panEnabled: true,
-          minScale: 0.5,
-          maxScale: 3.0,
-          child: imageWidget,
-        ),
+        child: _getProfileImageWidget(),
       ),
     );
-  } catch (e) {
-    print('Error showing full screen image: $e');
-    Get.snackbar(
-      "Error",
-      "Could not display image",
-      backgroundColor: CRMColors.error,
-      colorText: CRMColors.textWhite,
-    );
-  }
-}
-Widget _getProfileImageWidget() {
-  if (profilePicPath.isEmpty) {
-    return const CircleAvatar(
-      radius: 50,
-      backgroundColor: Colors.grey,
-      child: Icon(Icons.person, size: 50, color: Colors.white),
-    );
   }
 
-  try {
-    // Check if it's a file path
-    final file = File(profilePicPath);
-    if (file.existsSync()) {
-      return CircleAvatar(
-        radius: 50,
-        backgroundImage: FileImage(file),
+  void _showFullScreenImage() {
+    if (profilePicPath.isEmpty) return;
+
+    try {
+      Widget imageWidget;
+
+      // Check if it's a file path
+      final file = File(profilePicPath);
+      if (file.existsSync()) {
+        imageWidget = Image.file(file);
+      }
+      // Check if it's a network URL
+      else if (profilePicPath.startsWith('http')) {
+        imageWidget = Image.network(profilePicPath);
+      }
+      // Assume it's base64 if neither
+      else {
+        final imageBytes = base64Decode(profilePicPath);
+        imageWidget = Image.memory(imageBytes);
+      }
+
+      Get.dialog(
+        Dialog(
+          child: InteractiveViewer(
+            panEnabled: true,
+            minScale: 0.5,
+            maxScale: 3.0,
+            child: imageWidget,
+          ),
+        ),
+      );
+    } catch (e) {
+      print('Error showing full screen image: $e');
+      Get.snackbar(
+        "Error",
+        "Could not display image",
+        backgroundColor: CRMColors.error,
+        colorText: CRMColors.textWhite,
       );
     }
-    // Check if it's a network URL
-    else if (profilePicPath.startsWith('http')) {
-      return CircleAvatar(
-        radius: 50,
-        backgroundImage: NetworkImage(profilePicPath),
-      );
-    }
-    // Assume it's base64 if neither
-    else {
-      final imageBytes = base64Decode(profilePicPath);
-      return CircleAvatar(
-        radius: 50,
-        backgroundImage: MemoryImage(imageBytes),
-      );
-    }
-  } catch (e) {
-    print('Error loading profile image: $e');
-    return const CircleAvatar(
-      radius: 50,
-      backgroundColor: Colors.grey,
-      child: Icon(Icons.person, size: 50, color: Colors.white),
-    );
   }
-}
-  
+
+  Widget _getProfileImageWidget() {
+    if (profilePicPath.isEmpty) {
+      return const CircleAvatar(
+        radius: 50,
+        backgroundColor: Colors.grey,
+        child: Icon(Icons.person, size: 50, color: Colors.white),
+      );
+    }
+
+    try {
+      // Check if it's a file path
+      final file = File(profilePicPath);
+      if (file.existsSync()) {
+        return CircleAvatar(radius: 50, backgroundImage: FileImage(file));
+      }
+      // Check if it's a network URL
+      else if (profilePicPath.startsWith('http')) {
+        return CircleAvatar(
+          radius: 50,
+          backgroundImage: NetworkImage(profilePicPath),
+        );
+      }
+      // Assume it's base64 if neither
+      else {
+        final imageBytes = base64Decode(profilePicPath);
+        return CircleAvatar(
+          radius: 50,
+          backgroundImage: MemoryImage(imageBytes),
+        );
+      }
+    } catch (e) {
+      print('Error loading profile image: $e');
+      return const CircleAvatar(
+        radius: 50,
+        backgroundColor: Colors.grey,
+        child: Icon(Icons.person, size: 50, color: Colors.white),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -435,7 +430,10 @@ Widget _getProfileImageWidget() {
                   buildMenuItem(
                     icon: Icons.person_outline,
                     text: "Profile Details",
-                    onTap: () => Get.to( ViewEmployeeDetailsScreen(employeeId: employeeID,)),
+                    onTap:
+                        () => Get.to(
+                          ViewEmployeeDetailsScreen(employeeId: employeeID),
+                        ),
                   ),
                   userRole != "EMPLOYEE"
                       ? buildMenuItem(
@@ -446,35 +444,73 @@ Widget _getProfileImageWidget() {
                         }, // Navigate to profile detail screen if needed
                       )
                       : const SizedBox(),
-                  buildMenuItem(
-                    icon: Icons.calendar_month_outlined,
-                    text: 'Apply Leave',
-                    onTap: () => Get.to(() => LeaveRequestScreen()),
-                  ),
+                  userRole != "COMPANY_ADMIN"
+                      ? buildMenuItem(
+                        icon: Icons.calendar_month_outlined,
+                        text: 'Apply Leave',
+                        onTap: () => Get.to(() => LeaveRequestScreen()),
+                      )
+                      : const SizedBox(),
                   buildMenuItem(
                     icon: Icons.calendar_month_outlined,
                     text: 'Leave History',
                     onTap: () => Get.to(() => LeavehistoryScreen()),
                   ),
-                  userRole != "EMPLOYEE"
+                  userRole != "EMPLOYEE" && userRole != "COMPANY_ADMIN"
                       ? buildMenuItem(
                         icon: Icons.schedule,
                         text: 'Leave Requests',
                         onTap: () => Get.to(() => EmpLeaveRequestScreen()),
                       )
                       : const SizedBox(),
+                  userRole != "COMPANY_ADMIN"
+                      ? buildMenuItem(
+                        icon: Icons.history,
+                        text: 'Attendance History',
+                        onTap: () => Get.to(() => const HistoryScreen()),
+                      )
+                      : const SizedBox(),
                   buildMenuItem(
-                    icon: Icons.history,
-                    text: 'Attendance History',
-                    onTap: () => Get.to(() => const HistoryScreen()),
-                  ),
-                 buildMenuItem(
                     icon: Icons.currency_rupee_sharp,
                     text: 'Salary',
                     onTap: () => Get.to(() => Salaryscreen()),
                   ),
+                  buildMenuItem(
+                    icon: Icons.chat,
+                    text: 'Chat',
+                    onTap: () => Get.to(() => ChatHomeScreen()),
+                  ),
                   widgetshowpermissionswise(),
-                    buildMenuItem(
+                  userRole == "COMPANY_ADMIN"
+                      ? buildMenuItem(
+                        icon: Icons.leaderboard,
+                        text: 'Create Lead',
+                        onTap:
+                            () => Get.to(
+                              () => CreateLeadsScreen(
+                                token: token,
+                                name: name,
+                                visitTime: visitTime,
+                                employeeid: employeeID,
+                              ),
+                            ),
+                      )
+                      : const SizedBox(),
+
+                  userRole != "EMPLOYEE"
+                      ? buildMenuItem(
+                        icon: Icons.inventory,
+                        text: 'Inventory Management',
+                        onTap: () => Get.to(() => IssueInventoryScreen()),
+                      )
+                      : SizedBox(),
+
+                  buildMenuItem(
+                    icon: Icons.inventory_sharp,
+                    text: 'Inventory History',
+                    onTap: () => Get.to(() => IssueInventoryHistoryScreen()),
+                  ),
+                  buildMenuItem(
                     icon: Icons.leak_add_sharp,
                     text: 'All Leads',
                     onTap: () => Get.to(() => AllLeadsScreen()),
@@ -503,7 +539,15 @@ Widget _getProfileImageWidget() {
               return buildMenuItem(
                 icon: Icons.leaderboard,
                 text: 'Create Lead',
-                onTap: () => Get.to(() => CreateLeadsScreen(token: token,name:name ,visitTime:visitTime ,employeeid: employeeID,)),
+                onTap:
+                    () => Get.to(
+                      () => CreateLeadsScreen(
+                        token: token,
+                        name: name,
+                        visitTime: visitTime,
+                        employeeid: employeeID,
+                      ),
+                    ),
               );
             } else if (element == "view-leads") {
               return buildMenuItem(

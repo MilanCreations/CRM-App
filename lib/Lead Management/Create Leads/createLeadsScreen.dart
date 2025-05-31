@@ -175,6 +175,7 @@ class _CreateLeadsScreenState extends State<CreateLeadsScreen> {
                 controller: createLeadcontroller.phoneController,
                 keyboardType: TextInputType.phone,
                 backgroundColor: CRMColors.whiteColor,
+                maxLength: 10,
               ),
               const SizedBox(height: 12),
 
@@ -185,58 +186,60 @@ class _CreateLeadsScreenState extends State<CreateLeadsScreen> {
               ),
               const SizedBox(height: 12),
 
-             Obx(() {
-  if (sourcesInLeadcontroller.isLoading.value) {
-    return const Center(child: CircularProgressIndicator());
-  }
-  if (sourcesInLeadcontroller.sourceList.isEmpty) {
-    return const Center(
-      child: CustomText(text: 'No Source list found'),
-    );
-  }
+              Obx(() {
+                if (sourcesInLeadcontroller.isLoading.value) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (sourcesInLeadcontroller.sourceList.isEmpty) {
+                  return const Center(
+                    child: CustomText(text: 'No Source list found'),
+                  );
+                }
 
-  return Container(
-    height: Get.height * 0.067,
-    decoration: BoxDecoration(
-      color: CRMColors.white,
-      borderRadius: BorderRadius.circular(10),
-      border: Border.all(color: Colors.grey),
-    ),
-    child: DropdownButtonHideUnderline(
-      child: DropdownButton2<Source>(
-        isExpanded: true,
-        hint: const Text(
-          'Select Source',
-          style: TextStyle(color: Colors.grey),
-        ),
-        items: sourcesInLeadcontroller.sourceList
-            .map<DropdownMenuItem<Source>>((source) {
-              return DropdownMenuItem<Source>(
-                value: source,
-                child: Text(
-                  source.name,
-                  style: const TextStyle(fontSize: 16),
-                ),
-              );
-            })
-            .toList(),
-        value: sourcesInLeadcontroller.selectedSource.value,
-        onChanged: (Source? newValue) {
-          if (newValue != null) {
-            sourcesInLeadcontroller.selectedSource.value = newValue;
-          }
-        },
-        buttonStyleData: const ButtonStyleData(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          height: 50,
-        ),
-        dropdownStyleData: const DropdownStyleData(
-          maxHeight: 200,
-        ),
-      ),
-    ),
-  );
-}),
+                return Container(
+                  height: Get.height * 0.067,
+                  decoration: BoxDecoration(
+                    color: CRMColors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.grey),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton2<Source>(
+                      isExpanded: true,
+                      hint: const Text(
+                        'Select Source',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      items:
+                          sourcesInLeadcontroller.sourceList
+                              .map<DropdownMenuItem<Source>>((source) {
+                                return DropdownMenuItem<Source>(
+                                  value: source,
+                                  child: Text(
+                                    source.name,
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
+                                );
+                              })
+                              .toList(),
+                      value: sourcesInLeadcontroller.selectedSource.value,
+                      onChanged: (Source? newValue) {
+                        if (newValue != null) {
+                          sourcesInLeadcontroller.selectedSource.value =
+                              newValue;
+                        }
+                      },
+                      buttonStyleData: const ButtonStyleData(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        height: 50,
+                      ),
+                      dropdownStyleData: const DropdownStyleData(
+                        maxHeight: 200,
+                      ),
+                    ),
+                  ),
+                );
+              }),
               const SizedBox(height: 12),
 
               CustomTextFormField(
@@ -313,32 +316,36 @@ class _CreateLeadsScreenState extends State<CreateLeadsScreen> {
                 readOnly: true,
               ),
               SizedBox(height: 15),
-              CustomButton(
-                text: 'Register',
-                onPressed: () {
-                  if(sourcesInLeadcontroller.selectedSource.value != null){
-                    createLeadcontroller.createLeadCOntrollerFunction(
-                    context,
-                   sourcesInLeadcontroller.selectedSource.value!.name,
-                    widget.token,
-                    widget.employeeid,
-                    widget.visitTime,
-                  );
-                  } else{
-                     Get.snackbar(
-      "Validation Error",
-      "Please select a lead source.",
-      backgroundColor: Colors.redAccent,
-      colorText: Colors.white,
-    );
-                  }
-                  
-                },
-                gradient: const LinearGradient(
-                  colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+              Obx(() {
+                return createLeadcontroller.isLoading.value
+                ? const Center(child: CircularProgressIndicator(),)
+                :CustomButton(
+                  text: 'Register',
+                  onPressed: () {
+                    if (sourcesInLeadcontroller.selectedSource.value != null) {
+                      createLeadcontroller.createLeadCOntrollerFunction(
+                        context,
+                        sourcesInLeadcontroller.selectedSource.value!.name,
+                        widget.token,
+                        widget.employeeid,
+                        widget.visitTime,
+                      );
+                    } else {
+                      Get.snackbar(
+                        "Validation Error",
+                        "Please select a lead source.",
+                        backgroundColor: Colors.redAccent,
+                        colorText: Colors.white,
+                      );
+                    }
+                  },
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                );
+              }
               ),
             ],
           ),

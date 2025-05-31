@@ -10,6 +10,7 @@ import 'package:crm_milan_creations/Employee/Break/breakendModel.dart';
 import 'package:crm_milan_creations/Employee/Dashboard/Models/checkinModel.dart';
 import 'package:crm_milan_creations/Employee/Dashboard/Models/checkoutModel.dart';
 import 'package:crm_milan_creations/Employee/check%20clockin%20status/check-In-StatusController.dart';
+import 'package:crm_milan_creations/Task%20Management/TaskModel.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
@@ -34,6 +35,7 @@ class DashboardController extends GetxController {
   CheckClockInController checkClockInController = Get.put(
     CheckClockInController(checkpagestatus: "login"),
   );
+   final tabs = ['Pending', 'Ongoing', 'Under Review', 'Upcoming'].obs;
 
   RxString position = ''.obs;
 
@@ -43,6 +45,7 @@ class DashboardController extends GetxController {
   var breakData = false.obs;
   var picture = ''.obs;
   var imageurl = ''.obs;
+  final selectedTab = 0.obs;
  
 
   final Rx<LatLng> currentLocation = LatLng(0, 0).obs;
@@ -64,6 +67,43 @@ class DashboardController extends GetxController {
     positionStream?.cancel();
     super.onClose();
   }
+
+
+
+    final tasks = <Task>[
+    Task(
+      title: "Design system for Llama",
+      description: "Lorem ipsum dolor sit amet, consectetur sadipscing...",
+      deadline: "3 days",
+      date: "12 Sep 2021",
+      status: "pending",
+    ),
+    Task(
+      title: "Implement authentication",
+      description: "Create login and signup screens",
+      deadline: "5 days",
+      date: "15 Sep 2021",
+      status: "ongoing",
+    ),
+    // Add more sample tasks with different statuses
+  ].obs;
+
+  List<Task> getFilteredTasks(int tabIndex) {
+    final statusMap = {
+      0: 'pending',
+      1: 'ongoing',
+      2: 'under_review',
+      3: 'upcoming',
+    };
+    final status = statusMap[tabIndex];
+    return tasks.where((task) => task.status == status).toList();
+  }
+
+
+
+
+
+
 
   void startLiveLocation() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();

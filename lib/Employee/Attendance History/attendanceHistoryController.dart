@@ -29,6 +29,7 @@ class AttendanceHistoryController extends GetxController {
   void onClose() {
     super.onClose();
     attendanceHistoryList.clear();
+    allEmployeeAttendanceHistoryList.clear();
   }
 
   //.............. Individual Function for Attendance History ................
@@ -143,6 +144,7 @@ class AttendanceHistoryController extends GetxController {
     bool isRefresh = false,
     String? startDate,
     String? endDate,
+     String? nameSearch = "",
   }) async {
     if (isLoading.value || !hasMoreData.value) return;
 
@@ -150,6 +152,7 @@ class AttendanceHistoryController extends GetxController {
       isLoading.value = true;
       final prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
+      // String finalSearchName = searchName ?? '';
 
       if (token == null) {
         isLoading.value = false;
@@ -192,7 +195,7 @@ class AttendanceHistoryController extends GetxController {
         "&_limit=10"
         "&_sort=date"
         "&_order=desc"
-        "&q="
+        "&q=$nameSearch"
         "&status="
         "&department="
         "&startDate=${startDate ?? ''}"
