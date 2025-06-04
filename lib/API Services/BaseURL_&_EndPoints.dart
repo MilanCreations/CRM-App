@@ -70,6 +70,9 @@ static const String leaveAction = "$baseUrls/payroll/attendance/leaves";
 // Get All Companirs
 static const String getAllComapies = "$baseUrls/payroll/company/index";
 
+// Dashboard
+static const String hrDashboard = "$baseUrls/payroll/dashboard/hr";
+
 ////////////////////////// Lead Managament ////////////////////////////
 // Create leads
 static const String creatLead = "$baseUrls/payroll/leads";
@@ -97,6 +100,20 @@ static const String sourceList = "$baseUrls/payroll/leads/sources";
 
 //////////////////// Salary Management //////////////////
 static const String salaryList = "$baseUrls/payroll/employee/generate-salary-report";
+
+
+// HR Dashboard 
+static const String todayAttendanceHistory = "$baseUrls/payroll/attendance";
+
+// HR Leads
+static const String hrleadList = "$baseUrls/payroll/leads/all/assignedLeads";
+
+
+
+
+
+
+
 
 
 /////////////////// Inventory Management ////////////////

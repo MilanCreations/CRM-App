@@ -113,12 +113,14 @@ class LeadListcontroller extends GetxController {
         );
       }
     } catch (e) {
-      Get.snackbar(
-        "Error",
-        "Something went wrong: ${e.toString()}",
-        backgroundColor: CRMColors.error,
-        colorText: CRMColors.textWhite,
-      );
+      // Get.snackbar(
+      //   "Message",
+      //   "Something went wrong: ${e.toString()}",
+      //   backgroundColor: CRMColors.error,
+      //   colorText: CRMColors.textWhite,
+      // );
+
+      print("Exception in lead List Function: ${e.toString()}");
     } finally {
       isLoading.value = false;
     }

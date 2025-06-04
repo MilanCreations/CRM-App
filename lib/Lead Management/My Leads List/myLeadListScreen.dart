@@ -382,7 +382,7 @@ class _LeadListScreenState extends State<LeadListScreen> {
                                             print("Navigating with lead ID: ${lead.id}");
                                             Get.to(
                                               () => LeadDetailsScreen(
-                                               assignId: '${lead.assignId}',
+                                               assignID: '${lead.assignId}',
                                                 // leadId: '${lead.id}',
                                               ),
                                             );
@@ -429,6 +429,7 @@ class _LeadListScreenState extends State<LeadListScreen> {
                                     ),
                                   ],
                                 ),
+                              
                               ],
                             ),
                           ),
@@ -858,4 +859,5 @@ class _LeadListScreenState extends State<LeadListScreen> {
           ),
     );
   }
+
 }

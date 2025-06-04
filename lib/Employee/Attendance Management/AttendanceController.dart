@@ -7,8 +7,8 @@ import 'package:crm_milan_creations/API%20Services/BaseURL_&_EndPoints.dart';
 import 'package:crm_milan_creations/Auth/Login/loginScreen.dart';
 import 'package:crm_milan_creations/Employee/Break/breakStartModel.dart';
 import 'package:crm_milan_creations/Employee/Break/breakendModel.dart';
-import 'package:crm_milan_creations/Employee/Dashboard/Models/checkinModel.dart';
-import 'package:crm_milan_creations/Employee/Dashboard/Models/checkoutModel.dart';
+import 'package:crm_milan_creations/Employee/Attendance%20Management/Models/checkinModel.dart';
+import 'package:crm_milan_creations/Employee/Attendance%20Management/Models/checkoutModel.dart';
 import 'package:crm_milan_creations/Employee/check%20clockin%20status/check-In-StatusController.dart';
 import 'package:crm_milan_creations/Task%20Management/TaskModel.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
@@ -24,7 +24,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:math';
 
-class DashboardController extends GetxController {
+class Attendancecontroller extends GetxController {
   final RxBool isClockedIn = false.obs;
   final Rx<File?> image = Rx<File?>(null);
   final RxBool isLoading = false.obs;

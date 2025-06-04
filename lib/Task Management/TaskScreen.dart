@@ -31,7 +31,7 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        showBackArrow: true,
+        showBackArrow: false,
         leadingIcon: Icons.arrow_back_ios_new_sharp,
         gradient: const LinearGradient(
           colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
@@ -105,15 +105,17 @@ Widget showTodayTask() {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                Spacer(),
+                CustomText(text: 'Priority: ',color: CRMColors.darkGrey,fontWeight: FontWeight.bold,fontSize: 13),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: color.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Text(
-                    priority,
-                    style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w600),
+                  child: CustomText(
+                   text:  priority,
+                    color: color, fontSize: 12, fontWeight: FontWeight.w600,
                   ),
                 ),
               ],

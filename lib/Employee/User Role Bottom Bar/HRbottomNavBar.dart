@@ -1,8 +1,9 @@
 // ignore_for_file: file_names
-import 'package:crm_milan_creations/Employee/Dashboard/dashboardScreen.dart';
+import 'package:crm_milan_creations/Employee/Attendance%20Management/AttendanceScreen.dart';
 import 'package:crm_milan_creations/Employee/Attendance%20History/allendanceHistoryScreen.dart';
 import 'package:crm_milan_creations/Employee/Notifications/notificationsScreen.dart';
 import 'package:crm_milan_creations/Employee/profile/profileScreen.dart';
+import 'package:crm_milan_creations/HR%20App/HR%20Dashboard/Dashboard%20Home%20Page/dashboardScreen.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +23,8 @@ class _BottomNavBarState extends State<HRBottomNavBar> {
   void initState() {
     super.initState();
     _screens = [
-      Dashboardscreen(checkpagestatus: widget.checkpagestatuss),
+      Dashboardscreen(),
+      Attendancescreen(checkpagestatus: widget.checkpagestatuss),
       ProfileScreen(),
       NotificationsScreen(),
       HistoryScreen(),
@@ -50,9 +52,10 @@ class _BottomNavBarState extends State<HRBottomNavBar> {
         unselectedItemColor: Colors.grey,
         items: [
           _buildNavItem(Icons.dashboard, "Dashboard", 0),
-          _buildNavItem(Icons.person, "Profile", 1),
-          _buildNavItem(Icons.notifications, "Notifications", 2),
-          _buildNavItem(Icons.wallet, "Historyh", 3),
+          _buildNavItem(Icons.group_add_rounded, "Attendance", 1),
+          _buildNavItem(Icons.person, "Profile", 2),
+          _buildNavItem(Icons.notifications, "Notifications", 3),
+          _buildNavItem(Icons.wallet, "Historyh", 4),
         ],
       ),
     );

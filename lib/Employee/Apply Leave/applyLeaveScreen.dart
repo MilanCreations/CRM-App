@@ -133,6 +133,7 @@ class LeaveRequestScreen extends StatelessWidget {
                   ),
                 ],
               ),
+              
               const SizedBox(height: 20),
               Obx(() {
                 if (leaveTypeController.isLoading.value) {
