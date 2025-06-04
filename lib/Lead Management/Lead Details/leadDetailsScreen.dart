@@ -9,8 +9,8 @@ import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
 
 class LeadDetailsScreen extends StatefulWidget {
-  final String assignId;
-  const LeadDetailsScreen({super.key, required this.assignId});
+  final String assignID;
+  const LeadDetailsScreen({super.key, required this.assignID});
 
   @override
   State<LeadDetailsScreen> createState() => _LeadDetailsScreenState();
@@ -28,7 +28,7 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       leadDetailsController.leadDetailsFunction(
-        assignId: widget.assignId,
+        assignId: widget.assignID,
         isRefresh: true,
       );
     });
@@ -40,7 +40,7 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
       leadDetailsController.leadDetailsFunction(
         isRefresh: true,
         search: searchController.text.trim(),
-        assignId: widget.assignId,
+        assignId: widget.assignID,
       );
     });
   }

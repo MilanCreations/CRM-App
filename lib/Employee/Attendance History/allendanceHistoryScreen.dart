@@ -30,6 +30,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   @override
   void initState() {
     super.initState();
+    getUserData();
     _scrollController = ScrollController()..addListener(_onScroll);
     attendanceHistoryController.AllEmployeesAttendanceHistoryfunctions(
       isRefresh: true,
@@ -41,15 +42,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
             _scrollController.position.maxScrollExtent - 200 &&
         !attendanceHistoryController.isLoading.value &&
         attendanceHistoryController.hasMoreData.value) {
-      attendanceHistoryController.AllEmployeesAttendanceHistoryfunctions();
+      _fetchFilteredData();
     }
-  }
-
-  @override
-  void dispose() {
-    _scrollController.removeListener(_onScroll);
-    _scrollController.dispose();
-    super.dispose();
   }
 
   Future<void> getUserData() async {
@@ -57,6 +51,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
     setState(() {
       userRole = prefs.getString("role_code") ?? "";
     });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
   }
 
   String formatDateTime(DateTime? dateTime) {
@@ -78,48 +79,68 @@ class _HistoryScreenState extends State<HistoryScreen> {
     }
   }
 
-void _onSearchChanged() {
-  if (_debounce?.isActive ?? false) _debounce?.cancel();
-  _debounce = Timer(const Duration(milliseconds: 500), () async {
-    String query = searchController.text.trim();
+  void _onSearchChanged() {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      _resetAndFetchFilteredData();
+    });
+  }
 
+  Future<void> _resetAndFetchFilteredData() async {
     attendanceHistoryController.hasMoreData.value = true;
     attendanceHistoryController.currentPage.value = 1;
     attendanceHistoryController.allEmployeeAttendanceHistoryList.clear();
+    await _fetchFilteredData();
+  }
 
-    if (query.isEmpty) {
-      // Reload everything when empty
-      await attendanceHistoryController.AllEmployeesAttendanceHistoryfunctions(
-        isRefresh: true,
-        nameSearch: "",
-      );
-    } else {
-      await _fetchAllMatchingData(query);
-    }
-  });
-}
+  Future<void> _fetchFilteredData() async {
+    String? startDate =
+        attendanceHistoryController.startDateTime.value != null
+            ? DateFormat(
+              'yyyy-MM-dd',
+            ).format(attendanceHistoryController.startDateTime.value!)
+            : null;
 
+    String? endDate =
+        attendanceHistoryController.endDateTime.value != null
+            ? DateFormat(
+              'yyyy-MM-dd',
+            ).format(attendanceHistoryController.endDateTime.value!)
+            : null;
 
-  Future<void> _fetchAllMatchingData(String query) async {
-    int maxPages = 30; // Prevent infinite loop
-    int page = 0;
+    await attendanceHistoryController.AllEmployeesAttendanceHistoryfunctions(
+      nameSearch: searchController.text.trim(),
+      startDate: startDate,
+      endDate: endDate,
+    );
+  }
 
-    while (attendanceHistoryController.hasMoreData.value && page < maxPages) {
-      await attendanceHistoryController.AllEmployeesAttendanceHistoryfunctions(
-        nameSearch: query,
-      );
-      page++;
-    }
+  Future<void> pickDateTime(Rx<DateTime?> dateTime) async {
+    DateTime now = DateTime.now();
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: now,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
 
-    if (page >= maxPages) {
-      debugPrint(
-        "Stopped fetching after $maxPages pages to avoid infinite loop.",
-      );
+    if (pickedDate != null) {
+      dateTime.value = pickedDate;
+
+      if (attendanceHistoryController.startDateTime.value != null &&
+          attendanceHistoryController.endDateTime.value != null) {
+        await _resetAndFetchFilteredData();
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final inputDecoration = InputDecoration(
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+    );
+
     return Scaffold(
       appBar: CustomAppBar(
         gradient: const LinearGradient(
@@ -136,55 +157,156 @@ void _onSearchChanged() {
       ),
       body: Column(
         children: [
-          userRole != "EMPLOYEE"
-              ? Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 4,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
+          const SizedBox(height: 12),
+              userRole != "EMPLOYEE"
+         ? Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
                   ),
-                  child: TextField(
-                    controller: searchController,
-                    onChanged: (_) => _onSearchChanged(),
-                    decoration: InputDecoration(
-                      hintText: 'Search employee...',
-                      prefixIcon: const Icon(Icons.search),
-                      border: InputBorder.none,
-                      suffixIcon:
-                          searchController.text.isNotEmpty
-                              ? IconButton(
-                                icon: const Icon(Icons.clear),
-                                onPressed: () {
-                                searchController.clear();
-                                FocusScope.of(context).unfocus(); // Dismiss keyboard
-                
-                                // Reset pagination
-                                attendanceHistoryController.hasMoreData.value = true;
-                                attendanceHistoryController.currentPage.value = 1;
-                                attendanceHistoryController.allEmployeeAttendanceHistoryList.clear();
-                
-                                // Now load full list again without search
-                                attendanceHistoryController.AllEmployeesAttendanceHistoryfunctions(
-                                  isRefresh: true,
-                                  nameSearch: "", // Pass empty explicitly
-                                );
-                              }
-                
-                              )
-                              : null,
+                ],
+              ),
+              child: TextField(
+                controller: searchController,
+                onChanged: (_) => _onSearchChanged(),
+                decoration: InputDecoration(
+                  hintText: 'Search employee...',
+                  prefixIcon: const Icon(Icons.search),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                  suffixIcon:
+                      searchController.text.isNotEmpty
+                          ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () {
+                              searchController.clear();
+                              FocusScope.of(context).unfocus();
+                              _resetAndFetchFilteredData();
+                            },
+                          )
+                          : null,
+                ),
+              ),
+            ),
+          ): SizedBox(),
+          const SizedBox(height: 18),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Obx(
+                    () => Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: TextFormField(
+                        readOnly: true,
+                        onTap:
+                            () => pickDateTime(
+                              attendanceHistoryController.startDateTime,
+                            ),
+                        decoration: inputDecoration.copyWith(
+                          labelText: "Start Date",
+                          hintText: "MM/DD/YYYY",
+                          filled: true,
+                          fillColor:
+                              Colors
+                                  .transparent, // Keeps Container color visible
+                          suffixIcon: const Icon(Icons.calendar_today_outlined),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 16,
+                          ),
+                        ),
+                        controller: TextEditingController(
+                          text:
+                              attendanceHistoryController.startDateTime.value !=
+                                      null
+                                  ? DateFormat.yMd().format(
+                                    attendanceHistoryController
+                                        .startDateTime
+                                        .value!,
+                                  )
+                                  : '',
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              )
-              : SizedBox(),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Obx(
+                    () => Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: TextFormField(
+                        readOnly: true,
+                        onTap:
+                            () => pickDateTime(
+                              attendanceHistoryController.endDateTime,
+                            ),
+                        decoration: inputDecoration.copyWith(
+                          labelText: "End Date",
+                          hintText: "MM/DD/YYYY",
+                          filled: true,
+                          fillColor:
+                              Colors
+                                  .transparent, // Keeps Container color visible
+                          suffixIcon: const Icon(Icons.calendar_today_outlined),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 16,
+                          ),
+                        ),
+                        controller: TextEditingController(
+                          text:
+                              attendanceHistoryController.endDateTime.value !=
+                                      null
+                                  ? DateFormat.yMd().format(
+                                    attendanceHistoryController
+                                        .endDateTime
+                                        .value!,
+                                  )
+                                  : '',
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                onPressed: () {
+                  attendanceHistoryController.startDateTime.value = null;
+                  attendanceHistoryController.endDateTime.value = null;
+                  _resetAndFetchFilteredData();
+                },
+                icon: const Icon(Icons.clear, size: 18),
+                label: const Text("Clear Filters"),
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
           Expanded(
             child: Obx(() {
               if (attendanceHistoryController.isLoading.value &&
@@ -222,15 +344,14 @@ void _onSearchChanged() {
 
               return ListView.builder(
                 controller: _scrollController,
-                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.only(top: 4, bottom: 16),
                 itemCount:
                     attendanceHistoryController
                         .allEmployeeAttendanceHistoryList
                         .length +
                     1,
                 itemBuilder: (context, index) {
-                  if (index <
-                      attendanceHistoryController
+                  if (index < attendanceHistoryController
                           .allEmployeeAttendanceHistoryList
                           .length) {
                     final history =
@@ -341,6 +462,7 @@ void _onSearchChanged() {
                   }
                 },
               );
+          
             }),
           ),
         ],

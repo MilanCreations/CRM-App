@@ -58,7 +58,7 @@ Future<void> leadStatusFunction() async {
           backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
     }
   } catch (e) {
-    Get.snackbar("Error", "Something went wrong: ${e.toString()}",
+    Get.snackbar("Message", "Something went wrong: ${e.toString()}",
         backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
   } finally {
     isLoading.value = false;

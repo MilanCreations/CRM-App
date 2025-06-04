@@ -2,7 +2,7 @@
 
 import 'dart:convert';
 import 'package:crm_milan_creations/API%20Services/BaseURL_&_EndPoints.dart';
-import 'package:crm_milan_creations/Lead%20Management/My%20Leads%20List/myLeadListScreen.dart';
+import 'package:crm_milan_creations/Lead%20Management/Lead%20Details/leadDetailsScreen.dart';
 import 'package:crm_milan_creations/Lead%20Management/Update%20Lead%20Status/UpdateLeadStatusModel.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:flutter/widgets.dart';
@@ -116,7 +116,7 @@ class UpdateLeadcontroller extends GetxController {
 
         clearAllFields();
 
-        Get.off(LeadListScreen());
+        Get.off(LeadDetailsScreen(assignID: leadid,));
       } catch (error) {
         isLoading.value = false;
         print("Catch Error: $error");

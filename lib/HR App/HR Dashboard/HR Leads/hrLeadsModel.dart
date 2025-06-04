@@ -1,27 +1,27 @@
 // To parse this JSON data, do
 //
-//     final myLeadsModel = myLeadsModelFromJson(jsonString);
+//     final hrLeadsModel = hrLeadsModelFromJson(jsonString);
 
 import 'dart:convert';
 
-MyLeadsModel myLeadsModelFromJson(String str) => MyLeadsModel.fromJson(json.decode(str));
+HrLeadsModel hrLeadsModelFromJson(String str) => HrLeadsModel.fromJson(json.decode(str));
 
-String myLeadsModelToJson(MyLeadsModel data) => json.encode(data.toJson());
+String hrLeadsModelToJson(HrLeadsModel data) => json.encode(data.toJson());
 
-class MyLeadsModel {
+class HrLeadsModel {
     String status;
     List<Result> result;
     int total;
     String filterCount;
 
-    MyLeadsModel({
+    HrLeadsModel({
         required this.status,
         required this.result,
         required this.total,
         required this.filterCount,
     });
 
-    factory MyLeadsModel.fromJson(Map<String, dynamic> json) => MyLeadsModel(
+    factory HrLeadsModel.fromJson(Map<String, dynamic> json) => HrLeadsModel(
         status: json["status"],
         result: List<Result>.from(json["result"].map((x) => Result.fromJson(x))),
         total: json["total"],
@@ -49,12 +49,12 @@ class Result {
     bool phoneVerified;
     DateTime createdAt;
     DateTime updatedAt;
-    String source;
-    String queryType;
+    String? source;
+    String? queryType;
     dynamic conversionTypeId;
     String? leadCreator;
     String status;
-    dynamic employeeRemark;
+    String? employeeRemark;
     int assignId;
     String employeeName;
     String companyName;
@@ -85,26 +85,26 @@ class Result {
 
     factory Result.fromJson(Map<String, dynamic> json) => Result(
         id: json["id"],
-        name: json["name"]?? "",
-        phone: json["phone"]?? 0,
-        email: json["email"]?? "",
-        address: json["address"]?? "",
+        name: json["name"],
+        phone: json["phone"],
+        email: json["email"],
+        address: json["address"],
         visitTime: DateTime.parse(json["visit_time"]),
-        remark: json["remark"]?? "",
-        branchName: json["branch_name"]?? "",
+        remark: json["remark"],
+        branchName: json["branch_name"],
         branchId: json["branch_id"]?? 0,
         phoneVerified: json["phone_verified"],
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
-        source: json["source"]?? "",
-        queryType: json["query_type"]?? "",
+        source: json["source"],
+        queryType: json["query_type"],
         conversionTypeId: json["conversion_type_id"]?? 0,
-        leadCreator: json["lead_creator"] ?? "",
-        status: json["status"]?? "",
+        leadCreator: json["lead_creator"]?? "",
+        status: json["status"],
         employeeRemark: json["employee_remark"]?? "",
-        assignId: json["assign_id"]?? 0,
-        employeeName: json["employee_name"]?? "",
-        companyName: json["companyName"]?? "",
+        assignId: json["assign_id"],
+        employeeName: json["employee_name"],
+        companyName: json["companyName"],
     );
 
     Map<String, dynamic> toJson() => {

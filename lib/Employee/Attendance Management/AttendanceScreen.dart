@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:crm_milan_creations/Auth/Login/loginScreen.dart';
 import 'package:crm_milan_creations/Employee/Attendance%20History/attendanceHistoryController.dart';
-import 'package:crm_milan_creations/Employee/Dashboard/dashboardController.dart';
+import 'package:crm_milan_creations/Employee/Attendance%20Management/AttendanceController.dart';
 import 'package:crm_milan_creations/Employee/Table%20Calender%20Dashboard/tableCalenderController.dart';
 import 'package:crm_milan_creations/Employee/check%20clockin%20status/check-In-StatusController.dart';
 import 'package:flutter/material.dart';
@@ -17,17 +17,17 @@ import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class Dashboardscreen extends StatefulWidget {
+class Attendancescreen extends StatefulWidget {
   final String checkpagestatus;
-  const Dashboardscreen({super.key, required this.checkpagestatus});
+  const Attendancescreen({super.key, required this.checkpagestatus});
 
   @override
-  State<Dashboardscreen> createState() => _DashboardscreenState();
+  State<Attendancescreen> createState() => _AttendancescreenState();
 }
 
-class _DashboardscreenState extends State<Dashboardscreen> {
+class _AttendancescreenState extends State<Attendancescreen> {
   late CheckClockInController checkClockInController;
-  final DashboardController controller = Get.put(DashboardController());
+  final Attendancecontroller controller = Get.put(Attendancecontroller());
   final TableCalendarController tableController = Get.put(
     TableCalendarController(),
   );
