@@ -17,96 +17,101 @@ class AllLeadListcontroller extends GetxController {
   DateTime? currentStartDate;
   DateTime? currentEndDate;
 
-  Future<void> allLeadListFunction({
-    bool isRefresh = false,
-    String search = '',
-    DateTime? startDate,
-    DateTime? endDate,
-  }) async {
-    if (isLoading.value) return;
-    
-    try {
+ Future<void> allLeadListFunction({
+  bool isRefresh = false,
+  bool loadMore = false, // Add this parameter
+  String search = '',
+  DateTime? startDate,
+  DateTime? endDate,
+}) async {
+  // Don't load more if already loading or no more data
+  if (isLoading.value || (loadMore && !hasMoreData.value)) return;
+  
+  try {
+    if (!loadMore) {
       isLoading.value = true;
-      final prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString('token');
-
-      if (token == null) {
-        isLoading.value = false;
-        clearSharedPreferences();
-        Get.snackbar("Error", "User is not authenticated. Login again!",
-            backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
-        return;
-      }
-
-      // Reset for refresh or when filters change
-      if (isRefresh || 
-          search != searchQuery.value || 
-          startDate != currentStartDate || 
-          endDate != currentEndDate) {
-        currentPage.value = 1;
-        hasMoreData.value = true;
-        alleadList.clear();
-        searchQuery.value = search;
-        currentStartDate = startDate;
-        currentEndDate = endDate;
-      }
-
-      if (!hasMoreData.value && !isRefresh) {
-        isLoading.value = false;
-        return;
-      }
-
-      String baseUrl = ApiConstants.allleadList;
-      String queryParams = '?_page=${currentPage.value}&_limit=10';
-
-      // Add search query if provided
-      if (search.isNotEmpty) {
-        queryParams += '&q=$search';
-      }
-
-      // Add date filters if provided
-      if (startDate != null) {
-        queryParams += '&startDate=${startDate.toIso8601String()}';
-      }
-      if (endDate != null) {
-        queryParams += '&endDate=${endDate.toIso8601String()}';
-      }
-
-      final url = Uri.parse('$baseUrl$queryParams');
-      print('Fetching URL: $url');
-
-      final response = await http.get(
-        url,
-        headers: {"Authorization": "Bearer $token"},
-      );
-
-      if (response.statusCode == 200) {
-        var allLeadsModel = allLeadsModelFromJson(response.body);
-
-        if (allLeadsModel.result.isEmpty) {
-          hasMoreData.value = false;
-          if (!isRefresh && currentPage.value > 1) {
-            Get.snackbar("Info", "No more leads available",
-                backgroundColor: CRMColors.info, colorText: CRMColors.textWhite);
-          }
-        } else {
-          alleadList.addAll(allLeadsModel.result);
-          currentPage.value++;
-        }
-      } else if (response.statusCode == 401) {
-        clearSharedPreferences();
-      } else {
-        Get.snackbar("Error", "Failed to fetch leads: ${response.statusCode}",
-            backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
-      }
-    } catch (e) {
-      Get.snackbar("Error", "Something went wrong: ${e.toString()}",
-          backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
-    } finally {
-      isLoading.value = false;
     }
-  }
 
+    final prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+
+    if (token == null) {
+      isLoading.value = false;
+      clearSharedPreferences();
+      Get.snackbar("Error", "User is not authenticated. Login again!",
+          backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
+      return;
+    }
+
+    // Reset for refresh or when filters change
+    if (isRefresh || 
+        search != searchQuery.value || 
+        startDate != currentStartDate || 
+        endDate != currentEndDate) {
+      currentPage.value = 1;
+      hasMoreData.value = true;
+      if (!loadMore) {
+        alleadList.clear();
+      }
+      searchQuery.value = search;
+      currentStartDate = startDate;
+      currentEndDate = endDate;
+    }
+
+    String baseUrl = ApiConstants.allleadList;
+    String queryParams = '?_page=${currentPage.value}&_limit=10';
+
+    // Add search query if provided
+    if (search.isNotEmpty) {
+      queryParams += '&q=$search';
+    }
+
+    // Add date filters if provided
+    if (startDate != null) {
+      queryParams += '&startDate=${startDate.toIso8601String()}';
+    }
+    if (endDate != null) {
+      queryParams += '&endDate=${endDate.toIso8601String()}';
+    }
+
+    final url = Uri.parse('$baseUrl$queryParams');
+    print('Fetching URL: $url');
+
+    final response = await http.get(
+      url,
+      headers: {"Authorization": "Bearer $token"},
+    );
+
+    if (response.statusCode == 200) {
+      var allLeadsModel = allLeadsModelFromJson(response.body);
+
+      if (allLeadsModel.result.isEmpty) {
+        hasMoreData.value = false;
+        if (loadMore) {
+          Get.snackbar("Info", "No more leads available",
+              backgroundColor: CRMColors.info, colorText: CRMColors.textWhite);
+        }
+      } else {
+        if (loadMore) {
+          alleadList.addAll(allLeadsModel.result);
+        } else {
+          alleadList.assignAll(allLeadsModel.result);
+        }
+        currentPage.value++;
+      }
+    } else if (response.statusCode == 401) {
+      clearSharedPreferences();
+    } else {
+      Get.snackbar("Error", "Failed to fetch leads: ${response.statusCode}",
+          backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
+    }
+  } catch (e) {
+    Get.snackbar("Error", "Something went wrong: ${e.toString()}",
+        backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
+  } finally {
+    isLoading.value = false;
+  }
+}
   // Add a method to refresh with current filters
   Future<void> refreshWithCurrentFilters() async {
     await allLeadListFunction(

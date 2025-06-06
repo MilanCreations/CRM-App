@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use, prefer_if_null_operators
+
 import 'dart:async';
 
 import 'package:crm_milan_creations/Lead%20Management/Lead%20Details/leadDetailsScreen.dart';
@@ -8,7 +10,6 @@ import 'package:crm_milan_creations/Lead%20Management/Update%20Lead%20Status/Upd
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
-import 'package:crm_milan_creations/widgets/button.dart';
 import 'package:crm_milan_creations/widgets/textfiled.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
@@ -74,25 +75,25 @@ class _LeadListScreenState extends State<LeadListScreen> {
     });
   }
 
-  Future<void> _selectStartDate() async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: startDate ?? DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null) setState(() => startDate = picked);
-  }
+  // Future<void> _selectStartDate() async {
+  //   final DateTime? picked = await showDatePicker(
+  //     context: context,
+  //     initialDate: startDate ?? DateTime.now(),
+  //     firstDate: DateTime(2000),
+  //     lastDate: DateTime.now(),
+  //   );
+  //   if (picked != null) setState(() => startDate = picked);
+  // }
 
-  Future<void> _selectEndDate() async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: endDate ?? DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null) setState(() => endDate = picked);
-  }
+  // Future<void> _selectEndDate() async {
+  //   final DateTime? picked = await showDatePicker(
+  //     context: context,
+  //     initialDate: endDate ?? DateTime.now(),
+  //     firstDate: DateTime(2000),
+  //     lastDate: DateTime.now(),
+  //   );
+  //   if (picked != null) setState(() => endDate = picked);
+  // }
 
   String formatDate(DateTime? date) {
     if (date == null) return '';

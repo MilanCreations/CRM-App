@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:crm_milan_creations/HR%20App/HR%20Dashboard/Dashboard%20Home%20Page/dashboardController.dart';
 import 'package:crm_milan_creations/HR%20App/HR%20Dashboard/HR%20Leads/hrLeadsScreen.dart';
 import 'package:crm_milan_creations/HR%20App/HR%20Dashboard/Today%20Leave%20Request/todayLeaveScreen.dart';
@@ -24,96 +26,97 @@ class _DashboardscreenState extends State<Dashboardscreen> {
     controller.dashboardFunction();
   }
 
- Widget buildDashboardTile(
-  String title,
-  RxString value,
-  IconData icon,
-  List<Color> gradientColors, {
-  VoidCallback? onTap,
-}) {
-  return Obx(
-    () => GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: gradientColors,
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+  Widget buildDashboardTile(
+    String title,
+    RxString value,
+    IconData icon,
+    List<Color> gradientColors, {
+    VoidCallback? onTap,
+  }) {
+    return Obx(
+      () => GestureDetector(
+        onTap: onTap,
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: gradientColors,
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: gradientColors.last.withOpacity(0.3),
+                offset: const Offset(0, 6),
+                blurRadius: 12,
+              ),
+            ],
           ),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: gradientColors.last.withOpacity(0.3),
-              offset: const Offset(0, 6),
-              blurRadius: 12,
-            ),
-          ],
-        ),
-        padding: const EdgeInsets.all(16),
-        child: Stack(
-          children: [
-            // Decorative curves in the corner (unchanged)
-            Positioned(
-              top: -10,
-              right: -10,
-              child: Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(30),
+          padding: const EdgeInsets.all(16),
+          child: Stack(
+            children: [
+              // Decorative curves in the corner (unchanged)
+              Positioned(
+                top: -10,
+                right: -10,
+                child: Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(30),
+                  ),
                 ),
               ),
-            ),
-            Positioned(
-              bottom: -20,
-              left: -20,
-              child: Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(40),
+              Positioned(
+                bottom: -20,
+                left: -20,
+                child: Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(40),
+                  ),
                 ),
               ),
-            ),
-            // Centered content column
-            Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(icon, color: Colors.white, size: 36),
-                  const SizedBox(height: 15),
-                  Text(
-                    value.value,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+              // Centered content column
+              Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(icon, color: Colors.white, size: 36),
+                    const SizedBox(height: 15),
+                    Text(
+                      value.value,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      color: Colors.white70, 
-                      fontSize: 16,
+                    const SizedBox(height: 8),
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 16,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -146,48 +149,66 @@ class _DashboardscreenState extends State<Dashboardscreen> {
             children: [
               // Header with decorative curve
               Container(
-                height: 120,
+                height: Get.height * 0.2,
                 width: double.infinity,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+                    colors: [Color(0xFF4A00E0), Color(0xFF8E2DE2)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(40),
-                    bottomRight: Radius.circular(40),
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
+                  borderRadius: BorderRadius.circular(25),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.blue.withOpacity(0.3),
-                      blurRadius: 10,
-                      offset: const Offset(0, 5),
+                      color: Colors.purple.withOpacity(0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 6),
                     ),
                   ],
                 ),
-                padding: const EdgeInsets.all(20),
-                child: const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 20,
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      "Today's Overview",
-                      style: TextStyle(
+                    Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.bar_chart,
                         color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
+                        size: 32,
                       ),
                     ),
-                    SizedBox(height: 8),
-                    Text(
-                      "Check your daily statistics",
-                      style: TextStyle(color: Colors.white70, fontSize: 14),
+                    const SizedBox(width: 20),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Text(
+                          "Today's Overview",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 6),
+                        CustomText(
+                         text:  "Check your daily statistics",
+                         color: Colors.white70, fontSize: 14
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
+
               const SizedBox(height: 30),
               Expanded(
                 child: GridView.count(

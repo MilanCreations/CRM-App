@@ -49,14 +49,14 @@ class SalaryReportModel {
 }
 
 class Result {
-    num employeeId;
+    int employeeId;
     String name;
     String baseSalary;
-    num presentDays;
-    num unpaidLeaves;
-    num lateArrivals;
-    num earlyLeaves;
-    num workingHours;
+    int presentDays;
+    int unpaidLeaves;
+    int lateArrivals;
+    int earlyLeaves;
+    dynamic workingHours;
     String deduction;
     String payableSalary;
 

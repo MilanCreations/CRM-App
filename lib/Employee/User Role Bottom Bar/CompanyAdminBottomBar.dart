@@ -1,8 +1,5 @@
 
 // ignore_for_file: file_names
-
-import 'package:crm_milan_creations/Employee/Attendance%20Management/AttendanceScreen.dart';
-import 'package:crm_milan_creations/Employee/Attendance%20History/allendanceHistoryScreen.dart';
 import 'package:crm_milan_creations/Employee/Notifications/notificationsScreen.dart';
 import 'package:crm_milan_creations/Employee/profile/profileScreen.dart';
 import 'package:crm_milan_creations/utils/colors.dart';

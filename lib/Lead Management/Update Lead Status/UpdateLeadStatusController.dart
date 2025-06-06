@@ -44,8 +44,8 @@ class UpdateLeadcontroller extends GetxController {
         print("===================================");
         print("type:- $type");
         print("feedback:- ${feedBack.text.trim()}");
-        print("lead_id:- ${leadid}");
-        print("followup_date:- ${followupdate}");
+        print("lead_id:- $leadid");
+        print("followup_date:- $followupdate");
         print("Lead Status:- $leadstatus");
 
         final response = await http.put(

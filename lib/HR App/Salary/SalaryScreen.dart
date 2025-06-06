@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:async';
 import 'package:crm_milan_creations/HR%20App/Salary/salaryController.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
@@ -347,7 +349,7 @@ class _SalaryscreenState extends State<Salaryscreen> {
               children: [
                 _statBox("Early Leave", "${item.earlyLeaves}", 
                     Icons.exit_to_app, CRMColors.purple),
-                _statBox("Hours", "${item.workingHours.toStringAsFixed(1)}", 
+                _statBox("Hours", "${item.workingHours}", 
                     Icons.work_outline, CRMColors.teal),
                 _statBox("Deduction", "₹${item.deduction}", 
                     Icons.currency_rupee_sharp, CRMColors.crmMainCOlor),

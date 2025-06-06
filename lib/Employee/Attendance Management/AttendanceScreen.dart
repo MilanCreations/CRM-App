@@ -1,6 +1,7 @@
+// ignore_for_file: unused_element, deprecated_member_use
+
 import 'dart:async';
 import 'dart:math';
-
 import 'package:crm_milan_creations/Auth/Login/loginScreen.dart';
 import 'package:crm_milan_creations/Employee/Attendance%20History/attendanceHistoryController.dart';
 import 'package:crm_milan_creations/Employee/Attendance%20Management/AttendanceController.dart';
@@ -28,12 +29,8 @@ class Attendancescreen extends StatefulWidget {
 class _AttendancescreenState extends State<Attendancescreen> {
   late CheckClockInController checkClockInController;
   final Attendancecontroller controller = Get.put(Attendancecontroller());
-  final TableCalendarController tableController = Get.put(
-    TableCalendarController(),
-  );
-  final AttendanceHistoryController attendanceHistoryController = Get.put(
-    AttendanceHistoryController(),
-  );
+  final TableCalendarController tableController = Get.put(TableCalendarController());
+  final AttendanceHistoryController attendanceHistoryController = Get.put(AttendanceHistoryController());
 
   RxString totalHoursToday = '0h 00m'.obs;
   RxString totalWorkingHoursToday = '0h 00m'.obs;
@@ -86,140 +83,7 @@ class _AttendancescreenState extends State<Attendancescreen> {
     });
   }
 
-  void showLogoutDialog() {
-    showDialog(
-      context: context,
-      builder:
-          (_) => Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            child: Container(
-              padding: const EdgeInsets.all(25),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 20,
-                    spreadRadius: 5,
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Header with gradient icon
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                    ),
-                    child: const Icon(
-                      Icons.logout,
-                      size: 40,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Title
-                  const Text(
-                    "Logout?",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-
-                  // Subtitle
-                  const Text(
-                    "Are you sure you want to logout?",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: Colors.black54),
-                  ),
-                  const SizedBox(height: 25),
-
-                  // Buttons
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      // Cancel Button
-                      Expanded(
-                        child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 15),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              side: const BorderSide(color: Colors.grey),
-                            ),
-                          ),
-                          onPressed: () => Get.back(),
-                          child: const Text(
-                            "Cancel",
-                            style: TextStyle(
-                              color: Colors.black87,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 15),
-
-                      // Logout Button
-                      Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 15),
-                            backgroundColor: CRMColors.error,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            elevation: 0,
-                          ),
-                          onPressed: () async {
-                            final prefs = await SharedPreferences.getInstance();
-                            await prefs.clear();
-                            Get.back(); // Close dialog first
-                            Get.snackbar(
-                              "Success",
-                              "Logout Successfully",
-                              backgroundColor: CRMColors.error,
-                              colorText: CRMColors.textWhite,
-                            );
-                            Get.offAll(() => const LoginScreen());
-                          },
-                          child: const Text(
-                            "Logout",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-    );
-  }
-
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -454,87 +318,89 @@ class _AttendancescreenState extends State<Attendancescreen> {
                     ],
                   ),
 
-                  Obx(
-                    () => TableCalendar(
-                      firstDay: DateTime.utc(2020, 1, 1),
-                      lastDay: DateTime.utc(2030, 12, 31),
-
-                      focusedDay: tableController.focusedDay.value,
-                      selectedDayPredicate:
-                          (day) =>
-                              isSameDay(tableController.selectedDay.value, day),
-                      onDaySelected: tableController.onDaySelected,
-                      calendarStyle: CalendarStyle(
-                        selectedDecoration: BoxDecoration(
-                          color: Colors.blue,
-                          shape: BoxShape.circle,
+                  SingleChildScrollView(
+                    child: Obx(
+                      () => TableCalendar(
+                        firstDay: DateTime.utc(2020, 1, 1),
+                        lastDay: DateTime.utc(2030, 12, 31),
+                    
+                        focusedDay: tableController.focusedDay.value,
+                        selectedDayPredicate:
+                            (day) =>
+                                isSameDay(tableController.selectedDay.value, day),
+                        onDaySelected: tableController.onDaySelected,
+                        calendarStyle: CalendarStyle(
+                          selectedDecoration: BoxDecoration(
+                            color: Colors.blue,
+                            shape: BoxShape.circle,
+                          ),
+                          todayDecoration: BoxDecoration(
+                            color: Colors.grey.shade300,
+                            shape: BoxShape.circle,
+                          ),
+                          defaultTextStyle: const TextStyle(color: Colors.red),
+                          selectedTextStyle: TextStyle(color: Colors.white),
+                          weekendTextStyle: const TextStyle(color: Colors.red),
                         ),
-                        todayDecoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          shape: BoxShape.circle,
-                        ),
-                        defaultTextStyle: const TextStyle(color: Colors.red),
-                        selectedTextStyle: TextStyle(color: Colors.white),
-                        weekendTextStyle: const TextStyle(color: Colors.red),
-                      ),
-                      availableGestures: AvailableGestures.none,
-                      calendarBuilders: CalendarBuilders(
-                        defaultBuilder: (context, day, focusedDay) {
-                          final isSunday = day.weekday == DateTime.sunday;
-                          if (isSunday) {
-                            return Center(
-                              child: Text(
-                                '${day.day}',
-                                style: const TextStyle(
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            );
-                          }
-
-                          final status = tableController.getStatus(day);
-
-                          Color dotColor;
-                          switch (status) {
-                            case 'approved':
-                              dotColor = Colors.green;
-                              break;
-                            case 'pending':
-                              dotColor = Colors.orange;
-                              break;
-                            case 'rejected':
-                              dotColor = Colors.orange;
-                              break;
-                            default:
-                              dotColor = Colors.transparent;
-                          }
-
-                          return Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  width: 40,
-                                  height: 28,
-                                  decoration: BoxDecoration(
-                                    color: dotColor,
-                                    borderRadius: BorderRadius.circular(20),
-                                    // pill shape
+                        availableGestures: AvailableGestures.none,
+                        calendarBuilders: CalendarBuilders(
+                          defaultBuilder: (context, day, focusedDay) {
+                            final isSunday = day.weekday == DateTime.sunday;
+                            if (isSunday) {
+                              return Center(
+                                child: Text(
+                                  '${day.day}',
+                                  style: const TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  child: Center(
-                                    child: Text(
-                                      '${day.day}',
-                                      style: const TextStyle(
-                                        color: Colors.black,
+                                ),
+                              );
+                            }
+                    
+                            final status = tableController.getStatus(day);
+                    
+                            Color dotColor;
+                            switch (status) {
+                              case 'approved':
+                                dotColor = Colors.green;
+                                break;
+                              case 'pending':
+                                dotColor = Colors.orange;
+                                break;
+                              case 'rejected':
+                                dotColor = Colors.orange;
+                                break;
+                              default:
+                                dotColor = Colors.transparent;
+                            }
+                    
+                            return Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 28,
+                                    decoration: BoxDecoration(
+                                      color: dotColor,
+                                      borderRadius: BorderRadius.circular(20),
+                                      // pill shape
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        '${day.day}',
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
+                                ],
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),
@@ -1068,6 +934,142 @@ class _AttendancescreenState extends State<Attendancescreen> {
     workingTimeTimer?.cancel();
     calculateTotalHoursToday(); // Calculate final hours when clocking out
   }
+
+ void showLogoutDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (_) => Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            child: Container(
+              padding: const EdgeInsets.all(25),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 20,
+                    spreadRadius: 5,
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Header with gradient icon
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                    child: const Icon(
+                      Icons.logout,
+                      size: 40,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Title
+                  const Text(
+                    "Logout?",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Subtitle
+                  const Text(
+                    "Are you sure you want to logout?",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, color: Colors.black54),
+                  ),
+                  const SizedBox(height: 25),
+
+                  // Buttons
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      // Cancel Button
+                      Expanded(
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              side: const BorderSide(color: Colors.grey),
+                            ),
+                          ),
+                          onPressed: () => Get.back(),
+                          child: const Text(
+                            "Cancel",
+                            style: TextStyle(
+                              color: Colors.black87,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 15),
+
+                      // Logout Button
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            backgroundColor: CRMColors.error,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 0,
+                          ),
+                          onPressed: () async {
+                            final prefs = await SharedPreferences.getInstance();
+                            await prefs.clear();
+                            Get.back(); // Close dialog first
+                            Get.snackbar(
+                              "Success",
+                              "Logout Successfully",
+                              backgroundColor: CRMColors.error,
+                              colorText: CRMColors.textWhite,
+                            );
+                            Get.offAll(() => const LoginScreen());
+                          },
+                          child: const Text(
+                            "Logout",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+    );
+  }
+
+
 }
 
 // bell_curve_painter.dart

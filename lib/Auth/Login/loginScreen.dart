@@ -1,4 +1,5 @@
-import 'package:crm_milan_creations/Auth/Forgot%20Password/ForgotPasswordScreen.dart';
+// ignore_for_file: deprecated_member_use
+
 import 'package:crm_milan_creations/Auth/Login/loginController.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';

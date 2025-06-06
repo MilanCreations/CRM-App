@@ -15,6 +15,7 @@ class AttendanceHistoryController extends GetxController {
   var allEmployeeAttendanceHistoryList = [].obs;
   var currentPage = 1.obs;
   var hasMoreData = true.obs;
+  var isDateInvalid = false.obs;
   final tableCalendarController = Get.find<TableCalendarController>();
   Rx<DateTime?> startDateTime = Rx<DateTime?>(null);
   Rx<DateTime?> endDateTime = Rx<DateTime?>(null);

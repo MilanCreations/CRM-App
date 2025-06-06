@@ -1,5 +1,4 @@
-import 'dart:convert';
-import 'dart:io';
+// ignore_for_file: deprecated_member_use
 
 import 'package:crm_milan_creations/HR%20App/Department%20List/departmentListController.dart';
 import 'package:crm_milan_creations/HR%20App/Department%20List/departmentListModel.dart';
@@ -18,7 +17,7 @@ import 'package:intl/intl.dart';
 
 class EditEmployeeScreen extends StatefulWidget {
   final String editEmployeeDetails;
-  EditEmployeeScreen({super.key, required this.editEmployeeDetails});
+ const EditEmployeeScreen({super.key, required this.editEmployeeDetails});
 
   @override
   State<EditEmployeeScreen> createState() => _EditEmployeeScreenState();
@@ -720,105 +719,109 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
     );
   }
 
-   Widget _buildProfileImage() {
-  return GestureDetector(
-    onTap: _showFullScreenImage,
-    child: Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: CRMColors.crmMainCOlor,
-          width: 2,
-        ),
-      ),
-      child: _getProfileImageWidget(),
-    ),
-  );
-}
+//    Widget _buildProfileImage() {
+//   return GestureDetector(
+//     onTap: _showFullScreenImage,
+//     child: Container(
+//       decoration: BoxDecoration(
+//         shape: BoxShape.circle,
+//         border: Border.all(
+//           color: CRMColors.crmMainCOlor,
+//           width: 2,
+//         ),
+//       ),
+//       child: _getProfileImageWidget(),
+//     ),
+//   );
+// }
 
 
 
-void _showFullScreenImage() {
-  if (getEmployeeDetailsController.profile_pic.isEmpty) return;
+// void _showFullScreenImage() {
+//   if (getEmployeeDetailsController.profile_pic.isEmpty) return;
   
-  try {
-    Widget imageWidget;
+//   try {
+//     Widget imageWidget;
     
-    // Check if it's a file path
-    final file = File(getEmployeeDetailsController.profile_pic.toString());
-    if (file.existsSync()) {
-      imageWidget = Image.file(file);
-    } 
-    // Check if it's a network URL
-    else if (getEmployeeDetailsController.profile_pic.startsWith('http')) {
-      imageWidget = Image.network(getEmployeeDetailsController.profile_pic.toString());
-    }
-    // Assume it's base64 if neither
-    else {
-      final imageBytes = base64Decode(getEmployeeDetailsController.profile_pic.toString());
-      imageWidget = Image.memory(imageBytes);
-    }
+//     // Check if it's a file path
+//     final file = File(getEmployeeDetailsController.profile_pic.toString());
+//     if (file.existsSync()) {
+//       imageWidget = Image.file(file);
+//     } 
+//     // Check if it's a network URL
+//     else if (getEmployeeDetailsController.profile_pic.startsWith('http')) {
+//       imageWidget = Image.network(getEmployeeDetailsController.profile_pic.toString());
+//     }
+//     // Assume it's base64 if neither
+//     else {
+//       final imageBytes = base64Decode(getEmployeeDetailsController.profile_pic.toString());
+//       imageWidget = Image.memory(imageBytes);
+//     }
 
-    Get.dialog(
-      Dialog(
-        child: InteractiveViewer(
-          panEnabled: true,
-          minScale: 0.5,
-          maxScale: 3.0,
-          child: imageWidget,
-        ),
-      ),
-    );
-  } catch (e) {
-    print('Error showing full screen image: $e');
-    Get.snackbar(
-      "Error",
-      "Could not display image",
-      backgroundColor: CRMColors.error,
-      colorText: CRMColors.textWhite,
-    );
-  }
-}
-Widget _getProfileImageWidget() {
-  if (getEmployeeDetailsController.profile_pic.value.isEmpty) {
-    return const CircleAvatar(
-      radius: 50,
-      backgroundColor: Colors.grey,
-      child: Icon(Icons.person, size: 50, color: Colors.white),
-    );
-  }
+//     Get.dialog(
+//       Dialog(
+//         child: InteractiveViewer(
+//           panEnabled: true,
+//           minScale: 0.5,
+//           maxScale: 3.0,
+//           child: imageWidget,
+//         ),
+//       ),
+//     );
+//   } catch (e) {
+//     print('Error showing full screen image: $e');
+//     Get.snackbar(
+//       "Error",
+//       "Could not display image",
+//       backgroundColor: CRMColors.error,
+//       colorText: CRMColors.textWhite,
+//     );
+//   }
+// }
 
-  try {
-    // Check if it's a file path
-    final file = File(getEmployeeDetailsController.profile_pic.toString());
-    if (file.existsSync()) {
-      return CircleAvatar(
-        radius: 50,
-        backgroundImage: FileImage(file),
-      );
-    }
-    // Check if it's a network URL
-    else if (getEmployeeDetailsController.profile_pic.startsWith('http')) {
-      return CircleAvatar(
-        radius: 50,
-        backgroundImage: NetworkImage(getEmployeeDetailsController.profile_pic.toString()),
-      );
-    }
-    // Assume it's base64 if neither
-    else {
-      final imageBytes = base64Decode(getEmployeeDetailsController.profile_pic.toString());
-      return CircleAvatar(
-        radius: 50,
-        backgroundImage: MemoryImage(imageBytes),
-      );
-    }
-  } catch (e) {
-    print('Error loading profile image: $e');
-    return const CircleAvatar(
-      radius: 50,
-      backgroundColor: Colors.grey,
-      child: Icon(Icons.person, size: 50, color: Colors.white),
-    );
-  }
-}
+
+// Widget _getProfileImageWidget() {
+//   if (getEmployeeDetailsController.profile_pic.value.isEmpty) {
+//     return const CircleAvatar(
+//       radius: 50,
+//       backgroundColor: Colors.grey,
+//       child: Icon(Icons.person, size: 50, color: Colors.white),
+//     );
+//   }
+
+//   try {
+//     // Check if it's a file path
+//     final file = File(getEmployeeDetailsController.profile_pic.toString());
+//     if (file.existsSync()) {
+//       return CircleAvatar(
+//         radius: 50,
+//         backgroundImage: FileImage(file),
+//       );
+//     }
+//     // Check if it's a network URL
+//     else if (getEmployeeDetailsController.profile_pic.startsWith('http')) {
+//       return CircleAvatar(
+//         radius: 50,
+//         backgroundImage: NetworkImage(getEmployeeDetailsController.profile_pic.toString()),
+//       );
+//     }
+//     // Assume it's base64 if neither
+//     else {
+//       final imageBytes = base64Decode(getEmployeeDetailsController.profile_pic.toString());
+//       return CircleAvatar(
+//         radius: 50,
+//         backgroundImage: MemoryImage(imageBytes),
+//       );
+//     }
+//   } catch (e) {
+//     print('Error loading profile image: $e');
+//     return const CircleAvatar(
+//       radius: 50,
+//       backgroundColor: Colors.grey,
+//       child: Icon(Icons.person, size: 50, color: Colors.white),
+//     );
+//   }
+// }
+
+
 }

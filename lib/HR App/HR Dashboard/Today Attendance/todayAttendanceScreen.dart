@@ -1,5 +1,4 @@
 import 'package:crm_milan_creations/HR%20App/HR%20Dashboard/Today%20Attendance/todayAttendanceController.dart';
-import 'package:crm_milan_creations/HR%20App/HR%20Dashboard/waves%20painter/wavePainter.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
@@ -135,7 +134,7 @@ class _TodayAttendanceScreenState extends State<TodayAttendanceScreen> {
                       ),
                       Expanded(
                         child: CustomText(
-                          text: "Clock Out : ${history.checkOut ?? '--'}",
+                          text: "Clock Out : ${formatDateTime(history.checkOut) ?? '--'}",
                           fontSize: 12,
                           textAlign: TextAlign.right,
                           color: CRMColors.black,
