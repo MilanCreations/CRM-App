@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print, file_names, depend_on_referenced_packages, prefer_interpolation_to_compose_strings
+// ignore_for_file: avoid_print, file_names, depend_on_referenced_packages, prefer_interpolation_to_compose_strings, constant_pattern_never_matches_value_type
 
 import 'dart:convert';
 import 'package:crm_milan_creations/API%20Services/BaseURL_&_EndPoints.dart';

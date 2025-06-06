@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use, unused_local_variable, unrelated_type_equality_checks
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -324,8 +326,7 @@ class _ViewEmployeeDetailsScreenState extends State<ViewEmployeeDetailsScreen> {
                                     'Document',
                                 doc['url'] ?? '',
                               ),
-                            )
-                            .toList(),
+                            ),
                       ]),
                     );
                   default:

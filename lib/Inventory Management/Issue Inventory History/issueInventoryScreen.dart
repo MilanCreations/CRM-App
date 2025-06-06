@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:crm_milan_creations/Inventory%20Management/Issue%20Inventory%20History/issueInventoryController.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';

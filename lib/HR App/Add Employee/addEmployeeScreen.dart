@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:crm_milan_creations/HR%20App/Add%20Employee/addEmployeeController.dart';
 import 'package:crm_milan_creations/HR%20App/Department%20List/departmentListController.dart';
 import 'package:crm_milan_creations/HR%20App/Department%20List/departmentListModel.dart';

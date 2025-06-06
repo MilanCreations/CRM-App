@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_typing_uninitialized_variables
+
 import 'dart:async';
 import 'package:crm_milan_creations/HR%20App/Employee%20Leave%20Request/Action%20on%20Leave%20status/leaveAcionController.dart';
 import 'package:crm_milan_creations/HR%20App/Employee%20Leave%20Request/empLeaveRequestController.dart';

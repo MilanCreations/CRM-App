@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:async';
 
 import 'package:crm_milan_creations/Employee/Get%20All%20Employees%20List/getAllEmployeeeListController.dart';
@@ -5,6 +7,7 @@ import 'package:crm_milan_creations/Employee/Get%20All%20Employees%20List/getAll
 import 'package:crm_milan_creations/Lead%20Management/All%20Lead%20list/allLeadListController.dart';
 import 'package:crm_milan_creations/Lead%20Management/Assign%20Lead%20to%20Employees/assignLeadController.dart';
 import 'package:crm_milan_creations/Lead%20Management/Get%20All%20Companies%20list/getAllCompaniesController.dart';
+import 'package:crm_milan_creations/Lead%20Management/Get%20Lead%20Details%20for%20update%20lead/getLeadDetailsScreen.dart';
 import 'package:crm_milan_creations/widgets/dropdown.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
@@ -60,6 +63,7 @@ class _AllLeadsScreenState extends State<AllLeadsScreen> {
         !allLeadListcontroller.isLoading.value &&
         allLeadListcontroller.hasMoreData.value) {
       allLeadListcontroller.allLeadListFunction(
+        loadMore: true, // This is the key change
         search: searchController.text.trim(),
         startDate: startDate,
         endDate: endDate,
@@ -90,10 +94,11 @@ class _AllLeadsScreenState extends State<AllLeadsScreen> {
     if (picked != null) {
       setState(() => endDate = picked);
       // Trigger API call with new date filter
-     _applyDateFilters();
+      _applyDateFilters();
     }
   }
-    void _applyDateFilters() {
+
+  void _applyDateFilters() {
     if (startDate != null && endDate != null) {
       // Only apply filters if both dates are selected
       allLeadListcontroller.allLeadListFunction(
@@ -107,7 +112,7 @@ class _AllLeadsScreenState extends State<AllLeadsScreen> {
   }
 
   // Add a clear filters button
-   Widget _buildDateFilterUI() {
+  Widget _buildDateFilterUI() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -118,7 +123,10 @@ class _AllLeadsScreenState extends State<AllLeadsScreen> {
                 child: GestureDetector(
                   onTap: _selectStartDate,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 14,
+                      horizontal: 12,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.grey.shade100,
                       borderRadius: BorderRadius.circular(12),
@@ -126,14 +134,21 @@ class _AllLeadsScreenState extends State<AllLeadsScreen> {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.calendar_today, size: 18, color: Colors.grey.shade600),
+                        Icon(
+                          Icons.calendar_today,
+                          size: 18,
+                          color: Colors.grey.shade600,
+                        ),
                         const SizedBox(width: 8),
                         Text(
-                          startDate != null 
+                          startDate != null
                               ? 'From: ${formatDate(startDate)}'
                               : 'Select Start Date',
                           style: TextStyle(
-                            color: startDate != null ? Colors.black : Colors.grey.shade600,
+                            color:
+                                startDate != null
+                                    ? Colors.black
+                                    : Colors.grey.shade600,
                           ),
                         ),
                       ],
@@ -146,7 +161,10 @@ class _AllLeadsScreenState extends State<AllLeadsScreen> {
                 child: GestureDetector(
                   onTap: _selectEndDate,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 14,
+                      horizontal: 12,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.grey.shade100,
                       borderRadius: BorderRadius.circular(12),
@@ -154,14 +172,21 @@ class _AllLeadsScreenState extends State<AllLeadsScreen> {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.calendar_today, size: 18, color: Colors.grey.shade600),
+                        Icon(
+                          Icons.calendar_today,
+                          size: 18,
+                          color: Colors.grey.shade600,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           endDate != null
                               ? 'To: ${formatDate(endDate)}'
                               : 'Select End Date',
                           style: TextStyle(
-                            color: endDate != null ? Colors.black : Colors.grey.shade600,
+                            color:
+                                endDate != null
+                                    ? Colors.black
+                                    : Colors.grey.shade600,
                           ),
                         ),
                       ],
@@ -196,14 +221,20 @@ class _AllLeadsScreenState extends State<AllLeadsScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.transparent,
                   shadowColor: Colors.transparent,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 child: const Text(
                   'Clear Date Filters',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
@@ -211,6 +242,7 @@ class _AllLeadsScreenState extends State<AllLeadsScreen> {
       ),
     );
   }
+
   String formatDate(DateTime? date) {
     if (date == null) return '';
     return DateFormat('yyyy-MM-dd').format(date);
@@ -292,7 +324,8 @@ class _AllLeadsScreenState extends State<AllLeadsScreen> {
           const SizedBox(height: 14),
 
           Obx(() {
-            if (allLeadListcontroller.isLoading.value) {
+            if (allLeadListcontroller.isLoading.value &&
+                allLeadListcontroller.alleadList.isEmpty) {
               return const Center(
                 child: CircularProgressIndicator(color: CRMColors.black),
               );
@@ -324,6 +357,7 @@ class _AllLeadsScreenState extends State<AllLeadsScreen> {
                 itemBuilder: (context, index) {
                   if (index < allLeadListcontroller.alleadList.length) {
                     final lead = allLeadListcontroller.alleadList[index];
+
                     return Card(
                       margin: const EdgeInsets.only(bottom: 12),
                       shape: RoundedRectangleBorder(
@@ -455,64 +489,125 @@ class _AllLeadsScreenState extends State<AllLeadsScreen> {
                             const SizedBox(height: 10),
 
                             // Purpose section
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Purpose:',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  lead.remark ?? 'No purpose provided',
-                                  style: TextStyle(color: Colors.grey[700]),
-                                  maxLines: 3,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
+                            // Column(
+                            //   crossAxisAlignment: CrossAxisAlignment.start,
+                            //   children: [
+                            //     Text(
+                            //       'Purpose:',
+                            //       style: TextStyle(fontWeight: FontWeight.bold),
+                            //     ),
+                            //     const SizedBox(height: 4),
+                            //     Text(
+                            //       lead.remark ?? 'No purpose provided',
+                            //       style: TextStyle(color: Colors.grey[700]),
+                            //       maxLines: 3,
+                            //       overflow: TextOverflow.ellipsis,
+                            //     ),
+                            //   ],
+                            // ),
                             const SizedBox(height: 12),
 
                             // Assign button
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: GestureDetector(
-                                onTap:
-                                    () => showAssignLeadDialog(
-                                      lead.id.toString(),
-                                    ),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 10,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        Color(0xFFEC32B1),
-                                        Color(0xFF0C46CC),
-                                      ], // Example gradient
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    ),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: const Text(
-                                    'Assign',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: SizedBox(
+                                    height: Get.height * 0.06,
+                                    child: GestureDetector(
+                                      onTap:
+                                          () => Get.to(
+                                            GetAndEditleadDetailsScreen(
+                                              leadId: lead.id.toString(),
+                                            ),
+                                          ),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 20,
+                                          vertical: 10,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              Color(0xFFEC32B1),
+                                              Color(0xFF0C46CC),
+                                            ], // Example gradient
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                        ),
+                                        alignment: Alignment.center,
+                                        child: const Text(
+                                          'Lead Detais',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
+
+                                const SizedBox(width: 12),
+
+                                Expanded(
+                                  child: SizedBox(
+                                    height: Get.height * 0.06,
+                                    child: GestureDetector(
+                                      onTap:
+                                          () => showAssignLeadDialog(
+                                            lead.id.toString(),
+                                          ),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 20,
+                                          vertical: 10,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              Color(0xFFEC32B1),
+                                              Color(0xFF0C46CC),
+                                            ], // Example gradient
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                        ),
+                                        alignment: Alignment.center,
+                                        child: const Text(
+                                          'Assign',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
                       ),
                     );
+                  } else {
+                    // Show loading indicator at the bottom when fetching more data
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: CRMColors.crmMainCOlor,
+                        ),
+                      ),
+                    );
                   }
-                  ;
                 },
               ),
             );
@@ -603,7 +698,7 @@ class _AllLeadsScreenState extends State<AllLeadsScreen> {
                                         (employee) =>
                                             DropdownMenuItem<Resultemp?>(
                                               value: employee,
-                                              child: Text(employee.name ?? ''),
+                                              child: Text(employee.name),
                                             ),
                                       )
                                       .toList(),
@@ -678,7 +773,6 @@ class _AllLeadsScreenState extends State<AllLeadsScreen> {
                                   leadid,
                                   selectedCompany!,
                                   employeeID!,
-                                  
                                 );
                                 print(
                                   "Assigning to: $assignEmployee, Company: $selectedCompany",

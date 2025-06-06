@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, unrelated_type_equality_checks
 
 import 'dart:convert';
 
@@ -44,7 +44,7 @@ class CheckClockInController extends GetxController {
 
    
     if(checkInTime.isNotEmpty){
-       print("Check in time in getlocaldata: ${checkpagestatus}");
+       print("Check in time in getlocaldata: $checkpagestatus");
       if (checkpagestatus == "login") {
          print("Login");
       checkClockInController();

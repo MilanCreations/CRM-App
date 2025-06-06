@@ -21,7 +21,7 @@ Future<void> leavehistorycontrollerFunction({String name = "", bool isNewSearch 
       leaveHistoryList.clear();
       currentPage.value = 1;
       hasMoreData.value = true;
-      searchQuery.value = name ?? '';
+      searchQuery.value = name;
     }
 
     

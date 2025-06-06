@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:crm_milan_creations/Auth/Login/loginScreen.dart';
@@ -510,11 +512,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     text: 'Inventory History',
                     onTap: () => Get.to(() => IssueInventoryHistoryScreen()),
                   ),
-                  buildMenuItem(
+                  userRole != "HR_MANAGER" && userRole != "EMPLOYEE"
+                  ?buildMenuItem(
                     icon: Icons.leak_add_sharp,
                     text: 'All Leads',
                     onTap: () => Get.to(() => AllLeadsScreen()),
-                  ),
+                  ): SizedBox(),
                   buildMenuItem(
                     icon: Icons.logout,
                     text: 'Logout',
@@ -549,7 +552,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
               );
-            } else if (element == "view-leads") {
+            } else if (element == "view-leads" || userRole == "HR_MANAGER" ) {
               return buildMenuItem(
                 icon: Icons.lan_outlined,
                 text: 'My Leads',
@@ -567,4 +570,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           }).toList(),
     );
   }
+
+
 }

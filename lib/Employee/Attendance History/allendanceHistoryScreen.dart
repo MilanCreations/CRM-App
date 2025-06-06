@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:async';
 
 import 'package:crm_milan_creations/Employee/Attendance%20History/attendanceHistoryController.dart';
@@ -7,7 +9,6 @@ import 'package:crm_milan_creations/widgets/appBar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HistoryScreen extends StatefulWidget {
@@ -325,12 +326,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Lottie.asset(
-                        'assets/emptyfile.json',
-                        height: 200,
-                        width: 200,
-                      ),
-                      const SizedBox(height: 16),
+                      // Lottie.asset(
+                      //   'assets/emptyfile.json',
+                      //   height: 200,
+                      //   width: 200,
+                      // ),
+                      // const SizedBox(height: 16),
                       CustomText(
                         text: "No Records Found",
                         fontSize: 18,

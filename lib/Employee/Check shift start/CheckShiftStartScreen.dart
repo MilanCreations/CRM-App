@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:crm_milan_creations/Employee/Check%20shift%20start/CheckShiftStartController.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/widgets/button.dart';

@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use, prefer_null_aware_operators
+
 import 'dart:async';
 
 import 'package:crm_milan_creations/HR%20App/HR%20Dashboard/HR%20Leads/hrLeadsController.dart';

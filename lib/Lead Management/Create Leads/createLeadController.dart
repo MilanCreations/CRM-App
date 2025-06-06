@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:crm_milan_creations/API%20Services/BaseURL_&_EndPoints.dart';
 import 'package:crm_milan_creations/Lead%20Management/Create%20Leads/createLeadModel.dart';
-import 'package:crm_milan_creations/Lead%20Management/My%20Leads%20List/myLeadListScreen.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
@@ -130,7 +129,7 @@ class CreateLeadcontroller extends GetxController {
         }
 
         // Handle successful login (statusCode 200)
-        var loginModel = createLeadModelFromJson(response.body);
+        // var loginModel = createLeadModelFromJson(response.body);
         // final prefs = await SharedPreferences.getInstance();
 
         isLoading.value = false;
