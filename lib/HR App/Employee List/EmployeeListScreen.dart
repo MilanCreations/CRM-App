@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Add%20Employee/addEmployeeScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Change%20Emp%20Status/ChangeEmpStatusController.dart';
 import 'package:crm_milan_creations/HR%20App/Employee%20List/EmployeeListController.dart';
@@ -5,6 +9,7 @@ import 'package:crm_milan_creations/HR%20App/view%20employees/viewEmployeeDetail
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
+import 'package:crm_milan_creations/widgets/connectivity_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,6 +34,9 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
 
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
+    NointernetScreen noInternetScreen = const NointernetScreen();
+  final ConnectivityService _connectivityService = ConnectivityService();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
   String searchQuery = "";
   String userRole = "";
 
@@ -38,6 +46,8 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
     getUserData();
     _scrollController.addListener(_onScroll);
     employeeListcontroller.employeeListFunction();
+    _checkInitialConnection();
+   _setupConnectivityListener();
   }
 
   void _onScroll() {
@@ -54,6 +64,7 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _searchController.dispose();
+     _connectivitySubscription.cancel();
     super.dispose();
   }
 
@@ -62,6 +73,24 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
     setState(() {
       userRole = prefs.getString("role_code") ?? "";
     });
+  }
+
+      Future<void> _checkInitialConnection() async {
+    if (!(await _connectivityService.isConnected())) {
+      _connectivityService.showNoInternetScreen();
+    }
+  }
+
+    void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
+      onConnected: () {
+        // Optional: You can automatically go back if connection is restored
+        // Get.back();
+      },
+      onDisconnected: () {
+        _connectivityService.showNoInternetScreen();
+      },
+    );
   }
 
   @override

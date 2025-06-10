@@ -2,11 +2,14 @@
 
 import 'dart:async';
 import 'dart:math';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:crm_milan_creations/Auth/Login/loginScreen.dart';
+import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
 import 'package:crm_milan_creations/Employee/Attendance%20History/attendanceHistoryController.dart';
 import 'package:crm_milan_creations/Employee/Attendance%20Management/AttendanceController.dart';
 import 'package:crm_milan_creations/Employee/Table%20Calender%20Dashboard/tableCalenderController.dart';
 import 'package:crm_milan_creations/Employee/check%20clockin%20status/check-In-StatusController.dart';
+import 'package:crm_milan_creations/widgets/connectivity_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -29,8 +32,16 @@ class Attendancescreen extends StatefulWidget {
 class _AttendancescreenState extends State<Attendancescreen> {
   late CheckClockInController checkClockInController;
   final Attendancecontroller controller = Get.put(Attendancecontroller());
-  final TableCalendarController tableController = Get.put(TableCalendarController());
-  final AttendanceHistoryController attendanceHistoryController = Get.put(AttendanceHistoryController());
+  final TableCalendarController tableController = Get.put(
+    TableCalendarController(),
+  );
+  final AttendanceHistoryController attendanceHistoryController = Get.put(
+    AttendanceHistoryController(),
+  );
+
+    NointernetScreen noInternetScreen = const NointernetScreen();
+  final ConnectivityService _connectivityService = ConnectivityService();
+   late final StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
   RxString totalHoursToday = '0h 00m'.obs;
   RxString totalWorkingHoursToday = '0h 00m'.obs;
@@ -47,7 +58,7 @@ class _AttendancescreenState extends State<Attendancescreen> {
     checkClockInController.getlocaldata();
     getUserData();
     attendanceHistoryController.AttendanceHistoryfunctions();
-
+    tableController.focusedDay.value;
     workingTimeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       try {
         if (checkClockInController.checkInTime.value.isNotEmpty) {
@@ -64,6 +75,8 @@ class _AttendancescreenState extends State<Attendancescreen> {
         timer.cancel();
         debugPrint("Timer error: $e");
       }
+       _checkInitialConnection();
+   _setupConnectivityListener();
     });
     super.initState();
   }
@@ -72,7 +85,27 @@ class _AttendancescreenState extends State<Attendancescreen> {
   void dispose() {
     workingTimeTimer?.cancel();
     controller.mapController?.dispose();
+    _connectivitySubscription.cancel();
     super.dispose();
+  }
+
+
+      Future<void> _checkInitialConnection() async {
+    if (!(await _connectivityService.isConnected())) {
+      _connectivityService.showNoInternetScreen();
+    }
+  }
+
+    void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
+      onConnected: () {
+        // Optional: You can automatically go back if connection is restored
+        // Get.back();
+      },
+      onDisconnected: () {
+        _connectivityService.showNoInternetScreen();
+      },
+    );
   }
 
   Future<void> getUserData() async {
@@ -83,7 +116,6 @@ class _AttendancescreenState extends State<Attendancescreen> {
     });
   }
 
- 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -116,7 +148,7 @@ class _AttendancescreenState extends State<Attendancescreen> {
         ),
         actions: [
           Row(
-            children: [             
+            children: [
               Obx(() {
                 final picture = checkClockInController.pictureuser.value;
                 final pickedImage = controller.image.value;
@@ -181,7 +213,7 @@ class _AttendancescreenState extends State<Attendancescreen> {
                   ),
                 );
               }),
-               IconButton(
+              IconButton(
                 iconSize: 30,
                 onPressed: () => showLogoutDialog(),
                 icon: Icon(Icons.logout_rounded, color: CRMColors.whiteColor),
@@ -318,95 +350,93 @@ class _AttendancescreenState extends State<Attendancescreen> {
                     ],
                   ),
 
-                  SingleChildScrollView(
-                    child: Obx(
-                      () => TableCalendar(
-                        firstDay: DateTime.utc(2020, 1, 1),
-                        lastDay: DateTime.utc(2030, 12, 31),
-                    
-                        focusedDay: tableController.focusedDay.value,
-                        selectedDayPredicate:
-                            (day) =>
-                                isSameDay(tableController.selectedDay.value, day),
-                        onDaySelected: tableController.onDaySelected,
-                        calendarStyle: CalendarStyle(
-                          selectedDecoration: BoxDecoration(
-                            color: Colors.blue,
-                            shape: BoxShape.circle,
-                          ),
-                          todayDecoration: BoxDecoration(
-                            color: Colors.grey.shade300,
-                            shape: BoxShape.circle,
-                          ),
-                          defaultTextStyle: const TextStyle(color: Colors.red),
-                          selectedTextStyle: TextStyle(color: Colors.white),
-                          weekendTextStyle: const TextStyle(color: Colors.red),
+                  Obx(
+                    () => TableCalendar(
+                      
+                      firstDay: DateTime.utc(2020, 1, 1),
+                      lastDay: DateTime.utc(2030, 12, 31),
+                      calendarFormat: CalendarFormat.values[0],
+                      focusedDay: tableController.focusedDay.value,
+                      selectedDayPredicate:
+                          (day) =>
+                              isSameDay(tableController.selectedDay.value, day),
+                      onDaySelected: tableController.onDaySelected,
+                      calendarStyle: CalendarStyle(
+                        selectedDecoration: BoxDecoration(
+                          color: Colors.blue,
+                          shape: BoxShape.circle,
                         ),
-                        availableGestures: AvailableGestures.none,
-                        calendarBuilders: CalendarBuilders(
-                          defaultBuilder: (context, day, focusedDay) {
-                            final isSunday = day.weekday == DateTime.sunday;
-                            if (isSunday) {
-                              return Center(
-                                child: Text(
-                                  '${day.day}',
-                                  style: const TextStyle(
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              );
-                            }
-                    
-                            final status = tableController.getStatus(day);
-                    
-                            Color dotColor;
-                            switch (status) {
-                              case 'approved':
-                                dotColor = Colors.green;
-                                break;
-                              case 'pending':
-                                dotColor = Colors.orange;
-                                break;
-                              case 'rejected':
-                                dotColor = Colors.orange;
-                                break;
-                              default:
-                                dotColor = Colors.transparent;
-                            }
-                    
+                        todayDecoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          shape: BoxShape.circle,
+                        ),
+                        defaultTextStyle: const TextStyle(color: Colors.red),
+                        selectedTextStyle: TextStyle(color: Colors.white),
+                        weekendTextStyle: const TextStyle(color: Colors.red),
+                      ),
+                      availableGestures: AvailableGestures.none,
+                      calendarBuilders: CalendarBuilders(
+                        defaultBuilder: (context, day, focusedDay) {
+                          final isSunday = day.weekday == DateTime.sunday;
+                          if (isSunday) {
                             return Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Container(
-                                    width: 40,
-                                    height: 28,
-                                    decoration: BoxDecoration(
-                                      color: dotColor,
-                                      borderRadius: BorderRadius.circular(20),
-                                      // pill shape
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        '${day.day}',
-                                        style: const TextStyle(
-                                          color: Colors.black,
-                                        ),
+                              child: Text(
+                                '${day.day}',
+                                style: const TextStyle(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            );
+                          }
+
+                          final status = tableController.getStatus(day);
+
+                          Color dotColor;
+                          switch (status) {
+                            case 'approved':
+                              dotColor = Colors.green;
+                              break;
+                            case 'pending':
+                              dotColor = Colors.orange;
+                              break;
+                            case 'rejected':
+                              dotColor = Colors.red;
+                              break;
+                            default:
+                              dotColor = Colors.transparent;
+                          }
+
+                          return Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 40,
+                                  height: 28,
+                                  decoration: BoxDecoration(
+                                    color: dotColor,
+                                    borderRadius: BorderRadius.circular(20),
+                                    // pill shape
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      '${day.day}',
+                                      style: const TextStyle(
+                                        color: Colors.black,
                                       ),
                                     ),
                                   ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ),
 
                   const SizedBox(height: 20),
-                  
                 ],
               ),
             ),
@@ -935,7 +965,7 @@ class _AttendancescreenState extends State<Attendancescreen> {
     calculateTotalHoursToday(); // Calculate final hours when clocking out
   }
 
- void showLogoutDialog() {
+  void showLogoutDialog() {
     showDialog(
       context: context,
       builder:
@@ -1068,8 +1098,6 @@ class _AttendancescreenState extends State<Attendancescreen> {
           ),
     );
   }
-
-
 }
 
 // bell_curve_painter.dart

@@ -2,10 +2,13 @@
 
 import 'dart:async';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
 import 'package:crm_milan_creations/Employee/Attendance%20History/attendanceHistoryController.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
+import 'package:crm_milan_creations/widgets/connectivity_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -24,6 +27,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
   );
   TextEditingController searchController = TextEditingController();
   late final ScrollController _scrollController;
+    NointernetScreen noInternetScreen = const NointernetScreen();
+  final ConnectivityService _connectivityService = ConnectivityService();
+  late final StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
   Timer? _debounce;
   String userRole = "";
   RxBool isSearching = false.obs;
@@ -32,11 +38,32 @@ class _HistoryScreenState extends State<HistoryScreen> {
   void initState() {
     super.initState();
     getUserData();
+       _checkInitialConnection();
+   _setupConnectivityListener();
     _scrollController = ScrollController()..addListener(_onScroll);
     attendanceHistoryController.AllEmployeesAttendanceHistoryfunctions(
       isRefresh: true,
     );
   }
+
+    Future<void> _checkInitialConnection() async {
+    if (!(await _connectivityService.isConnected())) {
+      _connectivityService.showNoInternetScreen();
+    }
+  }
+
+    void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
+      onConnected: () {
+        // Optional: You can automatically go back if connection is restored
+        // Get.back();
+      },
+      onDisconnected: () {
+        _connectivityService.showNoInternetScreen();
+      },
+    );
+  }
+
 
   void _onScroll() {
     if (_scrollController.position.pixels >=
@@ -58,6 +85,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   void dispose() {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
+     _connectivitySubscription.cancel();
     super.dispose();
   }
 
@@ -144,6 +172,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
     return Scaffold(
       appBar: CustomAppBar(
+        showBackArrow: false,
+        leadingIcon:   Icons.arrow_back_ios_new,
+          // color: CRMColors.whiteColor,
         gradient: const LinearGradient(
           colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
           begin: Alignment.topLeft,

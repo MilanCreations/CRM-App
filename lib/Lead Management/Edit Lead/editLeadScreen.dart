@@ -1,6 +1,11 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
+import 'package:crm_milan_creations/widgets/connectivity_service.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -14,6 +19,9 @@ class EditleadScreen extends StatefulWidget {
 
 class _EditleadScreenState extends State<EditleadScreen> {
   final _formKey = GlobalKey<FormState>();
+    NointernetScreen noInternetScreen = const NointernetScreen();
+  final ConnectivityService _connectivityService = ConnectivityService();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
   late TextEditingController _nameController;
   late TextEditingController _phoneController;
   late TextEditingController _emailController;
@@ -21,9 +29,9 @@ class _EditleadScreenState extends State<EditleadScreen> {
   late TextEditingController _remarkController;
   late TextEditingController _visitTimeController;
   
-  String _selectedBranch = 'Main Branch';
-  String _selectedSource = 'Website';
-  String _selectedQueryType = 'Product Inquiry';
+  // String _selectedBranch = 'Main Branch';
+  // String _selectedSource = 'Website';
+  // String _selectedQueryType = 'Product Inquiry';
   bool _phoneVerified = false;
 
   // final List<String> _branches = ['Main Branch', 'North Branch', 'South Branch', 'East Branch'];
@@ -41,6 +49,8 @@ class _EditleadScreenState extends State<EditleadScreen> {
     _remarkController = TextEditingController(text: 'Interested in premium package');
     _visitTimeController = TextEditingController(text: DateFormat('dd MMM yyyy, hh:mm a').format(DateTime.now()));
     _phoneVerified = true;
+       _checkInitialConnection();
+   _setupConnectivityListener();
   }
 
   @override
@@ -51,7 +61,26 @@ class _EditleadScreenState extends State<EditleadScreen> {
     _addressController.dispose();
     _remarkController.dispose();
     _visitTimeController.dispose();
+    _connectivitySubscription.cancel();
     super.dispose();
+  }
+
+      Future<void> _checkInitialConnection() async {
+    if (!(await _connectivityService.isConnected())) {
+      _connectivityService.showNoInternetScreen();
+    }
+  }
+
+    void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
+      onConnected: () {
+        // Optional: You can automatically go back if connection is restored
+        // Get.back();
+      },
+      onDisconnected: () {
+        _connectivityService.showNoInternetScreen();
+      },
+    );
   }
 
   Future<void> _selectVisitTime(BuildContext context) async {

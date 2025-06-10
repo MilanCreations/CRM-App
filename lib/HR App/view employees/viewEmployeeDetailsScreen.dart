@@ -1,11 +1,15 @@
 // ignore_for_file: deprecated_member_use, unused_local_variable, unrelated_type_equality_checks
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Add%20Employee/addEmployeeScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Edit%20Employee%20Details/GetEmployeeDetailsScreen.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
+import 'package:crm_milan_creations/widgets/connectivity_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:get/get.dart';
@@ -30,6 +34,9 @@ class ViewEmployeeDetailsScreen extends StatefulWidget {
 
 class _ViewEmployeeDetailsScreenState extends State<ViewEmployeeDetailsScreen> {
   late final ViewEmployeecontroller controller;
+    NointernetScreen noInternetScreen = const NointernetScreen();
+  final ConnectivityService _connectivityService = ConnectivityService();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
   String userRole = "";
   // String profilePicPath = "";
 
@@ -39,6 +46,32 @@ class _ViewEmployeeDetailsScreenState extends State<ViewEmployeeDetailsScreen> {
     getUserData();
     controller = Get.put(ViewEmployeecontroller());
     controller.employeeDetailsFunction(widget.employeeId);
+       _checkInitialConnection();
+   _setupConnectivityListener();
+  }
+
+    @override
+  void dispose() {
+   _connectivitySubscription.cancel();
+    super.dispose();
+  }
+
+      Future<void> _checkInitialConnection() async {
+    if (!(await _connectivityService.isConnected())) {
+      _connectivityService.showNoInternetScreen();
+    }
+  }
+
+    void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
+      onConnected: () {
+        // Optional: You can automatically go back if connection is restored
+        // Get.back();
+      },
+      onDisconnected: () {
+        _connectivityService.showNoInternetScreen();
+      },
+    );
   }
 
   Future<void> getUserData() async {

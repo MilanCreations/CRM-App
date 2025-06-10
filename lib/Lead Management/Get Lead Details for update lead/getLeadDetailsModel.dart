@@ -45,6 +45,7 @@ class Data {
     String queryType;
     dynamic conversionTypeId;
     int leadCreator;
+    String leadCreatorName;
 
     Data({
         required this.id,
@@ -63,6 +64,7 @@ class Data {
         required this.queryType,
         required this.conversionTypeId,
         required this.leadCreator,
+        required this.leadCreatorName,
     });
 
     factory Data.fromJson(Map<String, dynamic> json) => Data(
@@ -82,6 +84,7 @@ class Data {
         queryType: json["query_type"],
         conversionTypeId: json["conversion_type_id"],
         leadCreator: json["lead_creator"],
+        leadCreatorName: json["lead_creator_name"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -101,5 +104,6 @@ class Data {
         "query_type": queryType,
         "conversion_type_id": conversionTypeId,
         "lead_creator": leadCreator,
+        "lead_creator_name": leadCreatorName,
     };
 }

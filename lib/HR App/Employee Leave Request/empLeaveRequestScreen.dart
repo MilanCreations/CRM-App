@@ -1,11 +1,14 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 
 import 'dart:async';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Employee%20Leave%20Request/Action%20on%20Leave%20status/leaveAcionController.dart';
 import 'package:crm_milan_creations/HR%20App/Employee%20Leave%20Request/empLeaveRequestController.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
+import 'package:crm_milan_creations/widgets/connectivity_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -22,6 +25,9 @@ class _EmpLeaveRequestScreenState extends State<EmpLeaveRequestScreen> {
   late ScrollController scrollController;
   final GetAllEmployeeLeaveController controller = Get.put(GetAllEmployeeLeaveController());
   final LeaveActionController leaveActionController = Get.put(LeaveActionController());
+  NointernetScreen noInternetScreen = const NointernetScreen();
+  final ConnectivityService _connectivityService = ConnectivityService();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
   var isSearching = false.obs;
   var debounceTimer;
 
@@ -30,6 +36,8 @@ class _EmpLeaveRequestScreenState extends State<EmpLeaveRequestScreen> {
     super.initState();
     scrollController = ScrollController();
     controller.getAllEmployeeLeaveFunction();
+     _checkInitialConnection();
+   _setupConnectivityListener();
 
     scrollController.addListener(() {
       if (scrollController.position.pixels == scrollController.position.maxScrollExtent &&
@@ -44,11 +52,30 @@ class _EmpLeaveRequestScreenState extends State<EmpLeaveRequestScreen> {
     });
   }
 
+      Future<void> _checkInitialConnection() async {
+    if (!(await _connectivityService.isConnected())) {
+      _connectivityService.showNoInternetScreen();
+    }
+  }
+
+    void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
+      onConnected: () {
+        // Optional: You can automatically go back if connection is restored
+        // Get.back();
+      },
+      onDisconnected: () {
+        _connectivityService.showNoInternetScreen();
+      },
+    );
+  }
+
   @override
   void dispose() {
     scrollController.dispose();
     searchController.dispose();
     debounceTimer?.cancel();
+    _connectivitySubscription.cancel();
     super.dispose();
   }
 

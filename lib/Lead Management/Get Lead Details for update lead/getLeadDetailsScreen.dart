@@ -1,8 +1,12 @@
-import 'package:crm_milan_creations/Lead%20Management/Edit%20Lead/editLeadScreen.dart';
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
 import 'package:crm_milan_creations/Lead%20Management/Get%20Lead%20Details%20for%20update%20lead/getLeadDetailsController.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
+import 'package:crm_milan_creations/widgets/connectivity_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -17,16 +21,46 @@ class GetAndEditleadDetailsScreen extends StatefulWidget {
 
 class _GetAndEditleadDetailsScreenState extends State<GetAndEditleadDetailsScreen> {
   final GetLeadDetails getLeadDetailsController = Get.put(GetLeadDetails());
+    NointernetScreen noInternetScreen = const NointernetScreen();
+  final ConnectivityService _connectivityService = ConnectivityService();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
   @override
   void initState() {
     super.initState();
+       _checkInitialConnection();
+   _setupConnectivityListener();
     getLeadDetailsController.fetchLeadDetails(widget.leadId!);
+  }
+
+    @override
+  void dispose() {
+   _connectivitySubscription.cancel();
+    super.dispose();
+  }
+
+    Future<void> _checkInitialConnection() async {
+    if (!(await _connectivityService.isConnected())) {
+      _connectivityService.showNoInternetScreen();
+    }
+  }
+
+    void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
+      onConnected: () {
+        // Optional: You can automatically go back if connection is restored
+        // Get.back();
+      },
+      onDisconnected: () {
+        _connectivityService.showNoInternetScreen();
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: CustomAppBar(
         showBackArrow: true,
         leadingIcon: Icons.arrow_back_ios_new_sharp,
@@ -42,21 +76,14 @@ class _GetAndEditleadDetailsScreenState extends State<GetAndEditleadDetailsScree
           color: CRMColors.whiteColor,
         ),
         backgroundColor: CRMColors.crmMainCOlor,
-        // actions: [
-        //   IconButton(
-        //     icon: Icon(Icons.edit, color: Colors.white),
-        //     onPressed: () {
-        //       // Add edit functionality
-        //       Get.to(EditleadScreen(
-        //         leadId: widget.leadId,
-        //       ));
-        //     },
-        //   ),
-        // ],
       ),
       body: Obx(() {
         if (getLeadDetailsController.isLoading.value) {
-          return Center(child: CircularProgressIndicator());
+          return Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(CRMColors.crmMainCOlor),
+            ),
+          );
         }
         
         return SingleChildScrollView(
@@ -67,8 +94,6 @@ class _GetAndEditleadDetailsScreenState extends State<GetAndEditleadDetailsScree
               _buildHeaderSection(),
               SizedBox(height: 24),
               _buildInfoCard(),
-              SizedBox(height: 16),
-              // _buildVerificationBadge(),
               SizedBox(height: 24),
               _buildDetailsSection(),
             ],
@@ -81,80 +106,83 @@ class _GetAndEditleadDetailsScreenState extends State<GetAndEditleadDetailsScree
   Widget _buildHeaderSection() {
     return Column(
       children: [
-        CircleAvatar(
-          radius: 40,
-          backgroundColor: Colors.blue.shade50,
-          child: Icon(Icons.person, size: 40, color: Colors.blue.shade700),
+        Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.blue.withOpacity(0.2),
+                blurRadius: 10,
+                spreadRadius: 2,
+              )
+            ],
+          ),
+          child: CircleAvatar(
+            radius: 50,
+            backgroundColor: Colors.blue.shade50,
+            child: Icon(Icons.person, size: 50, color: CRMColors.crmMainCOlor),
+          ),
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 16),
         Text(
-          getLeadDetailsController.name.value,
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          getLeadDetailsController.name.value.isNotEmpty
+              ? getLeadDetailsController.name.value
+              : "No Name",
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey[800],
+          ),
         ),
-        // SizedBox(height: 4),
-        // Text(
-        //   getLeadDetailsController.queryType.value,
-        //   style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
-        // ),
+        SizedBox(height: 4),
+        if (getLeadDetailsController.phoneVerified.value == true)
+          Container(
+            margin: EdgeInsets.only(top: 8),
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.green.shade50,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.verified, size: 16, color: Colors.green),
+                SizedBox(width: 4),
+                Text(
+                  'Verified',
+                  style: TextStyle(
+                    color: Colors.green,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
       ],
     );
   }
 
   Widget _buildInfoCard() {
     return Card(
-      elevation: 2,
+      elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
       ),
+      color: Colors.white,
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.all(20),
         child: Column(
           children: [
             _buildInfoRow(Icons.phone, 'Phone', getLeadDetailsController.phone.value),
-            Divider(height: 24, thickness: 0.5),
+            Divider(height: 24, thickness: 0.5, color: Colors.grey[200]),
             if (getLeadDetailsController.email.value.isNotEmpty)
               _buildInfoRow(Icons.email, 'Email', getLeadDetailsController.email.value),
             if (getLeadDetailsController.email.value.isNotEmpty)
-              Divider(height: 24, thickness: 0.5),
+              Divider(height: 24, thickness: 0.5, color: Colors.grey[200]),
             _buildInfoRow(Icons.location_on, 'Address', getLeadDetailsController.address.value),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildVerificationBadge() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: (getLeadDetailsController.phoneVerified.value == true)
-            ? Colors.green.shade50 
-            : Colors.orange.shade50,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            (getLeadDetailsController.phoneVerified.value == true)
-                ? Icons.verified 
-                : Icons.warning_amber,
-            color: (getLeadDetailsController.phoneVerified.value == true)
-                ? Colors.green 
-                : Colors.orange,
-            size: 18,
-          ),
-          SizedBox(width: 8),
-          Text(
-            'Phone ${(getLeadDetailsController.phoneVerified.value == true) ? "Verified" : "Not Verified"}',
-            style: TextStyle(
-              color: (getLeadDetailsController.phoneVerified.value == true)
-                  ? Colors.green 
-                  : Colors.orange,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -163,20 +191,44 @@ class _GetAndEditleadDetailsScreenState extends State<GetAndEditleadDetailsScree
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Lead Details',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey.shade800,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Text(
+            'LEAD INFORMATION',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[500],
+              letterSpacing: 0.5,
+            ),
           ),
         ),
-        SizedBox(height: 16),
-        _buildDetailItem('Visit Time', formatDate(getLeadDetailsController.visitTime.value)),
-        _buildDetailItem('Source', getLeadDetailsController.source.value),
-        _buildDetailItem('Branch', getLeadDetailsController.branchName.value),
-        _buildDetailItem('Purpose', getLeadDetailsController.remark.value),
-        _buildDetailItem('Query type', getLeadDetailsController.queryType.value,),
+        SizedBox(height: 12),
+        Card(
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          color: Colors.white,
+          child: Padding(
+            padding: EdgeInsets.all(20),
+            child: Column(
+              children: [
+                _buildDetailItem('Lead Creator', formatDate(getLeadDetailsController.leadCreator.value)),
+                SizedBox(height: 16),
+                _buildDetailItem('Visit Time', formatDate(getLeadDetailsController.visitTime.value)),
+                SizedBox(height: 16),
+                _buildDetailItem('Source', getLeadDetailsController.source.value),
+                SizedBox(height: 16),
+                _buildDetailItem('Branch', getLeadDetailsController.branchName.value),
+                SizedBox(height: 16),
+                _buildDetailItem('Purpose', getLeadDetailsController.remark.value),
+                SizedBox(height: 16),
+                _buildDetailItem('Query type', getLeadDetailsController.queryType.value),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -185,8 +237,16 @@ class _GetAndEditleadDetailsScreenState extends State<GetAndEditleadDetailsScree
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 20, color: Colors.blue.shade700),
-        SizedBox(width: 12),
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: CRMColors.crmMainCOlor.withOpacity(0.1),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, size: 20, color: CRMColors.crmMainCOlor),
+        ),
+        SizedBox(width: 16),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -195,15 +255,17 @@ class _GetAndEditleadDetailsScreenState extends State<GetAndEditleadDetailsScree
                 label,
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey.shade600,
+                  color: Colors.grey[600],
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               SizedBox(height: 4),
               Text(
-                value,
+                value.isNotEmpty ? value : 'Not provided',
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[800],
                 ),
               ),
             ],
@@ -214,28 +276,32 @@ class _GetAndEditleadDetailsScreenState extends State<GetAndEditleadDetailsScree
   }
 
   Widget _buildDetailItem(String label, String value) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          flex: 2,
+          child: Text(
             label,
             style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey.shade600,
-            ),
-          ),
-          SizedBox(height: 4),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 16,
+              fontSize: 14,
+              color: Colors.grey[600],
               fontWeight: FontWeight.w500,
             ),
           ),
-        ],
-      ),
+        ),
+        Expanded(
+          flex: 3,
+          child: Text(
+            value.isNotEmpty ? value : 'Not provided',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[800],
+            ),
+          ),
+        ),
+      ],
     );
   }
 

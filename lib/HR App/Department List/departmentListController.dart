@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 
 class DepartmentlistController extends GetxController {
   var isLoading = false.obs;
+  var designmation = "".obs;
  RxList<Department> departmentList = <Department>[].obs;
 
  var selectedDepartment = Rx<Department?>(null);
@@ -20,6 +21,8 @@ class DepartmentlistController extends GetxController {
       isLoading.value = true;
       final prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
+      String? designmation = prefs.getString('designation');
+      print('Designation in Department List: $designmation');
 
       if (token == null) {
         isLoading.value = false;
@@ -48,6 +51,16 @@ class DepartmentlistController extends GetxController {
       if (response.statusCode == 200) {
         var attendanceHistoryModel = departmentModelFromJson(response.body);
         departmentList.assignAll(attendanceHistoryModel.data.departments);
+
+        for (var department in departmentList) {
+          print("Department Name: ${department.name}");
+          if(department.name == designmation) {
+            selectedDepartment.value = department;
+            print("Selected Department: ${selectedDepartment.value?.name}");
+          }
+        }
+
+
         update();
       } else if (response.statusCode == 400) {
         Get.snackbar(

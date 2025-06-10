@@ -1,8 +1,12 @@
 // ignore_for_file: deprecated_member_use
 
+import 'dart:async';
 import 'dart:io';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
 import 'package:crm_milan_creations/widgets/button.dart';
+import 'package:crm_milan_creations/widgets/connectivity_service.dart';
 import 'package:fade_shimmer/fade_shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -49,6 +53,9 @@ class _IssueInventoryScreenState extends State<IssueInventoryScreen> {
   final TextEditingController ssdController = TextEditingController();
   final TextEditingController ramController = TextEditingController();
   final TextEditingController processorController = TextEditingController();
+    NointernetScreen noInternetScreen = const NointernetScreen();
+  final ConnectivityService _connectivityService = ConnectivityService();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
   // List to store accessories
   List<String> accessories = [];
   File? _selectedImage;
@@ -62,7 +69,34 @@ class _IssueInventoryScreenState extends State<IssueInventoryScreen> {
   void initState() {
     super.initState();
     getallemployeelistcontroller.getAllEmployeeListFunction();
+       _checkInitialConnection();
+   _setupConnectivityListener();
   }
+
+   @override
+  void dispose() {
+   _connectivitySubscription.cancel();
+    super.dispose();
+  }
+
+    Future<void> _checkInitialConnection() async {
+    if (!(await _connectivityService.isConnected())) {
+      _connectivityService.showNoInternetScreen();
+    }
+  }
+
+    void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
+      onConnected: () {
+        // Optional: You can automatically go back if connection is restored
+        // Get.back();
+      },
+      onDisconnected: () {
+        _connectivityService.showNoInternetScreen();
+      },
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +122,11 @@ class _IssueInventoryScreenState extends State<IssueInventoryScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CustomText(text: 'Select Date',color: CRMColors.darkGrey,fontSize: 15),
+            CustomText(
+              text: 'Select Date',
+              color: CRMColors.darkGrey,
+              fontSize: 15,
+            ),
             GestureDetector(
               onTap: _selectDateTime,
               child: AbsorbPointer(
@@ -102,7 +140,12 @@ class _IssueInventoryScreenState extends State<IssueInventoryScreen> {
               ),
             ),
             const SizedBox(height: 12),
-CustomText(text: 'Select Employee',color: CRMColors.darkGrey,fontSize: 15),
+            CustomText(
+              text: 'Select Employee',
+              color: CRMColors.darkGrey,
+              fontSize: 15,
+            ),
+
             /// Employee Dropdown
             Obx(() {
               if (getallemployeelistcontroller.isLoading.value) {
@@ -196,7 +239,12 @@ CustomText(text: 'Select Employee',color: CRMColors.darkGrey,fontSize: 15),
             }),
 
             const SizedBox(height: 12),
-          CustomText(text: 'Issued By',color: CRMColors.darkGrey,fontSize: 15),
+            CustomText(
+              text: 'Issued By',
+              color: CRMColors.darkGrey,
+              fontSize: 15,
+            ),
+
             /// Issued By
             CustomTextFormField(
               borderColor: CRMColors.grey,

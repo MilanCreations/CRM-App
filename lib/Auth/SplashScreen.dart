@@ -1,6 +1,6 @@
 import 'package:crm_milan_creations/Auth/Login/loginScreen.dart';
-import 'package:crm_milan_creations/Employee/User%20Role%20Bottom%20Bar/EmployeeBottomNavBar.dart';
 import 'package:crm_milan_creations/Employee/User%20Role%20Bottom%20Bar/CompanyAdminBottomBar.dart';
+import 'package:crm_milan_creations/Employee/User%20Role%20Bottom%20Bar/EmployeeBottomNavBar.dart';
 import 'package:crm_milan_creations/Employee/check%20clockin%20status/check-In-StatusController.dart';
 import 'package:crm_milan_creations/Employee/User%20Role%20Bottom%20Bar/HRbottomNavBar.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +51,7 @@ class _SplashscreenState extends State<Splashscreen> {
       case "HR_MANAGER":
         Get.off(() => HRBottomNavBar(checkpagestatuss: "splash"));
         break;
-      case "COMPANY_ADMIN":
+      case "SUPER_ADMIN":
         Get.off(() => SuperAdminBottomNavBar(checkpagestatuss: "splash"));
         break;
       case "Manager":

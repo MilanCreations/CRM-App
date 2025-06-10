@@ -24,6 +24,7 @@ class AssignLeadController extends GetxController {
       isLoading.value = true;
       final prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
+      String? companyid = prefs.getString('company_id');
 
       print("Retrieved token: $token");
 
@@ -37,7 +38,7 @@ class AssignLeadController extends GetxController {
 
            Map<String, String> newData = {
           "lead_id": leadId.toString(),
-          "company_id": "4",
+          "company_id": companyid.toString(),
           "employee_id": employeeId.toString(),
          
         };

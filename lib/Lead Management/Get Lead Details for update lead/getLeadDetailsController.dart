@@ -41,7 +41,7 @@ class GetLeadDetails extends GetxController {
       print("URL for fetching lead details: $url");
 
       final response = await http.get(url, headers: {"Authorization": "Bearer $token"});
-      print("Response status code: ${response.statusCode}");
+      print("Response status code in lead details: ${response.statusCode}");
       print("Response body of get lead detaisl with ID: ${response.body}");
 
       if(response.statusCode == 200) {
@@ -66,7 +66,7 @@ class GetLeadDetails extends GetxController {
         source.value = leadDetails.data.source;
         queryType.value = leadDetails.data.queryType;
         conversionTypeId.value = leadDetails.data.conversionTypeId.toString();
-        leadCreator.value = leadDetails.data.leadCreator.toString();
+        leadCreator.value = leadDetails.data.leadCreatorName.toString();
         print("Lead details updated successfully");
         isLoading.value = false;
       } else if (response.statusCode == 400) {

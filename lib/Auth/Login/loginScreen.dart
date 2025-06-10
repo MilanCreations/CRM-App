@@ -1,9 +1,14 @@
 // ignore_for_file: deprecated_member_use
 
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:crm_milan_creations/Auth/Login/loginController.dart';
+import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/button.dart';
+import 'package:crm_milan_creations/widgets/connectivity_service.dart';
 import 'package:crm_milan_creations/widgets/loader.dart';
 import 'package:crm_milan_creations/widgets/textfiled.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +24,41 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final LoginController objLoginController = Get.put(LoginController());
   bool _obscurePassword = true;
+  NointernetScreen noInternetScreen = const NointernetScreen();
+  final ConnectivityService _connectivityService = ConnectivityService();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+
+  @override
+  void initState() {
+    super.initState();
+
+   _checkInitialConnection();
+   _setupConnectivityListener();
+  }
+
+  @override
+  void dispose() {
+   _connectivitySubscription.cancel();
+    super.dispose();
+  }
+
+    Future<void> _checkInitialConnection() async {
+    if (!(await _connectivityService.isConnected())) {
+      _connectivityService.showNoInternetScreen();
+    }
+  }
+
+    void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
+      onConnected: () {
+        // Optional: You can automatically go back if connection is restored
+        // Get.back();
+      },
+      onDisconnected: () {
+        _connectivityService.showNoInternetScreen();
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +80,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0,vertical: 30.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10.0,
+                vertical: 30.0,
+              ),
               child: Center(
                 child: Column(
                   children: [
@@ -57,7 +100,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.white.withOpacity(0.2)),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.2),
+                        ),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.15),
@@ -73,7 +118,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             label: 'Email',
                             showLabel: false,
                             controller: objLoginController.emailController,
-                            prefixIcon: const Icon(Icons.email_outlined, color: Colors.white),
+                            prefixIcon: const Icon(
+                              Icons.email_outlined,
+                              color: Colors.white,
+                            ),
                             borderColor: Colors.transparent,
                             width: double.infinity,
                             backgroundColor: Colors.white.withOpacity(0.15),
@@ -88,7 +136,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             label: 'Password',
                             showLabel: false,
                             controller: objLoginController.passwordController,
-                            prefixIcon: const Icon(Icons.lock_outline, color: Colors.white),
+                            prefixIcon: const Icon(
+                              Icons.lock_outline,
+                              color: Colors.white,
+                            ),
                             obscureText: _obscurePassword,
                             borderColor: Colors.transparent,
                             backgroundColor: Colors.white.withOpacity(0.15),
@@ -100,46 +151,21 @@ class _LoginScreenState extends State<LoginScreen> {
                                 });
                               },
                               icon: Icon(
-                                _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                _obscurePassword
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
                                 color: Colors.white70,
                               ),
                             ),
                           ),
-
-                         
 
                           const SizedBox(height: 30),
 
                           // 🚪 Sign In Button
                           CustomButton(
                             text: 'Sign In',
-                            onPressed: () {
-                              String email = objLoginController.emailController.text;
-                              String password = objLoginController.passwordController.text;
-
-                              if (email.isEmpty) {
-                                Get.snackbar("Message", "Please enter your email",
-                                  backgroundColor: CRMColors.error,
-                                  colorText: CRMColors.whiteColor,
-                                );
-                              } else if (password.isEmpty) {
-                                Get.snackbar("Message", "Please enter your password",
-                                  backgroundColor: CRMColors.error,
-                                  colorText: CRMColors.whiteColor,
-                                );
-                              } else {
-                                final emailRegex = RegExp(
-                                    r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
-                                if (!emailRegex.hasMatch(email)) {
-                                  Get.snackbar("Invalid Email", "Please enter a valid email address",
-                                    backgroundColor: CRMColors.error,
-                                    colorText: CRMColors.whiteColor,
-                                  );
-                                } else {
-                                  objLoginController.loginAPI();
-                                }
-                              }
-                            },
+                            onPressed: _handleLogin,
+                            
                             textStyle: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -155,7 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               end: Alignment.bottomRight,
                             ),
                           ),
-                           const SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           Align(
                             alignment: Alignment.center,
                             child: GestureDetector(
@@ -188,96 +214,144 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-   void showAdminContactDialog() {
-  showDialog(
-    context: context,
-    builder: (_) => Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-      elevation: 0,
-      backgroundColor: Colors.transparent,
-      child: Container(
-        padding: const EdgeInsets.all(25),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 20,
-              spreadRadius: 5,
+  void showAdminContactDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (_) => Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
             ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Info icon
-            Container(
-              width: 80,
-              height: 80,
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            child: Container(
+              padding: const EdgeInsets.all(25),
               decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.blue.shade100,
-              ),
-              child: Icon(
-                Icons.info_outline,
-                size: 40,
-                color: Colors.blue.shade800,
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Title
-            const CustomText(
-             text:  "Admin Assistance Required",
-              fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-            ),
-            const SizedBox(height: 15),
-
-            // Message
-            const Text(
-              "Please contact your administrator for further assistance.",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.black54,
-              ),
-            ),
-           
-            const SizedBox(height: 25),
-
-            // OK Button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  backgroundColor: Colors.blue.shade800,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 20,
+                    spreadRadius: 5,
                   ),
-                  elevation: 0,
-                ),
-                onPressed: () => Get.back(),
-                child: const Text(
-                  "OK",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Info icon
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.blue.shade100,
+                    ),
+                    child: Icon(
+                      Icons.info_outline,
+                      size: 40,
+                      color: Colors.blue.shade800,
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 20),
+
+                  // Title
+                  const CustomText(
+                    text: "Admin Assistance Required",
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                  const SizedBox(height: 15),
+
+                  // Message
+                  const Text(
+                    "Please contact your administrator for further assistance.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, color: Colors.black54),
+                  ),
+
+                  const SizedBox(height: 25),
+
+                  // OK Button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        backgroundColor: Colors.blue.shade800,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
+                      ),
+                      onPressed: () => Get.back(),
+                      child: const Text(
+                        "OK",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
-    ),
-  );
-}
+          ),
+    );
+  }
+  
+  
+  Future<void> _handleLogin() async {
+    String email = objLoginController.emailController.text;
+    String password = objLoginController.passwordController.text;
+
+    // Basic validation
+    if (email.isEmpty) {
+      Get.snackbar(
+        "Message",
+        "Please enter your email",
+        backgroundColor: CRMColors.error,
+        colorText: CRMColors.whiteColor,
+      );
+      return;
+    }
+
+    if (password.isEmpty) {
+      Get.snackbar(
+        "Message",
+        "Please enter your password",
+        backgroundColor: CRMColors.error,
+        colorText: CRMColors.whiteColor,
+      );
+      return;
+    }
+
+    final emailRegex = RegExp(
+      r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
+    );
+    if (!emailRegex.hasMatch(email)) {
+      Get.snackbar(
+        "Invalid Email",
+        "Please enter a valid email address",
+        backgroundColor: CRMColors.error,
+        colorText: CRMColors.whiteColor,
+      );
+      return;
+    }
+
+    // Check internet connection
+    if (!(await _connectivityService.isConnected())) {
+      _connectivityService.showNoInternetScreen();
+      return;
+    }
+
+    // All good - proceed with login
+    objLoginController.loginAPI();
+  }
+
 
 }
