@@ -2,12 +2,15 @@
 
 import 'dart:async';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
 import 'package:crm_milan_creations/Employee/Get%20All%20Employees%20List/getAllEmployeeeListController.dart';
 import 'package:crm_milan_creations/Employee/Get%20All%20Employees%20List/getAllEmployeeeListModel.dart';
 import 'package:crm_milan_creations/Lead%20Management/All%20Lead%20list/allLeadListController.dart';
 import 'package:crm_milan_creations/Lead%20Management/Assign%20Lead%20to%20Employees/assignLeadController.dart';
 import 'package:crm_milan_creations/Lead%20Management/Get%20All%20Companies%20list/getAllCompaniesController.dart';
 import 'package:crm_milan_creations/Lead%20Management/Get%20Lead%20Details%20for%20update%20lead/getLeadDetailsScreen.dart';
+import 'package:crm_milan_creations/widgets/connectivity_service.dart';
 import 'package:crm_milan_creations/widgets/dropdown.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +44,9 @@ class _AllLeadsScreenState extends State<AllLeadsScreen> {
 
   final TextEditingController searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+    NointernetScreen noInternetScreen = const NointernetScreen();
+  final ConnectivityService _connectivityService = ConnectivityService();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
   String? selectedCompany;
   Resultemp? assignEmployee;
   String? employeeID;
@@ -55,6 +61,8 @@ class _AllLeadsScreenState extends State<AllLeadsScreen> {
     getallemployeelistcontroller.getAllEmployeeListFunction();
     getallCompanieslistcontroller.getAllCompaniesListFunction();
     _scrollController.addListener(_onScroll);
+       _checkInitialConnection();
+   _setupConnectivityListener();
   }
 
   void _onScroll() {
@@ -70,6 +78,31 @@ class _AllLeadsScreenState extends State<AllLeadsScreen> {
       );
     }
   }
+
+   @override
+  void dispose() {
+   _connectivitySubscription.cancel();
+    super.dispose();
+  }
+
+    Future<void> _checkInitialConnection() async {
+    if (!(await _connectivityService.isConnected())) {
+      _connectivityService.showNoInternetScreen();
+    }
+  }
+
+    void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
+      onConnected: () {
+        // Optional: You can automatically go back if connection is restored
+        // Get.back();
+      },
+      onDisconnected: () {
+        _connectivityService.showNoInternetScreen();
+      },
+    );
+  }
+
 
   Future<void> _selectStartDate() async {
     final DateTime? picked = await showDatePicker(

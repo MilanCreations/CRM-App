@@ -1,7 +1,12 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
 import 'package:crm_milan_creations/HR%20App/HR%20Dashboard/Today%20Attendance/todayAttendanceController.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
+import 'package:crm_milan_creations/widgets/connectivity_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -15,19 +20,43 @@ class TodayAttendanceScreen extends StatefulWidget {
 
 class _TodayAttendanceScreenState extends State<TodayAttendanceScreen> {
   final TodayAttendanceHistoryController controller = Get.put(TodayAttendanceHistoryController());
-
   late final ScrollController scrollController;
+    NointernetScreen noInternetScreen = const NointernetScreen();
+  final ConnectivityService _connectivityService = ConnectivityService();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
   @override
   void initState() {
     super.initState();
+    
+   _checkInitialConnection();
+   _setupConnectivityListener();
     scrollController = ScrollController()..addListener(_onScroll);
+  }
+
+      Future<void> _checkInitialConnection() async {
+    if (!(await _connectivityService.isConnected())) {
+      _connectivityService.showNoInternetScreen();
+    }
+  }
+
+    void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
+      onConnected: () {
+        // Optional: You can automatically go back if connection is restored
+        // Get.back();
+      },
+      onDisconnected: () {
+        _connectivityService.showNoInternetScreen();
+      },
+    );
   }
 
   @override
   void dispose() {
     scrollController.removeListener(_onScroll);
     scrollController.dispose();
+    _connectivitySubscription.cancel();
     super.dispose();
   }
 

@@ -2,6 +2,8 @@
 
 import 'dart:async';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
 import 'package:crm_milan_creations/HR%20App/HR%20Dashboard/HR%20Leads/hrLeadsController.dart';
 import 'package:crm_milan_creations/Lead%20Management/Lead%20Details/leadDetailsScreen.dart';
 import 'package:crm_milan_creations/Lead%20Management/Lead%20Status/leadStatusController.dart';
@@ -11,6 +13,7 @@ import 'package:crm_milan_creations/Lead%20Management/Update%20Lead%20Status/Upd
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
+import 'package:crm_milan_creations/widgets/connectivity_service.dart';
 import 'package:crm_milan_creations/widgets/textfiled.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +34,9 @@ class _HrleadsScreenState extends State<HrleadsScreen> {
   final TextEditingController searchController = TextEditingController();
   final LeadStatuscontroller leadStatuscontroller = Get.put(LeadStatuscontroller());
   final ScrollController _scrollController = ScrollController();
+    NointernetScreen noInternetScreen = const NointernetScreen();
+  final ConnectivityService _connectivityService = ConnectivityService();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
   Status? statusAssign;
   DateTime? followUpDate;
@@ -47,6 +53,26 @@ class _HrleadsScreenState extends State<HrleadsScreen> {
     leadController.leadListFunction(isRefresh: true);
     _scrollController.addListener(_onScroll);
     hrLeadcontroller.hrleadsFunction(isRefresh: true);
+       _checkInitialConnection();
+   _setupConnectivityListener();
+  }
+
+      Future<void> _checkInitialConnection() async {
+    if (!(await _connectivityService.isConnected())) {
+      _connectivityService.showNoInternetScreen();
+    }
+  }
+
+    void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
+      onConnected: () {
+        // Optional: You can automatically go back if connection is restored
+        // Get.back();
+      },
+      onDisconnected: () {
+        _connectivityService.showNoInternetScreen();
+      },
+    );
   }
 
   @override
@@ -54,6 +80,7 @@ class _HrleadsScreenState extends State<HrleadsScreen> {
     _debounce?.cancel();
     _scrollController.dispose();
     searchController.dispose();
+    _connectivitySubscription.cancel();
     super.dispose();
   }
 

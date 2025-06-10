@@ -15,42 +15,36 @@ class TableCalendarController extends GetxController {
   }
 
   /// Map attendance list to a map of DateTime -> status string
-void mapAttendanceStatus(List<Attendance> attendanceList) {
-  final map = <DateTime, String>{};
-  for (var att in attendanceList) {
-    final normalizedDate = DateTime(
-      att.attendanceDate.year,
-      att.attendanceDate.month,
-      att.attendanceDate.day,
-    );
-    print('Mapping attendance: $normalizedDate -> ${att.status}');
-    map[normalizedDate] = att.status.toLowerCase();
+  void mapAttendanceStatus(List<Attendance> attendanceList) {
+    final map = <DateTime, String>{};
+    for (var att in attendanceList) {
+      final normalizedDate = DateTime(
+        att.attendanceDate.year,
+        att.attendanceDate.month,
+        att.attendanceDate.day,
+      );
+      print('Mapping attendance: $normalizedDate -> ${att.status}');
+      map[normalizedDate] = att.status.toLowerCase();
+    }
+
+    // ✅ Merge with existing map instead of replacing
+    attendanceStatusMap.addAll(map);
   }
 
-  // ✅ Merge with existing map instead of replacing
-  attendanceStatusMap.addAll(map);
-}
-
-
-
-
-
-
   /// Get status for a specific date
-String getStatus(DateTime date) {
-  // Normalize input date
-  final normalizedDate = DateTime(date.year, date.month, date.day);
+  String getStatus(DateTime date) {
+    // Normalize input date
+    final normalizedDate = DateTime(date.year, date.month, date.day);
 
-  final statusEntry = attendanceStatusMap.entries.firstWhereOrNull(
-    (entry) => entry.key.year == normalizedDate.year &&
-               entry.key.month == normalizedDate.month &&
-               entry.key.day == normalizedDate.day,
-  );
+    final statusEntry = attendanceStatusMap.entries.firstWhereOrNull(
+      (entry) =>
+          entry.key.year == normalizedDate.year &&
+          entry.key.month == normalizedDate.month &&
+          entry.key.day == normalizedDate.day,
+    );
 
-  print('Checking date: $normalizedDate — Found entry: ${statusEntry?.key}, Status: ${statusEntry?.value}');
-  return statusEntry?.value ?? ''; 
-}
-
-
-
+    print('Checking date: $normalizedDate — Found entry: ${statusEntry?.key}, Status: ${statusEntry?.value}',
+    );
+    return statusEntry?.value ?? '';
+  }
 }

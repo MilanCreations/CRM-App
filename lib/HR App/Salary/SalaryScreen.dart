@@ -1,10 +1,13 @@
 // ignore_for_file: deprecated_member_use
 
 import 'dart:async';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Salary/salaryController.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
+import 'package:crm_milan_creations/widgets/connectivity_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,6 +23,9 @@ class _SalaryscreenState extends State<Salaryscreen> {
   final SalaryController salarycontroller = Get.put(SalaryController());
   final TextEditingController searchController = TextEditingController();
   final ScrollController scrollController = ScrollController();
+    NointernetScreen noInternetScreen = const NointernetScreen();
+  final ConnectivityService _connectivityService = ConnectivityService();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
   Timer? _debounceTimer;
   String userRole = "";
 
@@ -55,6 +61,8 @@ class _SalaryscreenState extends State<Salaryscreen> {
     super.initState();
     salarycontroller.salaryReportFunction();
     scrollController.addListener(_onScroll);
+     _checkInitialConnection();
+   _setupConnectivityListener();
     getUserData();
 
     int currentYear = DateTime.now().year;
@@ -118,7 +126,26 @@ class _SalaryscreenState extends State<Salaryscreen> {
     scrollController.dispose();
     searchController.dispose();
     _debounceTimer?.cancel();
+    _connectivitySubscription.cancel();
     super.dispose();
+  }
+
+      Future<void> _checkInitialConnection() async {
+    if (!(await _connectivityService.isConnected())) {
+      _connectivityService.showNoInternetScreen();
+    }
+  }
+
+    void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
+      onConnected: () {
+        // Optional: You can automatically go back if connection is restored
+        // Get.back();
+      },
+      onDisconnected: () {
+        _connectivityService.showNoInternetScreen();
+      },
+    );
   }
 
   @override

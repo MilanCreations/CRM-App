@@ -29,72 +29,78 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
         ),
         backgroundColor: CRMColors.crmMainCOlor,
       ),
- body: Column(
-  children: [
-    SizedBox(
-      height: 110, // ✅ Enough space for avatar + spacing + text
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: 10,
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const CircleAvatar(
-                  radius: 28, // 56px tall
-                  backgroundColor: Colors.blueGrey,
-                  child: Icon(Icons.person, color: Colors.white),
-                ),
-                const SizedBox(height: 8),
-                 SizedBox(
-                  width: 60,
-                  child: Text(
-                    'User ${index + 1}',
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 12),
+      body: Column(
+        children: [
+          SizedBox(
+            height: 110, // ✅ Enough space for avatar + spacing + text
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: 10,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      InkWell(
+                        onTap: () {},
+                        child: const CircleAvatar(
+                          radius: 28, // 56px tall
+                          backgroundColor: Colors.blueGrey,
+                          child: Icon(Icons.person, color: Colors.white),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: 60,
+                        child: Text(
+                          'User ${index + 1}',
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
+                );
+              },
             ),
-          );
-        },
+          ),
+          const Divider(),
+
+          // Placeholder for main chat area
+          Expanded(
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: 10,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0),
+                  child: ListTile(
+                    onTap: () {},
+                    leading: CircleAvatar(
+                      radius: 28, // 56px tall
+                      backgroundColor: Colors.blueGrey,
+                      child: Icon(Icons.person, color: Colors.white),
+                    ),
+                    title: Row(
+                      children: [
+                        CustomText(text: 'User ${index + 1}'),
+                        Spacer(),
+                        CustomText(
+                          text: DateFormat('HH:mm a').format(DateTime.now()),
+                        ),
+                      ],
+                    ),
+                    subtitle: CustomText(text: 'Message ${index + 1}'),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
-    ),
-    const Divider(),
-
-    // Placeholder for main chat area
-      Expanded(
-        child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: 10,
-          itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 12.0),
-            child: ListTile(
-              leading: CircleAvatar(
-                 radius: 28, // 56px tall
-                    backgroundColor: Colors.blueGrey,
-                    child: Icon(Icons.person, color: Colors.white),
-              ),
-              title: Row(
-                children: [
-                  CustomText(text: 'User ${index + 1}'),
-                  Spacer(),
-                  CustomText(text: DateFormat('HH:mm a').format(DateTime.now()))
-                ],
-              ),
-              subtitle: CustomText(text: 'Message ${index + 1}'),
-            ),
-          );
-        },),
-      )
-  ],
-)
-
     );
   }
 }

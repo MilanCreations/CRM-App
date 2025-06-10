@@ -20,6 +20,8 @@ class IssueInventoryHistoryScreenState
     extends State<IssueInventoryHistoryScreen> {
   final IssueInventoryController controller = Get.put(IssueInventoryController());
 
+  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

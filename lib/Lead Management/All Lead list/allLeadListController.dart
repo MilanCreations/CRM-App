@@ -87,10 +87,10 @@ class AllLeadListcontroller extends GetxController {
 
       if (allLeadsModel.result.isEmpty) {
         hasMoreData.value = false;
-        if (loadMore) {
-          Get.snackbar("Info", "No more leads available",
-              backgroundColor: CRMColors.info, colorText: CRMColors.textWhite);
-        }
+        // if (loadMore) {
+        //   Get.snackbar("Info", "No more leads available",
+        //       backgroundColor: CRMColors.info, colorText: CRMColors.textWhite);
+        // }
       } else {
         if (loadMore) {
           alleadList.addAll(allLeadsModel.result);

@@ -2,6 +2,8 @@
 
 import 'dart:async';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
 import 'package:crm_milan_creations/Lead%20Management/Lead%20Details/leadDetailsScreen.dart';
 import 'package:crm_milan_creations/Lead%20Management/Lead%20Status/leadStatusController.dart';
 import 'package:crm_milan_creations/Lead%20Management/Lead%20Status/leadStatusModel.dart';
@@ -10,6 +12,7 @@ import 'package:crm_milan_creations/Lead%20Management/Update%20Lead%20Status/Upd
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
+import 'package:crm_milan_creations/widgets/connectivity_service.dart';
 import 'package:crm_milan_creations/widgets/textfiled.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +34,9 @@ class _LeadListScreenState extends State<LeadListScreen> {
   );
 
   UpdateLeadcontroller updateLeadcontroller = Get.put(UpdateLeadcontroller());
+    NointernetScreen noInternetScreen = const NointernetScreen();
+  final ConnectivityService _connectivityService = ConnectivityService();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
   DateTime? startDate;
   DateTime? endDate;
@@ -47,10 +53,37 @@ class _LeadListScreenState extends State<LeadListScreen> {
   void initState() {
     super.initState();
     // getallCompanieslistcontroller.getAllCompaniesListFunction();
+    _checkInitialConnection();
+   _setupConnectivityListener();
     leadStatuscontroller.leadStatusFunction();
     leadController.leadListFunction(isRefresh: true);
     _scrollController.addListener(_onScroll);
   }
+
+   @override
+  void dispose() {
+   _connectivitySubscription.cancel();
+    super.dispose();
+  }
+
+    Future<void> _checkInitialConnection() async {
+    if (!(await _connectivityService.isConnected())) {
+      _connectivityService.showNoInternetScreen();
+    }
+  }
+
+    void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
+      onConnected: () {
+        // Optional: You can automatically go back if connection is restored
+        // Get.back();
+      },
+      onDisconnected: () {
+        _connectivityService.showNoInternetScreen();
+      },
+    );
+  }
+
 
   void _onScroll() {
     if (_scrollController.position.pixels >=
@@ -523,6 +556,11 @@ class _LeadListScreenState extends State<LeadListScreen> {
 
         case 'assigned':
         backgroundColor = CRMColors.dividerCOlor;
+        textColor = CRMColors.white;
+        break;
+
+        case 'rejected':
+        backgroundColor = CRMColors.black;
         textColor = CRMColors.white;
         break;
 

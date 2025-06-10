@@ -1,6 +1,11 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:crm_milan_creations/Auth/Login/loginScreen.dart';
+import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/widgets/button.dart';
+import 'package:crm_milan_creations/widgets/connectivity_service.dart';
 import 'package:crm_milan_creations/widgets/textfiled.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,6 +19,41 @@ class ForgotPasswordScreen extends StatefulWidget {
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   TextEditingController emailController = TextEditingController();
+    NointernetScreen noInternetScreen = const NointernetScreen();
+  final ConnectivityService _connectivityService = ConnectivityService();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+
+      @override
+  void initState() {
+    super.initState();
+
+   _checkInitialConnection();
+   _setupConnectivityListener();
+  }
+
+    @override
+  void dispose() {
+   _connectivitySubscription.cancel();
+    super.dispose();
+  }
+
+    Future<void> _checkInitialConnection() async {
+    if (!(await _connectivityService.isConnected())) {
+      _connectivityService.showNoInternetScreen();
+    }
+  }
+
+    void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
+      onConnected: () {
+        // Optional: You can automatically go back if connection is restored
+        // Get.back();
+      },
+      onDisconnected: () {
+        _connectivityService.showNoInternetScreen();
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,7 +1,7 @@
 // ignore_for_file: constant_identifier_names
 
 class ApiConstants {
-//  static const String baseUrls = "http://192.168.1.4:3000"; // Replace with your base URL
+//  static const String baseUrls = "http://192.168.1.31:3000"; // Replace with your base URL
  static const String baseUrls = "https://crm.venusstudies.com/api"; // Replace with your base URL
 
 
@@ -99,7 +99,10 @@ static const String leadDetails = "$baseUrls/payroll/leads/history";
 static const String sourceList = "$baseUrls/payroll/leads/sources";
 
 ////////////////////////////// Get and Updated Lead Details //////////////////////
+// Get Lead Details for Update
 static const String getLeadDetails = "$baseUrls/payroll/leads";
+
+// Update Lead Details
 static const String updateLead = "$baseUrls/payroll/leads";
 
 //////////////////// Salary Management //////////////////
@@ -111,20 +114,5 @@ static const String todayAttendanceHistory = "$baseUrls/payroll/attendance";
 
 // HR Leads
 static const String hrleadList = "$baseUrls/payroll/leads/all/assignedLeads";
-
-
-
-
-
-
-
-
-
-/////////////////// Inventory Management ////////////////
-// Call api inside this:- Get employee list to issue oinventory
-
-// static const String salaryList = "$baseUrls/payroll/employee/generate-salary-report";
-
-
 
 }

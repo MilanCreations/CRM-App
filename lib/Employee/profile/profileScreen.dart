@@ -1,8 +1,11 @@
 // ignore_for_file: deprecated_member_use
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:crm_milan_creations/Auth/Login/loginScreen.dart';
+import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
 import 'package:crm_milan_creations/Chat%20App/Chat%20Home%20Page/chatHomeScreen.dart';
 import 'package:crm_milan_creations/Employee/Apply%20Leave/applyLeaveScreen.dart';
 import 'package:crm_milan_creations/Employee/Attendance%20History/allendanceHistoryScreen.dart';
@@ -19,6 +22,7 @@ import 'package:crm_milan_creations/Lead%20Management/My%20Leads%20List/myLeadLi
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
+import 'package:crm_milan_creations/widgets/connectivity_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,6 +43,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String employeeID = "";
   String visitTime = "";
   String profilePicPath = ""; // Could be local path or base64
+    NointernetScreen noInternetScreen = const NointernetScreen();
+  final ConnectivityService _connectivityService = ConnectivityService();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
   // String permissions =  "";
   // File? _profileImage;
@@ -50,6 +57,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     getUserData();
     loadDataFromLocal();
+       _checkInitialConnection();
+   _setupConnectivityListener();
+  }
+
+    @override
+  void dispose() {
+   _connectivitySubscription.cancel();
+    super.dispose();
+  }
+
+      Future<void> _checkInitialConnection() async {
+    if (!(await _connectivityService.isConnected())) {
+      _connectivityService.showNoInternetScreen();
+    }
+  }
+
+    void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
+      onConnected: () {
+        // Optional: You can automatically go back if connection is restored
+        // Get.back();
+      },
+      onDisconnected: () {
+        _connectivityService.showNoInternetScreen();
+      },
+    );
   }
 
   Future<void> getUserData() async {
@@ -512,7 +545,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     text: 'Inventory History',
                     onTap: () => Get.to(() => IssueInventoryHistoryScreen()),
                   ),
-                  userRole != "HR_MANAGER" && userRole != "EMPLOYEE"
+                  userRole != "HR_MANAGER"
                   ?buildMenuItem(
                     icon: Icons.leak_add_sharp,
                     text: 'All Leads',

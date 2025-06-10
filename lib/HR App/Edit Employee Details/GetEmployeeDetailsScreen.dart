@@ -1,5 +1,9 @@
 // ignore_for_file: deprecated_member_use
 
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Department%20List/departmentListController.dart';
 import 'package:crm_milan_creations/HR%20App/Department%20List/departmentListModel.dart';
 import 'package:crm_milan_creations/HR%20App/Edit%20Employee%20Details/Edit%20Employee%20Details/editEmployeeDetailsController.dart';
@@ -10,6 +14,7 @@ import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
 import 'package:crm_milan_creations/widgets/button.dart';
+import 'package:crm_milan_creations/widgets/connectivity_service.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -38,6 +43,10 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
 
   final Editemployeedetailscontroller editEmployeeDetailsController =
       Get.put(Editemployeedetailscontroller());
+
+        NointernetScreen noInternetScreen = const NointernetScreen();
+  final ConnectivityService _connectivityService = ConnectivityService();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
       
   @override
   void initState() {
@@ -46,8 +55,35 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
     );
     departmentlistController.departmentListFunction();
     designationListController.designationListFunction();
+       _checkInitialConnection();
+   _setupConnectivityListener();
     super.initState();
   }
+
+    @override
+  void dispose() {
+   _connectivitySubscription.cancel();
+    super.dispose();
+  }
+
+      Future<void> _checkInitialConnection() async {
+    if (!(await _connectivityService.isConnected())) {
+      _connectivityService.showNoInternetScreen();
+    }
+  }
+
+    void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
+      onConnected: () {
+        // Optional: You can automatically go back if connection is restored
+        // Get.back();
+      },
+      onDisconnected: () {
+        _connectivityService.showNoInternetScreen();
+      },
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {

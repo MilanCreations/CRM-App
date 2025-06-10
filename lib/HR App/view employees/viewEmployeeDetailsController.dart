@@ -75,12 +75,12 @@ class ViewEmployeecontroller extends GetxController {
 
         print("Email: ${employeeDetailsModel.data.email}");
         print("Profile Pic: ${employeeDetailsModel.data.profilePic}");
-         // Debug print for documents
-      print("Total documents: ${employeeDetailsModel.data.documentType.length}");
-      print("Employee ID fo admin:- ${employeeDetailsModel.data.employeeNumber}");
-for (var doc in employeeDetailsModel.data.documentType) {
-  print("Document Type: ${doc.documentType}, URL: ${doc.documentUrl}");
-}
+        // Debug print for documents
+        print("Total documents: ${employeeDetailsModel.data.documentType.length}");
+        print("Employee ID fo admin:- ${employeeDetailsModel.data.employeeNumber}");
+        for (var doc in employeeDetailsModel.data.documentType) {
+          print("Document Type: ${doc.documentType}, URL: ${doc.documentUrl}");
+        }
 
         documents.clear();
         aadharCardPic.value = "";
@@ -91,16 +91,16 @@ for (var doc in employeeDetailsModel.data.documentType) {
           } else if (doc.documentType == 'pan_card') {
             panCardPic.value = doc.documentUrl;
           }
-           // Add all documents to the list
+          // Add all documents to the list
           documents.add({
             'document_type': doc.documentType,
             'document_url': doc.documentUrl,
           });
         }
 
-         // Debug print after assignment
-      print("Aadhar Card URL: ${aadharCardPic.value}");
-      print("PAN Card URL: ${panCardPic.value}");
+        // Debug print after assignment
+        print("Aadhar Card URL: ${aadharCardPic.value}");
+        print("PAN Card URL: ${panCardPic.value}");
 
         isLoading.value = false;
       } else if (response.statusCode == 400) {
