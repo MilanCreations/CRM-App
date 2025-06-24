@@ -1,7 +1,7 @@
 // ignore_for_file: avoid_print
 import 'package:crm_milan_creations/API%20Services/BaseURL_&_EndPoints.dart';
 import 'package:crm_milan_creations/Auth/Login/loginScreen.dart';
-import 'package:crm_milan_creations/HR%20App/view%20employees/viewEmployeeDetailsModel.dart';
+import 'package:crm_milan_creations/HR%20App/view%20personal%20employees%20details/viewEmployeePersonalDetailsModel.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';

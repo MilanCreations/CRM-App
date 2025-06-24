@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:crm_milan_creations/Auth/Login/loginScreen.dart';
+import 'package:crm_milan_creations/Auth/logout/logoutController.dart';
 import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
 import 'package:crm_milan_creations/Employee/Attendance%20History/attendanceHistoryController.dart';
 import 'package:crm_milan_creations/Employee/Attendance%20Management/AttendanceController.dart';
@@ -39,9 +40,11 @@ class _AttendancescreenState extends State<Attendancescreen> {
     AttendanceHistoryController(),
   );
 
-    NointernetScreen noInternetScreen = const NointernetScreen();
+  NointernetScreen noInternetScreen = const NointernetScreen();
   final ConnectivityService _connectivityService = ConnectivityService();
-   late final StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+  late final StreamSubscription<List<ConnectivityResult>>
+  _connectivitySubscription;
+  UserLogout objUserLogout = Get.put(UserLogout());
 
   RxString totalHoursToday = '0h 00m'.obs;
   RxString totalWorkingHoursToday = '0h 00m'.obs;
@@ -75,8 +78,8 @@ class _AttendancescreenState extends State<Attendancescreen> {
         timer.cancel();
         debugPrint("Timer error: $e");
       }
-       _checkInitialConnection();
-   _setupConnectivityListener();
+      _checkInitialConnection();
+      _setupConnectivityListener();
     });
     super.initState();
   }
@@ -89,23 +92,23 @@ class _AttendancescreenState extends State<Attendancescreen> {
     super.dispose();
   }
 
-
-      Future<void> _checkInitialConnection() async {
+  Future<void> _checkInitialConnection() async {
     if (!(await _connectivityService.isConnected())) {
       _connectivityService.showNoInternetScreen();
     }
   }
 
-    void _setupConnectivityListener() {
-    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
-      onConnected: () {
-        // Optional: You can automatically go back if connection is restored
-        // Get.back();
-      },
-      onDisconnected: () {
-        _connectivityService.showNoInternetScreen();
-      },
-    );
+  void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService
+        .listenToConnectivityChanges(
+          onConnected: () {
+            // Optional: You can automatically go back if connection is restored
+            // Get.back();
+          },
+          onDisconnected: () {
+            _connectivityService.showNoInternetScreen();
+          },
+        );
   }
 
   Future<void> getUserData() async {
@@ -215,7 +218,9 @@ class _AttendancescreenState extends State<Attendancescreen> {
               }),
               IconButton(
                 iconSize: 30,
-                onPressed: () => showLogoutDialog(),
+                onPressed: () {
+                  showLogoutDialog();
+                },
                 icon: Icon(Icons.logout_rounded, color: CRMColors.whiteColor),
               ),
             ],
@@ -352,7 +357,6 @@ class _AttendancescreenState extends State<Attendancescreen> {
 
                   Obx(
                     () => TableCalendar(
-                      
                       firstDay: DateTime.utc(2020, 1, 1),
                       lastDay: DateTime.utc(2030, 12, 31),
                       calendarFormat: CalendarFormat.values[0],
@@ -1057,38 +1061,56 @@ class _AttendancescreenState extends State<Attendancescreen> {
                       ),
                       const SizedBox(width: 15),
 
-                      // Logout Button
+                      // Logout Button or Loader
                       Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 15),
-                            backgroundColor: CRMColors.error,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            elevation: 0,
-                          ),
-                          onPressed: () async {
-                            final prefs = await SharedPreferences.getInstance();
-                            await prefs.clear();
-                            Get.back(); // Close dialog first
-                            Get.snackbar(
-                              "Success",
-                              "Logout Successfully",
-                              backgroundColor: CRMColors.error,
-                              colorText: CRMColors.textWhite,
-                            );
-                            Get.offAll(() => const LoginScreen());
-                          },
-                          child: const Text(
-                            "Logout",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
+                        child: Obx(() {
+                          return objUserLogout.isLoading.value
+                              ? const Center(
+                                child: SizedBox(
+                                  height: 25,
+                                  width: 25,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 3,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              )
+                              : ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 15,
+                                  ),
+                                  backgroundColor: CRMColors.error,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  elevation: 0,
+                                ),
+                                onPressed: () async {
+                                  final prefs =
+                                      await SharedPreferences.getInstance();
+                                  await objUserLogout.logoutFunction();
+                                  await prefs.clear();
+
+                                  Get.back(); // Close dialog
+                                  Get.snackbar(
+                                    "Success",
+                                    "Logout Successfully",
+                                    backgroundColor: CRMColors.error,
+                                    colorText: CRMColors.textWhite,
+                                  );
+                                  Get.offAll(() => const LoginScreen());
+                                },
+                                child: const Text(
+                                  "Logout",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              );
+                        }),
                       ),
                     ],
                   ),

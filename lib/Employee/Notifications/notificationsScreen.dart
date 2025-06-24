@@ -1,10 +1,12 @@
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 class NotificationsScreen extends StatefulWidget {
-  const NotificationsScreen({super.key});
+   final RemoteMessage message;
+  const NotificationsScreen({super.key, required this.message});
 
   @override
   State<NotificationsScreen> createState() => _NotificationsScreenState();
@@ -13,6 +15,7 @@ class NotificationsScreen extends StatefulWidget {
 class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: CustomAppBar(
         gradient: const LinearGradient(

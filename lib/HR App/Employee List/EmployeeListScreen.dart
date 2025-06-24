@@ -5,7 +5,7 @@ import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Add%20Employee/addEmployeeScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Change%20Emp%20Status/ChangeEmpStatusController.dart';
 import 'package:crm_milan_creations/HR%20App/Employee%20List/EmployeeListController.dart';
-import 'package:crm_milan_creations/HR%20App/view%20employees/viewEmployeeDetailsScreen.dart';
+import 'package:crm_milan_creations/HR%20App/view%20personal%20employees%20details/viewEmployeePersonalDetailsScreen.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
@@ -233,11 +233,15 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
                                   child: InkWell(
                                     borderRadius: BorderRadius.circular(8),
                                     onTap:
-                                        () => Get.to(
-                                          ViewEmployeeDetailsScreen(
+                                        () {
+                                          Get.to(
+                                          ViewEmployeePersonalDetailsScreen(
                                             employeeId: employee.id!.toString(),
                                           ),
-                                        ),
+                                        );
+                                        
+                                        },
+                                        
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 16,

@@ -1,38 +1,83 @@
 import 'package:crm_milan_creations/Auth/SplashScreen.dart';
+import 'package:crm_milan_creations/Chat%20App/Socket%20Services/socketController.dart';
+import 'package:crm_milan_creations/widgets/notficationsServices.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:get/get.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() async {
-  runApp(const MyApp());
-    WidgetsFlutterBinding.ensureInitialized();
-    // await Firebase.initializeApp(
-    //   options: DefaultFirebaseOptions.currentPlatform
-    // );
-  await FlutterDownloader.initialize(
-    debug: true, // Set to false in production
+
+
+Future<void> firebaseBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(
+      apiKey: "AIzaSyCGghMzDzxCgy-Vqeqg44AejeaHCiTUtXE",
+      appId: "1:683550110929:android:3e108ea123c770dc8381f0",
+      messagingSenderId: "683550110929",
+      projectId: "crm-payroll",
+    ),
   );
+  // You can handle the message here if needed
+}
 
-  // Initialize permission handler
-  await Permission.storage.request();
-  await Permission.manageExternalStorage.request();
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+   await Firebase.initializeApp(
+    options: const FirebaseOptions(
+      apiKey: "AIzaSyCGghMzDzxCgy-Vqeqg44AejeaHCiTUtXE",
+      appId: "1:683550110929:android:3e108ea123c770dc8381f0",
+      messagingSenderId: "683550110929",
+      projectId: "crm-payroll",
+    ),
+  );
+  Get.put(Socketcontroller(), permanent: true);
+  FirebaseMessaging.onBackgroundMessage(firebaseBackgroundHandler);
   
+
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final NotificationService notificationService = Get.put(NotificationService());
 
-  // This widget is the root of your application.
+  MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
+    // Use FutureBuilder to ensure context is available before calling permission
     return GetMaterialApp(
-      title: 'Haazir Janaab',
       debugShowCheckedModeBanner: false,
+      title: 'Haazir Janaab',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 6, 3, 11)),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-       home: const Splashscreen(),
+      home: Builder(
+        builder: (context) {
+          _initializeFCM(context);
+          return const Splashscreen();
+        },
+      ),
     );
   }
+
+void _initializeFCM(BuildContext context) async {
+  SharedPreferences preferences = await SharedPreferences.getInstance();
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  notificationService.requestNotificationPermission(context);
+
+  String? token = await messaging.getToken();
+  print("📱 FCM Token: $token");
+
+  if (token != null) {
+    await preferences.setString('fcm_token', token);
+    print("✅ Token saved to SharedPreferences: $token");
+  }
+
+  // 🔥 Important: Initialize FCM listening
+  notificationService.firebaseInit(context);
+  notificationService.setupInteractMessage(context); // Optional: to handle taps
+}
+
 }

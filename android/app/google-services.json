@@ -1,14 +1,13 @@
 {
   "project_info": {
-    "project_number": "357274844337",
-    "firebase_url": "https://crm-notifications-bf781-default-rtdb.firebaseio.com",
-    "project_id": "crm-notifications-bf781",
-    "storage_bucket": "crm-notifications-bf781.firebasestorage.app"
+    "project_number": "683550110929",
+    "project_id": "crm-payroll",
+    "storage_bucket": "crm-payroll.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:357274844337:android:6fb14d5c5ff59fc112f690",
+        "mobilesdk_app_id": "1:683550110929:android:3e108ea123c770dc8381f0",
         "android_client_info": {
           "package_name": "com.matcrm"
         }
@@ -16,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyA_YGQtOwItpeHcBzktl5lg9tq0AtcXlH8"
+          "current_key": "AIzaSyCGghMzDzxCgy-Vqeqg44AejeaHCiTUtXE"
         }
       ],
       "services": {

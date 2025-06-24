@@ -19,20 +19,21 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'viewEmployeeDetailsController.dart';
+import 'viewEmployeePersonalDetailsController.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
-class ViewEmployeeDetailsScreen extends StatefulWidget {
+class ViewEmployeePersonalDetailsScreen extends StatefulWidget {
   final String employeeId;
 
-  const ViewEmployeeDetailsScreen({super.key, required this.employeeId});
+
+  const ViewEmployeePersonalDetailsScreen({super.key, required this.employeeId});
 
   @override
-  State<ViewEmployeeDetailsScreen> createState() =>
-      _ViewEmployeeDetailsScreenState();
+  State<ViewEmployeePersonalDetailsScreen> createState() =>
+      _ViewEmployeePersonalDetailsScreenState();
 }
 
-class _ViewEmployeeDetailsScreenState extends State<ViewEmployeeDetailsScreen> {
+class _ViewEmployeePersonalDetailsScreenState extends State<ViewEmployeePersonalDetailsScreen> {
   late final ViewEmployeecontroller controller;
     NointernetScreen noInternetScreen = const NointernetScreen();
   final ConnectivityService _connectivityService = ConnectivityService();

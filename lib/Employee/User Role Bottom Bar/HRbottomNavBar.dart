@@ -5,6 +5,7 @@ import 'package:crm_milan_creations/Employee/Notifications/notificationsScreen.d
 import 'package:crm_milan_creations/Employee/profile/profileScreen.dart';
 import 'package:crm_milan_creations/HR%20App/HR%20Dashboard/Dashboard%20Home%20Page/dashboardScreen.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 class HRBottomNavBar extends StatefulWidget {
@@ -26,7 +27,7 @@ class _BottomNavBarState extends State<HRBottomNavBar> {
       Dashboardscreen(),
       Attendancescreen(checkpagestatus: widget.checkpagestatuss),
       ProfileScreen(),
-      NotificationsScreen(),
+      NotificationsScreen(message: RemoteMessage()),
       HistoryScreen(),
     ];
   }
