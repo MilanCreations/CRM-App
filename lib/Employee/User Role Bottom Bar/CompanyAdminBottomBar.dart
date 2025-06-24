@@ -3,6 +3,7 @@
 import 'package:crm_milan_creations/Employee/Notifications/notificationsScreen.dart';
 import 'package:crm_milan_creations/Employee/profile/profileScreen.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 class SuperAdminBottomNavBar extends StatefulWidget {
   final String checkpagestatuss;
@@ -24,7 +25,7 @@ class _SuperAdminBottomNavBarState extends State<SuperAdminBottomNavBar> {
       // Dashboardscreen(checkpagestatus: widget.checkpagestatuss),
       ProfileScreen(),
       // NotificationsScreen(),
-      NotificationsScreen(),
+      NotificationsScreen(message: RemoteMessage()),
     ];
   }
 

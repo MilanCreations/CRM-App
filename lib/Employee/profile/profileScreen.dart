@@ -13,7 +13,7 @@ import 'package:crm_milan_creations/Employee/Leave%20History/leaveHistoryScreen.
 import 'package:crm_milan_creations/HR%20App/Employee%20Leave%20Request/empLeaveRequestScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Employee%20List/EmployeeListScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Salary/SalaryScreen.dart';
-import 'package:crm_milan_creations/HR%20App/view%20employees/viewEmployeeDetailsScreen.dart';
+import 'package:crm_milan_creations/HR%20App/view%20personal%20employees%20details/viewEmployeePersonalDetailsScreen.dart';
 import 'package:crm_milan_creations/Inventory%20Management/Issue%20Inventory%20History/issueInventoryScreen.dart';
 import 'package:crm_milan_creations/Inventory%20Management/Issue%20Inventory/IssueInventoryScreen.dart';
 import 'package:crm_milan_creations/Lead%20Management/All%20Lead%20list/allLeadsScreen.dart';
@@ -90,7 +90,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() {
       username = prefs.getString("fullname") ?? "";
       useremail = prefs.getString("email") ?? "";
-      userRole = prefs.getString("role_code") ?? "";
+      userRole = prefs.getString("role_code") ?? ""; 
       token = prefs.getString('token') ?? "";
       employeeID = prefs.getString('employee_id') ?? "";
       // companyId = prefs.getString('company_id') ?? "";
@@ -467,7 +467,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     text: "Profile Details",
                     onTap:
                         () => Get.to(
-                          ViewEmployeeDetailsScreen(employeeId: employeeID),
+                          ViewEmployeePersonalDetailsScreen(employeeId: employeeID),
                         ),
                   ),
                   userRole != "EMPLOYEE"
@@ -499,7 +499,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       )
                       : const SizedBox(),
                   userRole != "COMPANY_ADMIN"
-                      ? buildMenuItem(
+                      ? buildMenuItem( 
                         icon: Icons.history,
                         text: 'Attendance History',
                         onTap: () => Get.to(() => const HistoryScreen()),

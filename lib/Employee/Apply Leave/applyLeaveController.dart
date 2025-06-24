@@ -58,6 +58,10 @@ Future<void> applyLeave() async {
       
       Get.snackbar("Success", "Leave request submitted",
           backgroundColor: Colors.green, colorText: CRMColors.textWhite);
+          startDateTime.value = null;
+      endDateTime.value = null;
+      leavetypeid.value = '';
+      reasonController.clear();
     } else if (response.statusCode == 400) {
       Get.snackbar('Error', 'Bad Request',
           backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
@@ -80,14 +84,28 @@ Future<void> applyLeave() async {
 }
 
 
-  void submitLeaveRequest() {
-    if (startDateTime.value == null || endDateTime.value == null || leavetypeid.value.isEmpty || reasonController.text.isEmpty) {
-      Get.snackbar("Error", "All fields are required");
-      return;
-    }
-    applyLeave();
-
-    // Submit logic here
-   // Get.snackbar("Submitted", "Leave request submitted successfully");
+void submitLeaveRequest() {
+  if (startDateTime.value == null) {
+    Get.snackbar("Error", "Please select start date and time",backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
+    return;
   }
+
+  if (endDateTime.value == null) {
+    Get.snackbar("Error", "Please select end date and time",backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
+    return;
+  }
+
+  if (leavetypeid.value.isEmpty) {
+    Get.snackbar("Error", "Please select leave type",backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
+    return;
+  }
+
+  if (reasonController.text.trim().isEmpty) {
+    Get.snackbar("Error", "Please enter reason for leave",backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
+    return;
+  }
+
+  applyLeave(); // All validations passed
+}
+
 }

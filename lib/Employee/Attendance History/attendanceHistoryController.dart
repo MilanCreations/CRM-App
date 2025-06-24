@@ -87,7 +87,7 @@ class AttendanceHistoryController extends GetxController {
       final uri = Uri.parse(
         "${ApiConstants.attendanceHistory}?"
         "_page=${currentPage.value}"
-        "&_limit=20"
+        "&_limit=40"
         "&_sort=date"
         "&_order=desc"
         "&q=$name"

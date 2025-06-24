@@ -22,14 +22,13 @@ import 'package:intl/intl.dart';
 
 class EditEmployeeScreen extends StatefulWidget {
   final String editEmployeeDetails;
- const EditEmployeeScreen({super.key, required this.editEmployeeDetails});
+  const EditEmployeeScreen({super.key, required this.editEmployeeDetails});
 
   @override
   State<EditEmployeeScreen> createState() => _EditEmployeeScreenState();
 }
 
 class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
-
   GetEmployeeDetailsController getEmployeeDetailsController = Get.put(
     GetEmployeeDetailsController(),
   );
@@ -41,13 +40,14 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
     DesignationListController(),
   );
 
-  final Editemployeedetailscontroller editEmployeeDetailsController =
-      Get.put(Editemployeedetailscontroller());
+  final Editemployeedetailscontroller editEmployeeDetailsController = Get.put(
+    Editemployeedetailscontroller(),
+  );
 
-        NointernetScreen noInternetScreen = const NointernetScreen();
+  NointernetScreen noInternetScreen = const NointernetScreen();
   final ConnectivityService _connectivityService = ConnectivityService();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
-      
+
   @override
   void initState() {
     getEmployeeDetailsController.editEmployeeFunction(
@@ -55,42 +55,42 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
     );
     departmentlistController.departmentListFunction();
     designationListController.designationListFunction();
-       _checkInitialConnection();
-   _setupConnectivityListener();
+    _checkInitialConnection();
+    _setupConnectivityListener();
     super.initState();
   }
 
-    @override
+  @override
   void dispose() {
-   _connectivitySubscription.cancel();
+    _connectivitySubscription.cancel();
     super.dispose();
   }
 
-      Future<void> _checkInitialConnection() async {
+  Future<void> _checkInitialConnection() async {
     if (!(await _connectivityService.isConnected())) {
       _connectivityService.showNoInternetScreen();
     }
   }
 
-    void _setupConnectivityListener() {
-    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
-      onConnected: () {
-        // Optional: You can automatically go back if connection is restored
-        // Get.back();
-      },
-      onDisconnected: () {
-        _connectivityService.showNoInternetScreen();
-      },
-    );
+  void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService
+        .listenToConnectivityChanges(
+          onConnected: () {
+            // Optional: You can automatically go back if connection is restored
+            // Get.back();
+          },
+          onDisconnected: () {
+            _connectivityService.showNoInternetScreen();
+          },
+        );
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
         showBackArrow: true,
-         leadingIcon: Icons.arrow_back_ios_new_sharp,
+        leadingIcon: Icons.arrow_back_ios_new_sharp,
         gradient: const LinearGradient(
           colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
           begin: Alignment.topLeft,
@@ -104,12 +104,11 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
         ),
         backgroundColor: CRMColors.crmMainCOlor,
       ),
-      body: Obx(
-        () {
-          if (getEmployeeDetailsController.isLoading.value) {
-        return const Center(child: CircularProgressIndicator());
-      }
-          return Stack(
+      body: Obx(() {
+        if (getEmployeeDetailsController.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        return Stack(
           children: [
             SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -134,7 +133,7 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
                             getEmployeeDetailsController.profileImage.value;
                         final networkImage =
                             getEmployeeDetailsController.profile_pic.value;
-        
+
                         if (pickedImage != null) {
                           return CircleAvatar(
                             radius: 50,
@@ -154,7 +153,7 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
                       }),
                     ),
                   ),
-        
+
                   SizedBox(height: 16),
                   // Joining Date and Name
                   Row(
@@ -204,7 +203,7 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
                     ],
                   ),
                   const SizedBox(height: 16),
-        
+
                   // Email and Department
                   _buildTextField(
                     "Email",
@@ -212,15 +211,18 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
                     hint: "Enter Email...",
                   ),
                   const SizedBox(height: 16),
-        
+
                   Obx(() {
                     if (departmentlistController.isLoading.value) {
                       return Center(child: CircularProgressIndicator());
-                    } else if (departmentlistController.departmentList.isEmpty) {
+                    } else if (departmentlistController
+                        .departmentList
+                        .isEmpty) {
                       return Container(
                         padding: EdgeInsets.all(16),
                         child: Text(
                           "No departments available",
+
                           style: TextStyle(color: Colors.grey),
                         ),
                       );
@@ -251,7 +253,9 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
                                                 value: item,
                                                 child: Text(
                                                   item.name,
-                                                  style: TextStyle(fontSize: 16),
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                  ),
                                                 ),
                                               ),
                                         )
@@ -280,12 +284,11 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
                               ),
                             ),
                           ),
-                      
                         ],
                       );
                     }
                   }),
-        
+
                   const SizedBox(height: 16),
                   Obx(() {
                     if (designationListController.isLoading.value) {
@@ -327,7 +330,9 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
                                                 value: item,
                                                 child: Text(
                                                   item.name,
-                                                  style: TextStyle(fontSize: 16),
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                  ),
                                                 ),
                                               ),
                                         )
@@ -360,9 +365,9 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
                       );
                     }
                   }),
-        
+
                   const SizedBox(height: 16),
-        
+
                   // Emergency Contact and Address
                   _buildTextField(
                     "Emergency Contact",
@@ -373,14 +378,14 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
                     maxLength: 10,
                   ),
                   const SizedBox(height: 16),
-        
+
                   _buildTextField(
                     "Address",
                     controller: getEmployeeDetailsController.addressController,
                     hint: "Enter address...",
                   ),
                   const SizedBox(height: 16),
-        
+
                   // Salary and Phone
                   Row(
                     children: [
@@ -404,9 +409,9 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
                       ),
                     ],
                   ),
-        
+
                   const SizedBox(height: 16),
-        
+
                   // Shift Time Pickers
                   Row(
                     children: [
@@ -443,7 +448,7 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
                     controller: getEmployeeDetailsController.bankNameController,
                     hint: "Enter Bank Name...",
                   ),
-        
+
                   const SizedBox(height: 16),
                   _buildTextField(
                     "Account Number",
@@ -457,7 +462,7 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
                     controller: getEmployeeDetailsController.ifscController,
                     hint: "Enter IFSC Code...",
                   ),
-        
+
                   SizedBox(height: 16),
                   CustomText(
                     text: "Pan card",
@@ -473,7 +478,10 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
                         border: Border.all(color: CRMColors.black),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
                       child: Row(
                         children: [
                           Container(
@@ -498,7 +506,9 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
                           Expanded(
                             child: Obx(
                               () => Text(
-                                getEmployeeDetailsController.panCardFile.value ==
+                                getEmployeeDetailsController
+                                            .panCardFile
+                                            .value ==
                                         null
                                     ? "No file chosen"
                                     : getEmployeeDetailsController
@@ -507,7 +517,7 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
                                         .path
                                         .split('/')
                                         .last,
-        
+
                                 style: TextStyle(
                                   color: Colors.grey.shade600,
                                   overflow: TextOverflow.ellipsis,
@@ -520,20 +530,19 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
                     ),
                   ),
                   SizedBox(height: 8),
-        
+
                   Obx(
                     () => CustomText(
                       text:
                           getEmployeeDetailsController.panCard.value.isEmpty
                               ? "No file chosen"
-                              : getEmployeeDetailsController.panCard.value
-                                  ,
+                              : getEmployeeDetailsController.panCard.value,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: CRMColors.crmMainCOlor,
                     ),
                   ),
-        
+
                   SizedBox(height: 16),
                   CustomText(
                     text: "Adhaar card",
@@ -549,7 +558,10 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
                         border: Border.all(color: CRMColors.black),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
                       child: Row(
                         children: [
                           Container(
@@ -588,7 +600,7 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
                                         .path
                                         .split('/')
                                         .last,
-        
+
                                 style: TextStyle(
                                   color: Colors.grey.shade600,
                                   overflow: TextOverflow.ellipsis,
@@ -600,15 +612,14 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
                       ),
                     ),
                   ),
-                   SizedBox(height: 8),
-        
+                  SizedBox(height: 8),
+
                   Obx(
                     () => CustomText(
                       text:
                           getEmployeeDetailsController.aadharCard.value.isEmpty
                               ? "No file chosen"
-                              : getEmployeeDetailsController.aadharCard.value
-                                  ,
+                              : getEmployeeDetailsController.aadharCard.value,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: CRMColors.crmMainCOlor,
@@ -635,11 +646,10 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
                         // backgroundColor: CRMColors.crmMainCOlor,
                         text: 'Save Changes',
                         onPressed: () {
-                        //  getEmployeeDetailsController.editEmployeeFunction(
-                        //     widget.editEmployeeDetails,
-                        //   );
+                          //  getEmployeeDetailsController.editEmployeeFunction(
+                          //     widget.editEmployeeDetails,
+                          //   );
                           editEmployeeDetailsController.editEmployeeFunction(
-                         
                             widget.editEmployeeDetails,
                           );
                         },
@@ -667,9 +677,7 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
             ),
           ],
         );
-      
-        },
-      ),
+      }),
     );
   }
 
@@ -755,109 +763,104 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
     );
   }
 
-//    Widget _buildProfileImage() {
-//   return GestureDetector(
-//     onTap: _showFullScreenImage,
-//     child: Container(
-//       decoration: BoxDecoration(
-//         shape: BoxShape.circle,
-//         border: Border.all(
-//           color: CRMColors.crmMainCOlor,
-//           width: 2,
-//         ),
-//       ),
-//       child: _getProfileImageWidget(),
-//     ),
-//   );
-// }
+  //    Widget _buildProfileImage() {
+  //   return GestureDetector(
+  //     onTap: _showFullScreenImage,
+  //     child: Container(
+  //       decoration: BoxDecoration(
+  //         shape: BoxShape.circle,
+  //         border: Border.all(
+  //           color: CRMColors.crmMainCOlor,
+  //           width: 2,
+  //         ),
+  //       ),
+  //       child: _getProfileImageWidget(),
+  //     ),
+  //   );
+  // }
 
+  // void _showFullScreenImage() {
+  //   if (getEmployeeDetailsController.profile_pic.isEmpty) return;
 
+  //   try {
+  //     Widget imageWidget;
 
-// void _showFullScreenImage() {
-//   if (getEmployeeDetailsController.profile_pic.isEmpty) return;
-  
-//   try {
-//     Widget imageWidget;
-    
-//     // Check if it's a file path
-//     final file = File(getEmployeeDetailsController.profile_pic.toString());
-//     if (file.existsSync()) {
-//       imageWidget = Image.file(file);
-//     } 
-//     // Check if it's a network URL
-//     else if (getEmployeeDetailsController.profile_pic.startsWith('http')) {
-//       imageWidget = Image.network(getEmployeeDetailsController.profile_pic.toString());
-//     }
-//     // Assume it's base64 if neither
-//     else {
-//       final imageBytes = base64Decode(getEmployeeDetailsController.profile_pic.toString());
-//       imageWidget = Image.memory(imageBytes);
-//     }
+  //     // Check if it's a file path
+  //     final file = File(getEmployeeDetailsController.profile_pic.toString());
+  //     if (file.existsSync()) {
+  //       imageWidget = Image.file(file);
+  //     }
+  //     // Check if it's a network URL
+  //     else if (getEmployeeDetailsController.profile_pic.startsWith('http')) {
+  //       imageWidget = Image.network(getEmployeeDetailsController.profile_pic.toString());
+  //     }
+  //     // Assume it's base64 if neither
+  //     else {
+  //       final imageBytes = base64Decode(getEmployeeDetailsController.profile_pic.toString());
+  //       imageWidget = Image.memory(imageBytes);
+  //     }
 
-//     Get.dialog(
-//       Dialog(
-//         child: InteractiveViewer(
-//           panEnabled: true,
-//           minScale: 0.5,
-//           maxScale: 3.0,
-//           child: imageWidget,
-//         ),
-//       ),
-//     );
-//   } catch (e) {
-//     print('Error showing full screen image: $e');
-//     Get.snackbar(
-//       "Error",
-//       "Could not display image",
-//       backgroundColor: CRMColors.error,
-//       colorText: CRMColors.textWhite,
-//     );
-//   }
-// }
+  //     Get.dialog(
+  //       Dialog(
+  //         child: InteractiveViewer(
+  //           panEnabled: true,
+  //           minScale: 0.5,
+  //           maxScale: 3.0,
+  //           child: imageWidget,
+  //         ),
+  //       ),
+  //     );
+  //   } catch (e) {
+  //     print('Error showing full screen image: $e');
+  //     Get.snackbar(
+  //       "Error",
+  //       "Could not display image",
+  //       backgroundColor: CRMColors.error,
+  //       colorText: CRMColors.textWhite,
+  //     );
+  //   }
+  // }
 
+  // Widget _getProfileImageWidget() {
+  //   if (getEmployeeDetailsController.profile_pic.value.isEmpty) {
+  //     return const CircleAvatar(
+  //       radius: 50,
+  //       backgroundColor: Colors.grey,
+  //       child: Icon(Icons.person, size: 50, color: Colors.white),
+  //     );
+  //   }
 
-// Widget _getProfileImageWidget() {
-//   if (getEmployeeDetailsController.profile_pic.value.isEmpty) {
-//     return const CircleAvatar(
-//       radius: 50,
-//       backgroundColor: Colors.grey,
-//       child: Icon(Icons.person, size: 50, color: Colors.white),
-//     );
-//   }
-
-//   try {
-//     // Check if it's a file path
-//     final file = File(getEmployeeDetailsController.profile_pic.toString());
-//     if (file.existsSync()) {
-//       return CircleAvatar(
-//         radius: 50,
-//         backgroundImage: FileImage(file),
-//       );
-//     }
-//     // Check if it's a network URL
-//     else if (getEmployeeDetailsController.profile_pic.startsWith('http')) {
-//       return CircleAvatar(
-//         radius: 50,
-//         backgroundImage: NetworkImage(getEmployeeDetailsController.profile_pic.toString()),
-//       );
-//     }
-//     // Assume it's base64 if neither
-//     else {
-//       final imageBytes = base64Decode(getEmployeeDetailsController.profile_pic.toString());
-//       return CircleAvatar(
-//         radius: 50,
-//         backgroundImage: MemoryImage(imageBytes),
-//       );
-//     }
-//   } catch (e) {
-//     print('Error loading profile image: $e');
-//     return const CircleAvatar(
-//       radius: 50,
-//       backgroundColor: Colors.grey,
-//       child: Icon(Icons.person, size: 50, color: Colors.white),
-//     );
-//   }
-// }
-
-
+  //   try {
+  //     // Check if it's a file path
+  //     final file = File(getEmployeeDetailsController.profile_pic.toString());
+  //     if (file.existsSync()) {
+  //       return CircleAvatar(
+  //         radius: 50,
+  //         backgroundImage: FileImage(file),
+  //       );
+  //     }
+  //     // Check if it's a network URL
+  //     else if (getEmployeeDetailsController.profile_pic.startsWith('http')) {
+  //       return CircleAvatar(
+  //         radius: 50,
+  //         backgroundImage: NetworkImage(getEmployeeDetailsController.profile_pic.toString()),
+  //       );
+  //     }
+  //     // Assume it's base64 if neither
+  //     else {
+  //       final imageBytes = base64Decode(getEmployeeDetailsController.profile_pic.toString());
+  //       return CircleAvatar(
+  //         radius: 50,
+  //         backgroundImage: MemoryImage(imageBytes),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     print('Error loading profile image: $e');
+  //     return const CircleAvatar(
+  //       radius: 50,
+  //       backgroundColor: Colors.grey,
+  //       child: Icon(Icons.person, size: 50, color: Colors.white),
+  //     );
+  //   }
+  // }
 }

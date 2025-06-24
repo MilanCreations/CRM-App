@@ -49,53 +49,49 @@ class SalaryReportModel {
 }
 
 class Result {
-    int employeeId;
     String name;
-    String baseSalary;
-    int presentDays;
-    int unpaidLeaves;
-    int lateArrivals;
-    int earlyLeaves;
-    dynamic workingHours;
-    String deduction;
-    String payableSalary;
+    int workingDays;
+    int noOfLeavesLeavePaidOrUnpaid;
+    int noOfDaysPaid;
+    int salary;
+    int amountPaid;
+    int amountDeducted;
+    int leaveBalance;
+    String reasonForDeduction;
 
     Result({
-        required this.employeeId,
         required this.name,
-        required this.baseSalary,
-        required this.presentDays,
-        required this.unpaidLeaves,
-        required this.lateArrivals,
-        required this.earlyLeaves,
-        required this.workingHours,
-        required this.deduction,
-        required this.payableSalary,
+        required this.workingDays,
+        required this.noOfLeavesLeavePaidOrUnpaid,
+        required this.noOfDaysPaid,
+        required this.salary,
+        required this.amountPaid,
+        required this.amountDeducted,
+        required this.leaveBalance,
+        required this.reasonForDeduction,
     });
 
     factory Result.fromJson(Map<String, dynamic> json) => Result(
-        employeeId: json["EmployeeID"],
         name: json["Name"],
-        baseSalary: json["BaseSalary"],
-        presentDays: json["PresentDays"],
-        unpaidLeaves: json["UnpaidLeaves"],
-        lateArrivals: json["LateArrivals"],
-        earlyLeaves: json["EarlyLeaves"],
-        workingHours: json["WorkingHours"],
-        deduction: json["Deduction"],
-        payableSalary: json["PayableSalary"],
+        workingDays: json["Working days"],
+        noOfLeavesLeavePaidOrUnpaid: json["No. of leaves Leave Paid or unpaid"],
+        noOfDaysPaid: json["No. of days paid"],
+        salary: json["Salary"],
+        amountPaid: json["Amount paid"],
+        amountDeducted: json["Amount deducted"],
+        leaveBalance: json["Leave Balance"],
+        reasonForDeduction: json["Reason for deduction"],
     );
 
     Map<String, dynamic> toJson() => {
-        "EmployeeID": employeeId,
         "Name": name,
-        "BaseSalary": baseSalary,
-        "PresentDays": presentDays,
-        "UnpaidLeaves": unpaidLeaves,
-        "LateArrivals": lateArrivals,
-        "EarlyLeaves": earlyLeaves,
-        "WorkingHours": workingHours,
-        "Deduction": deduction,
-        "PayableSalary": payableSalary,
+        "Working days": workingDays,
+        "No. of leaves Leave Paid or unpaid": noOfLeavesLeavePaidOrUnpaid,
+        "No. of days paid": noOfDaysPaid,
+        "Salary": salary,
+        "Amount paid": amountPaid,
+        "Amount deducted": amountDeducted,
+        "Leave Balance": leaveBalance,
+        "Reason for deduction": reasonForDeduction,
     };
 }

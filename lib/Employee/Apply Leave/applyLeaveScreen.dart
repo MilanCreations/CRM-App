@@ -301,49 +301,55 @@ class LeaveRequestScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 32),
-            Center(
-              child: Container(
-                width: Get.width * 0.8,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 8,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
+            Obx(() {
+  return leaveRequestcontroller.isLoading.value
+      ? const CircularProgressIndicator()
+      : Center(
+        child: Container(
+            width: Get.width * 0.8,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              gradient: const LinearGradient(
+                colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: Offset(0, 4),
                 ),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    minimumSize: Size(200, 50),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onPressed: () {
-                    leaveRequestcontroller.submitLeaveRequest();
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-                    child: CustomText(
-                      text: "Submit Request",
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
+              ],
+            ),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.zero,
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                minimumSize: const Size(200, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onPressed: () {
+                leaveRequestcontroller.submitLeaveRequest();
+              },
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                child: CustomText(
+                  text: "Submit Request",
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
             ),
+          ),
+      );
+})
+
+         
           ],
         ),
       ),

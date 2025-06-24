@@ -6,6 +6,7 @@ import 'package:crm_milan_creations/Employee/Notifications/notificationsScreen.d
 import 'package:crm_milan_creations/Employee/profile/profileScreen.dart';
 import 'package:crm_milan_creations/Task%20Management/TaskScreen.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 class EmployeeBottomNavBar extends StatefulWidget {
   final String checkpagestatuss;
@@ -26,7 +27,7 @@ class _EmployeeBottomNavBarState extends State<EmployeeBottomNavBar> {
     _screens = [
       Attendancescreen(checkpagestatus: widget.checkpagestatuss),
       ProfileScreen(),
-      NotificationsScreen(),
+      NotificationsScreen(message: RemoteMessage()),
       TaskScreen(),
       HistoryScreen(),
     ];

@@ -293,116 +293,127 @@ class _SalaryscreenState extends State<Salaryscreen> {
         ],
       ),
     );
-  }
+    }
 
-  Widget _buildSalaryItem(dynamic item) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Container(
-        decoration: BoxDecoration(
-          color: CRMColors.whiteColor,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: CRMColors.crmMainCOlor.withOpacity(0.05),
-              blurRadius: 8,
-              spreadRadius: 1,
-              offset: const Offset(2, 4),
-            ),
-          ],
-        ),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  backgroundColor: CRMColors.crmMainCOlor,
-                  radius: 20,
-                  child: Text(
-                    item.name.substring(0, 1).toUpperCase(),
-                    style: TextStyle(
-                      color: CRMColors.whiteColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    item.name,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                      color: CRMColors.textPrimary,
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: CRMColors.greenLight,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    "₹${item.baseSalary}",
-                    style: TextStyle(
-                      color: CRMColors.greenDark,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _statBox("Present", "${item.presentDays}", 
-                    Icons.check_circle, CRMColors.blue),
-                _statBox("Unpaid", "${item.unpaidLeaves}", 
-                    Icons.cancel, CRMColors.red),
-                _statBox("Late", "${item.lateArrivals}", 
-                    Icons.schedule, CRMColors.orange),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _statBox("Early Leave", "${item.earlyLeaves}", 
-                    Icons.exit_to_app, CRMColors.purple),
-                _statBox("Hours", "${item.workingHours}", 
-                    Icons.work_outline, CRMColors.teal),
-                _statBox("Deduction", "₹${item.deduction}", 
-                    Icons.currency_rupee_sharp, CRMColors.crmMainCOlor),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0, left: 5.0),
-              child: CustomText(
-                text: 'Total Payable',
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 5.0),
-              child: CustomText(
-                text: "${item.payableSalary}/-",
-                fontWeight: FontWeight.bold,
-                color: CRMColors.greenDark,
-                fontSize: 20,
-              ),
-            ),
-          ],
-        ),
+Widget _buildSalaryItem(dynamic item) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    child: Container(
+      decoration: BoxDecoration(
+        color: CRMColors.whiteColor,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: CRMColors.crmMainCOlor.withOpacity(0.05),
+            blurRadius: 8,
+            spreadRadius: 1,
+            offset: const Offset(2, 4),
+          ),
+        ],
       ),
-    );
-  }
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header: Avatar + Name
+          Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: CRMColors.crmMainCOlor,
+                radius: 20,
+                child: Text(
+                  item.name.substring(0, 1).toUpperCase(),
+                  style: TextStyle(
+                    color: CRMColors.whiteColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  item.name,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    color: CRMColors.textPrimary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          // Row 1: Present Days, Leaves, Working Days
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _statBox("Present Days", "${item.noOfDaysPaid}", Icons.check_circle, CRMColors.blue),
+              _statBox("Leaves", "${item.noOfLeavesLeavePaidOrUnpaid}", Icons.cancel, CRMColors.red),
+              _statBox("Working Days", "${item.workingDays}", Icons.work_outline, CRMColors.orange),
+            ],
+          ),
+
+          const SizedBox(height: 12),
+
+          // Row 2: Salary, Paid, Deducted
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _statBox("Salary", "₹${item.salary}", Icons.account_balance_wallet, CRMColors.succeed),
+              _statBox("Paid", "₹${item.amountPaid}", Icons.attach_money, CRMColors.teal),
+              _statBox("Deducted", "₹${item.amountDeducted}", Icons.money_off, CRMColors.red),
+            ],
+          ),
+
+          const SizedBox(height: 12),
+
+          // Total Payable
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0, left: 5.0),
+            child: CustomText(
+              text: 'Total Payable',
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 5.0),
+            child: CustomText(
+              text: "₹${item.amountPaid}/-",
+              fontWeight: FontWeight.bold,
+              color: CRMColors.greenDark,
+              fontSize: 20,
+            ),
+          ),
+
+          // Optional: Reason for Deduction
+          if (item.reasonForDeduction.trim().isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 10.0, left: 5.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomText(
+                    text: 'Reason for Deduction:',
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: CRMColors.textPrimary,
+                  ),
+                  const SizedBox(height: 4),
+                  CustomText(
+                    text: item.reasonForDeduction,
+                    fontSize: 13,
+                    color: Colors.black87,
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    ),
+  );
+}
 
   Widget _statBox(String label, String value, IconData icon, Color color) {
     return Expanded(
