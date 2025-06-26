@@ -126,22 +126,18 @@ class GetEmployeeDetailsController extends GetxController{
         aadharCard = RxString(editEmployeeDetailsModel.data.documentType[1].documentUrl.toString());
 
            // Parse and set shift times
-      if (editEmployeeDetailsModel.data.employeeShift.shiftStart != null) {
-        final startParts = editEmployeeDetailsModel.data.employeeShift.shiftStart.split(':');
-        shiftStart.value = TimeOfDay(
-          hour: int.parse(startParts[0]),
-          minute: int.parse(startParts[1]),
-        );
-      }
-      
-      if (editEmployeeDetailsModel.data.employeeShift.shiftEnd != null) {
-        final endParts = editEmployeeDetailsModel.data.employeeShift.shiftEnd.split(':');
-        shiftEnd.value = TimeOfDay(
-          hour: int.parse(endParts[0]),
-          minute: int.parse(endParts[1]),
-        );
-      }
-
+      final startParts = editEmployeeDetailsModel.data.employeeShift.shiftStart.split(':');
+      shiftStart.value = TimeOfDay(
+        hour: int.parse(startParts[0]),
+        minute: int.parse(startParts[1]),
+      );
+          
+      final endParts = editEmployeeDetailsModel.data.employeeShift.shiftEnd.split(':');
+      shiftEnd.value = TimeOfDay(
+        hour: int.parse(endParts[0]),
+        minute: int.parse(endParts[1]),
+      );
+    
 
         isLoading.value = false;
 

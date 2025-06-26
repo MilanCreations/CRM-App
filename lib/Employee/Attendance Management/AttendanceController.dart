@@ -696,7 +696,7 @@ Future<void> pickImageFromCamera() async {
           place.name,
           place.subLocality,
           place.locality,
-        ].where((e) => e != null && e!.isNotEmpty).join(', ');
+        ].where((e) => e != null && e.isNotEmpty).join(', ');
       } else {
         location.value = 'No address available';
       }
