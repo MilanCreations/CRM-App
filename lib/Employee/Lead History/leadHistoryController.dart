@@ -34,8 +34,7 @@ class AttendanceHistoryController extends GetxController {
     if (token == null) {
       isLoading.value = false;
       clearSharedPreferences();
-      Get.snackbar("Error", "User is not authenticated. Login again!",
-        backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
+     
       return;
     }
 

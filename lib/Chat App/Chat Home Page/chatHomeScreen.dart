@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crm_milan_creations/Chat%20App/Chat%20Home%20Page/ChatUserListController.dart';
+import 'package:crm_milan_creations/Chat%20App/Chat%20Inbox/chatInboxScreen.dart';
 import 'package:crm_milan_creations/Chat%20App/Socket%20Services/socketController.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,22 +18,30 @@ class ChatHomeScreen extends StatefulWidget {
 
 class _ChatHomeScreenState extends State<ChatHomeScreen> {
   final Socketcontroller socketController = Get.find<Socketcontroller>();
-  String? userId;
+  final ChatUserListController objChatUserListController = Get.put(ChatUserListController());
+
+  String userId ="";
+  String username ="";
 
   @override
   void initState() {
     super.initState();
     getUserData();
+    objChatUserListController.ChatUserListfunctions(isRefresh: true);
   }
 
   Future<void> getUserData() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    userId = sharedPreferences.getString("id");
-    print('user id:- $userId');
-    if (userId != null && userId!.isNotEmpty) {
-      socketController.initSocket(userId!);
-    } else {
-      print("userId is null or empty");
+    userId = sharedPreferences.getString("id") ?? "";
+    username = sharedPreferences.getString("username")?? "";
+    print('📥 Logged-in user ID: $userId');
+
+    if (userId != null && userId.isNotEmpty) {
+      socketController.initSocket(userId, username);
+    } 
+    
+     else {
+      print("⚠️ userId is null or empty");
     }
   }
 
@@ -64,14 +75,22 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
               ))
         ],
       ),
-      body: ListView.builder(
-        itemCount: 10,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+
+      body: Obx(() {
+      final users = objChatUserListController.ChatUsers;
+      if(users.isEmpty){
+        return const Center(child: Text("Chat box is Empty"));
+      }
+      return ListView.builder(
+        itemCount: users.length,
         itemBuilder: (context, index) {
-          return InkWell(
+        return InkWell(
             onTap: () {
-              // Navigate to chat box
-              // Get.to(() => ChatBoxScreen(userName: 'User ${index + 1}'));
+              final selectedPersonID = users[index].id.toString();
+              if(userId != null && selectedPersonID.isNotEmpty){
+                print('user id:- $userId selected person id:- $selectedPersonID');
+                Get.to(ChatScreen(userId: userId, peerId: selectedPersonID, selectedname: users[index].username, username:users[index].name,));
+              }
             },
             child: Card(
               elevation: 4,
@@ -82,27 +101,10 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                 child: Row(
                   children: [
-                    Stack(
-                      children: [
-                        CircleAvatar(
-                          radius: 28,
-                          backgroundColor: Colors.grey[300],
-                          backgroundImage: const AssetImage('assets/mainlogo.png'),
-                        ),
-                        // Positioned(
-                        //   bottom: 0,
-                        //   right: 0,
-                        //   child: Obx(() => Container(
-                        //         height: 12,
-                        //         width: 12,
-                        //         decoration: BoxDecoration(
-                        //           color: socketController.isConnected.value ? Colors.green : Colors.grey,
-                        //           shape: BoxShape.circle,
-                        //           border: Border.all(color: Colors.white, width: 2),
-                        //         ),
-                        //       )),
-                        // ),
-                      ],
+                    CircleAvatar(
+                      radius: 28,
+                      backgroundColor: Colors.grey[300],
+                      backgroundImage: const AssetImage('assets/mainlogo.png'),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -110,10 +112,10 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           CustomText(
-                            text: 'User Name ${index + 1}',
+                            text: users[index].name,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                          ),
+                          ), 
                           const SizedBox(height: 4),
                           CustomText(
                             text: 'This is a sample message preview...',
@@ -133,20 +135,20 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                             fontSize: 12,
                           ),
                         ),
-                        const SizedBox(height: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: CRMColors.crmMainCOlor,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const CustomText(
-                           text:  '2', // unread message count
-                            color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                          ),
-                        )
+                        // const SizedBox(height: 6),
+                        // Container(
+                        //   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        //   decoration: BoxDecoration(
+                        //     color: CRMColors.crmMainCOlor,
+                        //     borderRadius: BorderRadius.circular(12),
+                        //   ),
+                        //   child: const CustomText(
+                        //     text: '2',
+                        //     color: Colors.white,
+                        //     fontSize: 10,
+                        //     fontWeight: FontWeight.bold,
+                        //   ),
+                        // )
                       ],
                     )
                   ],
@@ -154,8 +156,9 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
               ),
             ),
           );
-        },
-      ),
+      },);
+      },),
+   
     );
   }
 }
