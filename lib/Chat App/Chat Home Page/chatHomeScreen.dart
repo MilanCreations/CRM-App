@@ -108,8 +108,10 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                     ),
                   );
                   if (result == true) {
-                     print("✅ User sent a message. Refreshing list...");
-                     objChatUserListController.ChatUserListfunctions(isRefresh: true);
+                    print("✅ User sent a message. Refreshing list...");
+                    objChatUserListController.ChatUserListfunctions(
+                      isRefresh: true,
+                    );
                   } else {
                     print('No message sent. so nee to referesh the list');
                   }
@@ -127,13 +129,49 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                   ),
                   child: Row(
                     children: [
-                      CircleAvatar(
-                        radius: 28,
-                        backgroundColor: Colors.grey[300],
-                        backgroundImage: const AssetImage(
-                          'assets/mainlogo.png',
-                        ),
+                      GestureDetector(
+                        onTap: () {
+                          if (users[index].profilePic != null &&
+                              users[index].profilePic.isNotEmpty) {
+                            Get.dialog(
+                              Dialog(
+                                backgroundColor: Colors.black,
+                                child: InteractiveViewer(
+                                  panEnabled: true,
+                                  minScale: 0.5,
+                                  maxScale: 4.0,
+                                  child: Image.network(
+                                    users[index].profilePic,
+                                    fit: BoxFit.contain,
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            const Icon(
+                                              Icons.broken_image,
+                                              color: Colors.white,
+                                            ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                        child:
+                            users[index].profilePic != null &&
+                                    users[index].profilePic.isNotEmpty
+                                ? CircleAvatar(
+                                  radius: 28,
+                                  backgroundColor: Colors.grey[300],
+                                  backgroundImage: NetworkImage(
+                                    users[index].profilePic,
+                                  ),
+                                )
+                                : const CircleAvatar(
+                                  radius: 28,
+                                  backgroundColor: Colors.grey,
+                                  child: Icon(Icons.person),
+                                ),
                       ),
+
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(

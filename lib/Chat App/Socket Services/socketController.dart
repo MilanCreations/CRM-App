@@ -12,7 +12,7 @@ class Socketcontroller extends GetxService {          // ① make it a Service
     userId=id;
     username=name;
     if (socket != null && socket!.connected) return;  // already connected
-    var url = "http://192.168.1.22:3000";
+    var url = "http://192.168.1.31:3000";
     socket = IO.io(
       url,
       IO.OptionBuilder()
