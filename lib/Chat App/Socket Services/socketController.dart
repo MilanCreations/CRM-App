@@ -12,7 +12,7 @@ class Socketcontroller extends GetxService {          // ① make it a Service
     userId=id;
     username=name;
     if (socket != null && socket!.connected) return;  // already connected
-    var url = "http://192.168.1.33:3000";
+    var url = "http://192.168.1.22:3000";
     socket = IO.io(
       url,
       IO.OptionBuilder()
@@ -20,12 +20,6 @@ class Socketcontroller extends GetxService {          // ① make it a Service
         .setTransports(['websocket'])
         .setPath('/socket.io')
         .build()
-      // <String, dynamic>{
-      //   'query': {'userId': userId},
-      //   'transports': ['websocket'],
-      //   'autoConnect': true,    
-      //   'path': '/socket.io'                      // ② correct key-name
-      // },
     );
 
     socket!
@@ -36,6 +30,8 @@ class Socketcontroller extends GetxService {          // ① make it a Service
          print('My Socket ID: ${socket?.id}');
         socket!.emit('userId', userId);
       })
+
+      
       ..on('disconnect', (_) {                        // add disconnect handler
         isConnected.value = false;
         print('❌ socket disconnected');
@@ -44,7 +40,7 @@ class Socketcontroller extends GetxService {          // ① make it a Service
       ..on('connect_error', (err) {
         isConnected.value = false;
         print('⚠️ connect_error: $err');
-        _reconnect();
+        // _reconnect();
       });
   }
 
@@ -56,14 +52,5 @@ class Socketcontroller extends GetxService {          // ① make it a Service
       }
     });
   }
-
-void sendMessage(String toUserId, String message, String recievername) =>
-    socket?.emit('privateMessage', {
-      'sender_id': userId,
-      'username':recievername,
-      'receiver_id': toUserId,
-      'message': message,
-      'timestamp': DateTime.now().toIso8601String(),
-    });
 
 }

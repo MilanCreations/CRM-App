@@ -13,60 +13,47 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CheckClockInController extends GetxController {
- final String checkpagestatus;
-   CheckClockInController({required this.checkpagestatus});
- 
- var isLoading = false.obs;
+  final String checkpagestatus;
+  CheckClockInController({required this.checkpagestatus});
+
+  var isLoading = false.obs;
   var checkInTime = ''.obs;
   var checkOutTime = ''.obs;
   var breackinTime = ''.obs;
   var breackOutTime = ''.obs;
   var pictureuser = ''.obs;
-   
 
   @override
   void onInit() {
     print("Check in API controller initialized");
     print("Check in API controller checkpagestatus: $checkpagestatus");
     super.onInit();
-     getlocaldata();
+    getlocaldata();
     //checkClockInController();
   }
 
-
- 
-
- 
-  getlocaldata() async{
+  getlocaldata() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
-   checkInTime =RxString( sharedPreferences.getString("check_in") ?? "");
+    checkInTime = RxString(sharedPreferences.getString("check_in") ?? "");
 
-   
-    if(checkInTime.isNotEmpty){
-       print("Check in time in getlocaldata: $checkpagestatus");
+    if (checkInTime.isNotEmpty) {
+      print("Check in time in getlocaldata: $checkpagestatus");
       if (checkpagestatus == "login") {
-         print("Login");
+        print("Login");
+        checkClockInController();
+      } else if (checkInTime.toString() == "checkin") {
+        print("checking");
+        checkClockInController();
+      } else if (checkpagestatus.toString() == "splash") {
+        print("splash");
+        checkClockInController();
+      }
+    } else {
+      print("not condition");
       checkClockInController();
-    
-    }else if(checkInTime.toString() == "checkin"){
-       print("checking");
-      checkClockInController();
-   
-    }else if(checkpagestatus.toString() == "splash"){
-       print("splash");
-      checkClockInController();
-
     }
-
-  }else{
-     print("not condition");
-     checkClockInController();
-
   }
-  }
-
-
 
   Future<void> openInternetSettings() async {
     const url = 'app-settings:';
@@ -138,10 +125,14 @@ class CheckClockInController extends GetxController {
         } else {
           print("sdfdsfdsg");
           var checkLoginModel = checkinStatusFromJson(response.body);
-           checkInTime.value = checkLoginModel.data.attendance.checkIn.toString();
-           checkOutTime.value = checkLoginModel.data.attendance.checkOut.toString();
-           breackinTime.value = checkLoginModel.data.attendance.breakStart.toString();
-           breackOutTime.value = checkLoginModel.data.attendance.breakEnd.toString();
+          checkInTime.value =
+              checkLoginModel.data.attendance.checkIn.toString();
+          checkOutTime.value =
+              checkLoginModel.data.attendance.checkOut.toString();
+          breackinTime.value =
+              checkLoginModel.data.attendance.breakStart.toString();
+          breackOutTime.value =
+              checkLoginModel.data.attendance.breakEnd.toString();
           print('Check in time in check API in controller :- $checkInTime');
           await prefs.setString(
             'picture',
@@ -222,7 +213,8 @@ class CheckClockInController extends GetxController {
       isLoading.value = false;
     }
   }
-        static Future<void> clearSharedPreferences() async {
+
+  static Future<void> clearSharedPreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.clear();
     // Get.snackbar(

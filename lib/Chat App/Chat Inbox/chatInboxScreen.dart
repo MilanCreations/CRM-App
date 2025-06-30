@@ -9,6 +9,7 @@ import 'package:crm_milan_creations/Chat%20App/Socket%20Services/socketControlle
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
+import 'package:intl/intl.dart';
 
 class ChatScreen extends StatefulWidget {
   final String userId;
@@ -33,23 +34,30 @@ class _ChatScreenState extends State<ChatScreen> {
   final socketController = Get.put(Socketcontroller());
   final TextEditingController msgCtrl = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  final Chatinboxhistorycontroller chatinboxhistorycontroller = Get.put(Chatinboxhistorycontroller());
+  final Chatinboxhistorycontroller chatinboxhistorycontroller = Get.put(
+    Chatinboxhistorycontroller(),
+  );
   File? selectedFile;
+  bool messageSent = false;
 
   @override
   void initState() {
     super.initState();
     socketController.initSocket(widget.userId, widget.username);
     chatController.initListeners(widget.userId, widget.peerId);
+    chatController.handleMessageActivity();
 
-    chatController.messages.listen((_){
-      Future.delayed(Duration(milliseconds: 100),(){
-        if(_scrollController.hasClients){
-          _scrollController.animateTo(_scrollController.position.maxScrollExtent, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+    chatController.messages.listen((_) {
+      Future.delayed(Duration(milliseconds: 100), () {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
         }
       });
     });
-
   }
 
   void sendMessage() {
@@ -61,17 +69,22 @@ class _ChatScreenState extends State<ChatScreen> {
       toId: widget.peerId,
       message: msgCtrl.text.trim(),
       selectedFile: selectedFile,
-      recievername: widget.selectedname
+      recievername: widget.selectedname,
     );
 
     msgCtrl.clear();
-    setState(() => selectedFile = null);
-
-    Future.delayed(Duration(milliseconds: 100),(){
-      _scrollController.animateTo(_scrollController.position.maxScrollExtent, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+    setState((){
+      selectedFile = null;
+      messageSent = true;
     });
 
-
+    Future.delayed(Duration(milliseconds: 100), () {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    });
   }
 
   Future<void> pickFile() async {
@@ -86,6 +99,9 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       appBar: CustomAppBar(
         showBackArrow: true,
+        leadingOnPressed: () {
+           Get.back(result: messageSent);
+        },
         title: CustomText(
           text: widget.username,
           fontSize: 18,
@@ -101,8 +117,13 @@ class _ChatScreenState extends State<ChatScreen> {
             () => Padding(
               padding: const EdgeInsets.only(right: 16.0),
               child: Icon(
-                socketController.isConnected.value ? Icons.wifi : Icons.wifi_off,
-                color: socketController.isConnected.value ? Colors.green : Colors.red,
+                socketController.isConnected.value
+                    ? Icons.wifi
+                    : Icons.wifi_off,
+                color:
+                    socketController.isConnected.value
+                        ? Colors.green
+                        : Colors.red,
               ),
             ),
           ),
@@ -121,7 +142,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   final isMe = msg.isSentByMe;
 
                   return Align(
-                    alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                    alignment:
+                        isMe ? Alignment.centerRight : Alignment.centerLeft,
                     child: Container(
                       padding: const EdgeInsets.all(12),
                       margin: const EdgeInsets.symmetric(vertical: 6),
@@ -130,28 +152,41 @@ class _ChatScreenState extends State<ChatScreen> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Column(
-                        crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                        crossAxisAlignment:
+                            isMe
+                                ? CrossAxisAlignment.end
+                                : CrossAxisAlignment.start,
                         children: [
                           if (msg.message.isNotEmpty)
                             Text(
                               msg.message,
-                              style: TextStyle(color: isMe ? Colors.white : Colors.black87),
+                              style: TextStyle(
+                                color: isMe ? Colors.white : Colors.black87,
+                              ),
                             ),
                           if (msg.file != null)
                             Padding(
                               padding: const EdgeInsets.only(top: 8),
                               child: Column(
                                 children: [
-                                  Icon(Icons.attach_file, color: isMe ? Colors.white : Colors.black87),
+                                  Icon(
+                                    Icons.attach_file,
+                                    color: isMe ? Colors.white : Colors.black87,
+                                  ),
                                   Text(
                                     '📎 Attachment',
-                                    style: TextStyle(color: isMe ? Colors.white : Colors.black87, fontSize: 12),
+                                    style: TextStyle(
+                                      color:
+                                          isMe ? Colors.white : Colors.black87,
+                                      fontSize: 12,
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
                         ],
                       ),
+                   
                     ),
                   );
                 },
@@ -179,7 +214,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   IconButton(
                     icon: const Icon(Icons.close),
                     onPressed: () => setState(() => selectedFile = null),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -188,14 +223,22 @@ class _ChatScreenState extends State<ChatScreen> {
             padding: const EdgeInsets.all(10.0),
             child: Row(
               children: [
-                IconButton(icon: const Icon(Icons.attach_file), onPressed: pickFile),
+                IconButton(
+                  icon: const Icon(Icons.attach_file),
+                  onPressed: pickFile,
+                ),
                 Expanded(
                   child: TextField(
                     controller: msgCtrl,
-                    decoration: const InputDecoration(hintText: 'Type your message...'),
+                    decoration: const InputDecoration(
+                      hintText: 'Type your message...',
+                    ),
                   ),
                 ),
-                IconButton(icon: const Icon(Icons.send), onPressed: sendMessage),
+                IconButton(
+                  icon: const Icon(Icons.send),
+                  onPressed: sendMessage,
+                ),
               ],
             ),
           ),
@@ -203,4 +246,7 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
     );
   }
+  String formatTime(DateTime timestamp) {
+  return DateFormat('hh:mm a').format(timestamp.toLocal());
+}
 }

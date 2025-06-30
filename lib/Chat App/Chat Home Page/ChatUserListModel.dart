@@ -50,7 +50,7 @@ class User {
     User({
         required this.id,
         required this.username,
-        required this.fullname,
+        required this.fullname, 
         required this.name,
         required this.departmentName,
         required this.designation,

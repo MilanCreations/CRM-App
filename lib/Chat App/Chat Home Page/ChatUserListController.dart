@@ -15,9 +15,11 @@ class ChatUserListController extends GetxController {
   var ChatUsers = [].obs;
   var currentPage = 1.obs;
   var hasMoreData = true.obs;
+  var lastUpdateTime = DateTime.now().obs;
 
   Future<void> ChatUserListfunctions({bool isRefresh = false}) async {
-    if (isLoading.value || !hasMoreData.value) return;
+    if (isLoading.value) return;
+    if (!isRefresh && !hasMoreData.value) return;
 
     try {
       isLoading.value = true;
@@ -40,7 +42,7 @@ class ChatUserListController extends GetxController {
       Map<String, dynamic> chatuserdata = {'company_id': companyID};
 
       final uri = Uri.parse(
-        "${ApiConstants.chatUserList}?chat=\"null\"&_page=${currentPage.value}",
+        "${ApiConstants.chatUserList}?_page=${currentPage.value}",
       );
       print("Final chat user list API URL: $uri");
 

@@ -12,7 +12,7 @@ class Chatinboxhistorycontroller extends GetxController{
   var hasMoreData = true.obs;
   var currentPage = 1.obs;
 
-  Future<void> messagesListFunction({bool isRefresh = false, required String peerId}) async{
+  Future<void> messagesListFunction({bool isRefresh = false, required String peerId}) async{    
     try{
         isLoading.value = true;
         final prefs = await SharedPreferences.getInstance();
@@ -24,7 +24,7 @@ class Chatinboxhistorycontroller extends GetxController{
           clearSharedPreferences();
           return;
         }
-
+        
         if(isRefresh){
           currentPage.value = 1;
           hasMoreData.value = true;

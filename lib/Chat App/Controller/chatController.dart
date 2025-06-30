@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:crm_milan_creations/Chat%20App/Chat%20Home%20Page/ChatUserListController.dart';
 import 'package:get/get.dart';
 import 'package:crm_milan_creations/Chat%20App/Model/chatModel.dart';
 import 'package:crm_milan_creations/Chat%20App/Socket%20Services/socketController.dart';
@@ -7,7 +8,12 @@ import 'package:crm_milan_creations/Chat%20App/Controller/chatInboxHistoryContro
 class ChatController extends GetxController {
   final RxList<ChatMessage> messages = <ChatMessage>[].obs;
   final Socketcontroller socketService = Get.find<Socketcontroller>();
-  final Chatinboxhistorycontroller chatHistory = Get.put(Chatinboxhistorycontroller());
+  final Chatinboxhistorycontroller chatHistory = Get.put(
+    Chatinboxhistorycontroller(),
+  );
+  final ChatUserListController chatuserlistcontroller = Get.put(
+    ChatUserListController(),
+  );
 
   /// Parses timestamp from API/socket
   DateTime _parseTimestamp(dynamic rawTimestamp) {
@@ -29,33 +35,36 @@ class ChatController extends GetxController {
   }
 
   /// Load previous messages from API
-  Future<void> loadChatHistory(String currentUserId, String peerId)async {
+  Future<void> loadChatHistory(String currentUserId, String peerId) async {
     await chatHistory.messagesListFunction(isRefresh: true, peerId: peerId);
 
     for (var item in chatHistory.messageList) {
-      messages.add(ChatMessage(
-        id: item.id?.toString() ?? '',
-        from: item.senderId?.toString() ?? '',
-        to: item.receiverId?.toString() ?? '',
-        fromName: item.senderId?.toString() ?? '',
-        message: item.message ?? '',
-        // file: item.file,
-        timestamp: _parseTimestamp(item.createdAt),
-        isSentByMe: item.senderId?.toString() == currentUserId,
-        status: 'delivered',
-      ));
+      messages.add(
+        ChatMessage(
+          id: item.id?.toString() ?? '',
+          from: item.senderId?.toString() ?? '',
+          to: item.receiverId?.toString() ?? '',
+          fromName: item.senderId?.toString() ?? '',
+          message: item.message ?? '',
+          timestamp: _parseTimestamp(item.createdAt),
+          isSentByMe: item.senderId?.toString() == currentUserId,
+          status: 'delivered',
+        ),
+      );
     }
   }
 
-  /// Setup listener for new messages via socket
+  /// Setup listeners for new messages and activity
   void initListeners(String currentUserId, String peerId) {
-    loadChatHistory(currentUserId,peerId); // Load history first
+    loadChatHistory(currentUserId, peerId); // Load history first
 
     final socket = socketService.socket;
 
     if (socket != null) {
       socket.off('privateMessage');
+      socket.off('messageActivity');
 
+      // Incoming private message
       socket.on('privateMessage', (data) {
         print('📥 Received socket message: $data');
 
@@ -77,8 +86,9 @@ class ChatController extends GetxController {
             status: data['status']?.toString() ?? 'received',
           );
 
-          if (receivedMsg.to == currentUserId) {
+          if (receivedMsg.to == currentUserId && receivedMsg.from == peerId) {
             messages.add(receivedMsg);
+
             print('✅ Message added from ${receivedMsg.from}');
 
             if (data['id'] != null) {
@@ -95,7 +105,22 @@ class ChatController extends GetxController {
     }
   }
 
-  /// Send message through socket
+  /// Refresh chat user list when message activity occurs
+  void handleMessageActivity() {
+    final socket = socketService.socket;
+    if (socket == null) return;
+    socket.off('messageActivity');
+    socket.on('messageActivity', (data) {
+      print('🔔 Message activity detected - refreshing user list');
+
+      chatuserlistcontroller.ChatUserListfunctions(isRefresh: true).then((_) {
+        chatuserlistcontroller.ChatUsers.refresh();
+      });
+      chatuserlistcontroller.ChatUsers.refresh();
+    });
+  }
+
+  // Send a message via socket
   void sendMessage({
     required String fromId,
     required String fromName,
@@ -118,8 +143,7 @@ class ChatController extends GetxController {
       'timestamp': DateTime.now().toIso8601String(),
       if (message != null && message.trim().isNotEmpty)
         'message': message.trim(),
-      if (selectedFile != null)
-        'file': selectedFile.path,
+      if (selectedFile != null) 'file': selectedFile.path,
     };
 
     messages.add(
@@ -137,5 +161,14 @@ class ChatController extends GetxController {
     );
 
     socket.emit('privateMessage', newMessagePayload);
+
+    // ✅ Emit messageActivity to trigger chat list update
+    socket.emit('messageActivity', {
+      'sender_id': fromId,
+      'receiver_id': toId,
+      'timestamp': DateTime.now().toIso8601String(),
+    });
+
+    print('📤 Message sent and messageActivity emitted.');
   }
 }
