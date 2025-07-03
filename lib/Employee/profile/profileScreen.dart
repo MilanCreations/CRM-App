@@ -10,6 +10,7 @@ import 'package:crm_milan_creations/Chat%20App/Chat%20Home%20Page/chatHomeScreen
 import 'package:crm_milan_creations/Employee/Apply%20Leave/applyLeaveScreen.dart';
 import 'package:crm_milan_creations/Employee/Attendance%20History/allendanceHistoryScreen.dart';
 import 'package:crm_milan_creations/Employee/Leave%20History/leaveHistoryScreen.dart';
+import 'package:crm_milan_creations/Employee/Notifications/notificationsScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Employee%20Leave%20Request/empLeaveRequestScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Employee%20List/EmployeeListScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Salary/SalaryScreen.dart';
@@ -19,10 +20,12 @@ import 'package:crm_milan_creations/Inventory%20Management/Issue%20Inventory/Iss
 import 'package:crm_milan_creations/Lead%20Management/All%20Lead%20list/allLeadsScreen.dart';
 import 'package:crm_milan_creations/Lead%20Management/Create%20Leads/createLeadsScreen.dart';
 import 'package:crm_milan_creations/Lead%20Management/My%20Leads%20List/myLeadListScreen.dart';
+import 'package:crm_milan_creations/Task%20Management/TaskScreen.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
 import 'package:crm_milan_creations/widgets/connectivity_service.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -511,9 +514,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     onTap: () => Get.to(() => Salaryscreen()),
                   ),
                   buildMenuItem(
-                    icon: Icons.chat,
-                    text: 'Chat',
-                    onTap: () => Get.to(() => ChatHomeScreen()),
+                    icon: Icons.task,
+                    text: 'Tasks',
+                    onTap: () => Get.to(() => TaskScreen()),
                   ),
                   widgetshowpermissionswise(),
                   userRole == "COMPANY_ADMIN"

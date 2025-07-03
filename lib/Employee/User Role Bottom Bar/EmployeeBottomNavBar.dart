@@ -1,10 +1,10 @@
 // ignore_for_file: file_names
 
+import 'package:crm_milan_creations/Chat%20App/Chat%20Home%20Page/chatHomeScreen.dart';
 import 'package:crm_milan_creations/Employee/Attendance%20Management/AttendanceScreen.dart';
 import 'package:crm_milan_creations/Employee/Attendance%20History/allendanceHistoryScreen.dart';
 import 'package:crm_milan_creations/Employee/Notifications/notificationsScreen.dart';
 import 'package:crm_milan_creations/Employee/profile/profileScreen.dart';
-import 'package:crm_milan_creations/Task%20Management/TaskScreen.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +28,7 @@ class _EmployeeBottomNavBarState extends State<EmployeeBottomNavBar> {
       Attendancescreen(checkpagestatus: widget.checkpagestatuss),
       ProfileScreen(),
       NotificationsScreen(message: RemoteMessage()),
-      TaskScreen(),
+      ChatHomeScreen(),
       HistoryScreen(),
     ];
   }
@@ -57,12 +57,12 @@ class _EmployeeBottomNavBarState extends State<EmployeeBottomNavBar> {
           _buildNavItem(Icons.dashboard, "Dashboard", 0),
           _buildNavItem(Icons.person, "Profile", 1),
           _buildNavItem(Icons.notifications, "Notification", 2),
-          _buildNavItem(Icons.task, "Task", 3),
+          _buildNavItem(Icons.chat, "Chat", 3),
           _buildNavItem(Icons.wallet, "History", 4),
         ],
       ),
     );
-  }
+  } 
 
   BottomNavigationBarItem _buildNavItem(
     IconData icon,

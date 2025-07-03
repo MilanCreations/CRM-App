@@ -27,9 +27,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
   );
   TextEditingController searchController = TextEditingController();
   late final ScrollController _scrollController;
-    NointernetScreen noInternetScreen = const NointernetScreen();
+  NointernetScreen noInternetScreen = const NointernetScreen();
   final ConnectivityService _connectivityService = ConnectivityService();
-  late final StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+  late final StreamSubscription<List<ConnectivityResult>>
+  _connectivitySubscription;
   Timer? _debounce;
   String userRole = "";
   RxBool isSearching = false.obs;
@@ -38,32 +39,32 @@ class _HistoryScreenState extends State<HistoryScreen> {
   void initState() {
     super.initState();
     getUserData();
-       _checkInitialConnection();
-   _setupConnectivityListener();
+    _checkInitialConnection();
+    _setupConnectivityListener();
     _scrollController = ScrollController()..addListener(_onScroll);
     attendanceHistoryController.AllEmployeesAttendanceHistoryfunctions(
       isRefresh: true,
     );
   }
 
-    Future<void> _checkInitialConnection() async {
+  Future<void> _checkInitialConnection() async {
     if (!(await _connectivityService.isConnected())) {
       _connectivityService.showNoInternetScreen();
     }
   }
 
-    void _setupConnectivityListener() {
-    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
-      onConnected: () {
-        // Optional: You can automatically go back if connection is restored
-        // Get.back();
-      },
-      onDisconnected: () {
-        _connectivityService.showNoInternetScreen();
-      },
-    );
+  void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService
+        .listenToConnectivityChanges(
+          onConnected: () {
+            // Optional: You can automatically go back if connection is restored
+            // Get.back();
+          },
+          onDisconnected: () {
+            _connectivityService.showNoInternetScreen();
+          },
+        );
   }
-
 
   void _onScroll() {
     if (_scrollController.position.pixels >=
@@ -85,7 +86,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   void dispose() {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
-     _connectivitySubscription.cancel();
+    _connectivitySubscription.cancel();
     super.dispose();
   }
 
@@ -173,8 +174,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
     return Scaffold(
       appBar: CustomAppBar(
         showBackArrow: false,
-        leadingIcon:   Icons.arrow_back_ios_new,
-          // color: CRMColors.whiteColor,
+        leadingIcon: Icons.arrow_back_ios_new,
+        // color: CRMColors.whiteColor,
         gradient: const LinearGradient(
           colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
           begin: Alignment.topLeft,
@@ -190,44 +191,45 @@ class _HistoryScreenState extends State<HistoryScreen> {
       body: Column(
         children: [
           const SizedBox(height: 12),
-              userRole != "EMPLOYEE"
-         ? Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
+          userRole != "EMPLOYEE"
+              ? Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              child: TextField(
-                controller: searchController,
-                onChanged: (_) => _onSearchChanged(),
-                decoration: InputDecoration(
-                  hintText: 'Search employee...',
-                  prefixIcon: const Icon(Icons.search),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 14),
-                  suffixIcon:
-                      searchController.text.isNotEmpty
-                          ? IconButton(
-                            icon: const Icon(Icons.clear),
-                            onPressed: () {
-                              searchController.clear();
-                              FocusScope.of(context).unfocus();
-                              _resetAndFetchFilteredData();
-                            },
-                          )
-                          : null,
+                  child: TextField(
+                    controller: searchController,
+                    onChanged: (_) => _onSearchChanged(),
+                    decoration: InputDecoration(
+                      hintText: 'Search employee...',
+                      prefixIcon: const Icon(Icons.search),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                      suffixIcon:
+                          searchController.text.isNotEmpty
+                              ? IconButton(
+                                icon: const Icon(Icons.clear),
+                                onPressed: () {
+                                  searchController.clear();
+                                  FocusScope.of(context).unfocus();
+                                  _resetAndFetchFilteredData();
+                                },
+                              )
+                              : null,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ): SizedBox(),
+              )
+              : SizedBox(),
           const SizedBox(height: 18),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -326,16 +328,29 @@ class _HistoryScreenState extends State<HistoryScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Align(
               alignment: Alignment.centerRight,
-              child: TextButton.icon(
-                onPressed: () {
-                  attendanceHistoryController.startDateTime.value = null;
-                  attendanceHistoryController.endDateTime.value = null;
-                  _resetAndFetchFilteredData();
-                },
-                icon: const Icon(Icons.clear, size: 18),
-                label: const Text("Clear Filters"),
-                style: TextButton.styleFrom(foregroundColor: Colors.red),
-              ),
+              child: Obx(() {
+                final isDisabled =
+                    attendanceHistoryController.startDateTime.value == null &&
+                    attendanceHistoryController.endDateTime.value == null;
+
+                return TextButton.icon(
+                  onPressed:
+                      isDisabled
+                          ? null
+                          : () {
+                            attendanceHistoryController.startDateTime.value =
+                                null;
+                            attendanceHistoryController.endDateTime.value =
+                                null;
+                            _resetAndFetchFilteredData();
+                          },
+                  icon: const Icon(Icons.clear, size: 18),
+                  label: const Text("Clear Filters"),
+                  style: TextButton.styleFrom(
+                    foregroundColor: isDisabled ? Colors.grey : Colors.red,
+                  ),
+                );
+              }),
             ),
           ),
           const SizedBox(height: 8),
@@ -383,7 +398,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         .length +
                     1,
                 itemBuilder: (context, index) {
-                  if (index < attendanceHistoryController
+                  if (index <
+                      attendanceHistoryController
                           .allEmployeeAttendanceHistoryList
                           .length) {
                     final history =
@@ -494,7 +510,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   }
                 },
               );
-          
             }),
           ),
         ],

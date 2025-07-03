@@ -40,7 +40,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
   Future<void> getUserData() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     userId = sharedPreferences.getString("id") ?? "";
-    username = sharedPreferences.getString("username") ?? "";
+    username = sharedPreferences.getString("username") ?? ""; 
     print('📥 Logged-in user ID: $userId');
 
     if (userId != null && userId.isNotEmpty) {
