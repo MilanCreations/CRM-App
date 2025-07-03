@@ -2,6 +2,7 @@ import 'package:crm_milan_creations/Chat%20App/Chat%20Home%20Page/ChatUserListCo
 import 'package:crm_milan_creations/Chat%20App/Chat%20Inbox/chatInboxScreen.dart';
 import 'package:crm_milan_creations/Chat%20App/Controller/chatController.dart';
 import 'package:crm_milan_creations/Chat%20App/Socket%20Services/socketController.dart';
+import 'package:fade_shimmer/fade_shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
@@ -86,8 +87,15 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
 
       body: Obx(() {
         final users = objChatUserListController.ChatUsers;
-        if (users.isEmpty) {
-          return const Center(child: Text("Chat box is Empty"));
+        if (objChatUserListController.isLoading.value) {
+          return shimmereffectloader();
+        } if(users.isEmpty) {
+          return const Center(
+            child: Text(
+              'No users found',
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+          );
         }
         return ListView.builder(
           itemCount: users.length,
@@ -227,4 +235,51 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
       }),
     );
   }
+Widget shimmereffectloader() {
+  return ListView.builder(
+    itemCount: 10,
+    padding: const EdgeInsets.symmetric(vertical: 8),
+    itemBuilder: (context, index) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        child: Row(
+          children: [
+            FadeShimmer.round(
+              size: 56,
+              fadeTheme: FadeTheme.light, // Or use FadeTheme.dark
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  FadeShimmer(
+                    height: 14,
+                    width: double.infinity,
+                    radius: 4,
+                    millisecondsDelay: 300,
+                    fadeTheme: FadeTheme.light,
+                  ),
+                  const SizedBox(height: 8),
+                  FadeShimmer(
+                    height: 12,
+                    width: MediaQuery.of(context).size.width * 0.4,
+                    radius: 4,
+                    millisecondsDelay: 300,
+                    fadeTheme: FadeTheme.light,
+                    baseColor: CRMColors.darkGrey,
+                    highlightColor: CRMColors.darkGrey,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+
+
 }
