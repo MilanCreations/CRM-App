@@ -121,7 +121,6 @@ class CheckClockInController extends GetxController {
           prefs.setString('breakin', '');
           prefs.setString('breakout', '');
           checkInTime.value = "checkin";
-          print("nextday");
         } else {
           print("sdfdsfdsg");
           var checkLoginModel = checkinStatusFromJson(response.body);
@@ -166,12 +165,6 @@ class CheckClockInController extends GetxController {
       if (response.statusCode == 401) {
         isLoading.value = false;
         clearSharedPreferences();
-        // Get.snackbar(
-        //   'Message',
-        //   'Login session expired',
-        //   backgroundColor: CRMColors.error,
-        //   colorText: CRMColors.textWhite,
-        // );
         return;
       }
 
@@ -197,14 +190,6 @@ class CheckClockInController extends GetxController {
         return;
       }
 
-      // isLoading.value = false;
-      // Get.snackbar(
-      //   "Error",
-      //   "Failed to check clock In status",
-      //   backgroundColor: CRMColors.error,
-      //   colorText: CRMColors.textWhite,
-      // );
-
       print("Retrieved Token in check clock in api Controller: $token");
     } catch (error) {
       isLoading.value = false;
@@ -217,12 +202,6 @@ class CheckClockInController extends GetxController {
   static Future<void> clearSharedPreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.clear();
-    // Get.snackbar(
-    //   'Logout',
-    //   'Login session expired',
-    //   backgroundColor: CRMColors.error,
-    //   colorText: CRMColors.textWhite,
-    // );
     Get.offAll(LoginScreen());
   }
 }

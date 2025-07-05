@@ -15,8 +15,9 @@ class Splashscreen extends StatefulWidget {
 }
 
 class _SplashscreenState extends State<Splashscreen> {
-  final CheckClockInController objCheckClockInController =
-      Get.put(CheckClockInController(checkpagestatus: "splash"));
+  final CheckClockInController objCheckClockInController = Get.put(
+    CheckClockInController(checkpagestatus: "splash"),
+  );
 
   @override
   void initState() {
@@ -71,13 +72,21 @@ class _SplashscreenState extends State<Splashscreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-        child: Image.asset(
-          'assets/mainlogo.png', // 🔁 Replace with your actual image path
-          width: 200,
-          height: 200,
-          fit: BoxFit.contain,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF00154F), Color(0xFF001B7D)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Center(
+          child: Image.asset(
+            'assets/mainlogo.png', // Replace with your actual image path
+            width: 200,
+            height: 200,
+            fit: BoxFit.contain,
+          ),
         ),
       ),
     );

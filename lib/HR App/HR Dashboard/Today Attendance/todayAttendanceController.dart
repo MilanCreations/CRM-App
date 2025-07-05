@@ -43,9 +43,6 @@ class TodayAttendanceHistoryController extends GetxController {
       if (token == null) {
         isLoading.value = false;
         clearSharedPreferences();
-        Get.snackbar("Error", "User is not authenticated. Login again!",
-            backgroundColor: CRMColors.error,
-            colorText: CRMColors.textWhite);
         return;
       }
 
@@ -98,7 +95,7 @@ class TodayAttendanceHistoryController extends GetxController {
   static Future<void> clearSharedPreferences() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
-    Get.snackbar('Logout', 'Login session expired',
+    Get.snackbar('Message', 'Login session expired',
         backgroundColor: CRMColors.error,
         colorText: CRMColors.textWhite);
     Get.offAll(LoginScreen());

@@ -147,7 +147,7 @@ await preferences.setString('platform', devicePlatform);
     Get.snackbar(
       "Success",
       "Login Successful",
-      backgroundColor: CRMColors.clockInDate_and_position,
+      backgroundColor: CRMColors.whiteColor,
       colorText: CRMColors.black,
     );
   } catch (error) {
