@@ -31,13 +31,13 @@ dependencies:
   flutter:
     sdk: flutter
   get:
-  google_fonts: ^6.2.1
-  flutter_svg: ^2.0.17
+  google_fonts:
+  flutter_svg:
   dropdown_button2:
   shared_preferences:
   image_picker:
   intl:
-  geolocator: ^9.0.2
+  geolocator:
   geocoding:
   http_parser:
   moment_dart:
@@ -58,7 +58,7 @@ dependencies:
   device_info_plus:
   fade_shimmer:
   upgrader:
-  app_settings: ^6.1.1
+  app_settings:
   firebase_core:
   cloud_firestore:
   firebase_messaging:
@@ -66,6 +66,7 @@ dependencies:
   android_intent_plus:
   socket_io_client:
   flutter_chat_ui:
+  local_auth:
 
 
   # The following adds the Cupertino Icons font to your application.
