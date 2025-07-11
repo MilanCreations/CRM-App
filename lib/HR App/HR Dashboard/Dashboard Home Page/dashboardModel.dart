@@ -38,6 +38,7 @@ class Data {
     int todayLeaves;
     int pendingLeaves;
     int approvedLeaves;
+    int totalEmployees;
 
     Data({
         required this.myLeads,
@@ -45,6 +46,7 @@ class Data {
         required this.todayLeaves,
         required this.pendingLeaves,
         required this.approvedLeaves,
+        required this.totalEmployees,
     });
 
     factory Data.fromJson(Map<String, dynamic> json) => Data(
@@ -53,6 +55,7 @@ class Data {
         todayLeaves: json["todayLeaves"],
         pendingLeaves: json["pendingLeaves"],
         approvedLeaves: json["approvedLeaves"],
+        totalEmployees: json["totalEmployees"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -61,5 +64,6 @@ class Data {
         "todayLeaves": todayLeaves,
         "pendingLeaves": pendingLeaves,
         "approvedLeaves": approvedLeaves,
+        "totalEmployees": totalEmployees,
     };
 }

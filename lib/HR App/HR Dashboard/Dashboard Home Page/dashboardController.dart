@@ -6,78 +6,94 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Dashboardcontroller extends GetxController{
+class Dashboardcontroller extends GetxController {
   var isLoading = false.obs;
   var myLeads = ''.obs;
   var todayAttendanceCount = ''.obs;
   var todayLeaves = ''.obs;
   var pendingLeaves = ''.obs;
   var approvedLeaves = ''.obs;
+  var totalEmployees = ''.obs;
 
   Future<void> dashboardFunction() async {
-    try{
+    try {
       isLoading.value = true;
       final prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
-    print("token in HR Dashboard:- $token");
+      print("token in HR Dashboard:- $token");
 
-       if (token == null) {
-      isLoading.value = false;
-      clearSharedPreferences();
-      return;
-    }
+      if (token == null) {
+        isLoading.value = false;
+        clearSharedPreferences();
+        return;
+      }
 
+      final url = Uri.parse(ApiConstants.hrDashboard);
+      final response = await http.get(
+        url,
+        headers: {"Authorization": "Bearer $token"},
+      );
 
-    final url = Uri.parse(ApiConstants.hrDashboard);
-    final response = await http.get(url,headers: {"Authorization": "Bearer $token"});
+      print("API Status Code in HR Dashbaord: ${response.statusCode}");
+      print("Body Response of HR Dashbaord: $response");
 
-    print("API Status Code in HR Dashbaord: ${response.statusCode}");
-    print("Body Response of HR Dashbaord: $response");
-  
-  if(response.statusCode == 200){
-      var hrDashboardModel = dashboardFromJson(response.body);
-      print("Data fetched from HR dashboard model");
-      myLeads.value = hrDashboardModel.data.myLeads.toString();
-      todayAttendanceCount.value = hrDashboardModel.data.todayAttendanceCount.toString();
-      todayLeaves.value = hrDashboardModel.data.todayLeaves.toString();
-      pendingLeaves.value = hrDashboardModel.data.pendingLeaves.toString();
-      approvedLeaves.value = hrDashboardModel.data.approvedLeaves.toString();
-      print('My Leads:- ${myLeads.value}');
-      print('Today Attendance Count:- ${todayAttendanceCount.value}');
-      print('Leads:- ${pendingLeaves.value}');
-      print('Approved Leaves:- ${approvedLeaves.value}');
-      print('Today Leaves:- ${todayLeaves.value}');
-  } else if (response.statusCode == 400) {
-      isLoading.value = false;
-      Get.snackbar('Error', 'Bad Request',
-          backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
-    } else if (response.statusCode == 401) {
-      isLoading.value = false;
-      Get.snackbar('Message', 'Login session expired',
-          backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
-    } else if (response.statusCode == 500 || response.statusCode == 404) {
-      isLoading.value = false;
-      Get.snackbar('Error', 'No More Data',
-          backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
-    } else {
-      isLoading.value = false;
-      Get.snackbar("Error", "Failed to fetch attendance history",
-          backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
-    }
-
-
-
-
-    } catch(error){
+      if (response.statusCode == 200) {
+        var hrDashboardModel = dashboardFromJson(response.body);
+        print("Data fetched from HR dashboard model");
+        myLeads.value = hrDashboardModel.data.myLeads.toString();
+        todayAttendanceCount.value =
+            hrDashboardModel.data.todayAttendanceCount.toString();
+        todayLeaves.value = hrDashboardModel.data.todayLeaves.toString();
+        pendingLeaves.value = hrDashboardModel.data.pendingLeaves.toString();
+        approvedLeaves.value = hrDashboardModel.data.approvedLeaves.toString();
+        totalEmployees.value = hrDashboardModel.data.totalEmployees.toString();
+        print('My Leads:- ${myLeads.value}');
+        print('Today Attendance Count:- ${todayAttendanceCount.value}');
+        print('Leads:- ${pendingLeaves.value}');
+        print('Approved Leaves:- ${approvedLeaves.value}');
+        print('Today Leaves:- ${todayLeaves.value}');
+        print('Total Employees:- ${totalEmployees.value}');
+        isLoading.value = false;
+      } else if (response.statusCode == 400) {
+        isLoading.value = false;
+        Get.snackbar(
+          'Error',
+          'Bad Request',
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+      } else if (response.statusCode == 401) {
+        isLoading.value = false;
+        Get.snackbar(
+          'Message',
+          'Login session expired',
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+      } else if (response.statusCode == 500 || response.statusCode == 404) {
+        isLoading.value = false;
+        Get.snackbar(
+          'Error',
+          'No More Data',
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+      } else {
+        isLoading.value = false;
+        Get.snackbar(
+          "Error",
+          "Failed to fetch attendance history",
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+      }
+    } catch (error) {
       print("Catch erro in dashboard controller:- $error");
       isLoading.value = false;
     }
   }
 
-
-
-
-        static Future<void> clearSharedPreferences() async {
+  static Future<void> clearSharedPreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.clear();
     Get.snackbar(
@@ -88,9 +104,4 @@ class Dashboardcontroller extends GetxController{
     );
     Get.offAll(LoginScreen());
   }
-
-
-
-
-
 }

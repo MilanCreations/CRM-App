@@ -420,7 +420,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
           fontSize: 20,
           fontWeight: FontWeight.bold,
         ),
-        backgroundColor: CRMColors.crmMainCOlor,
+        // backgroundColor: CRMColors.crmMainCOlor,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications, color: Colors.white),
+            onPressed: () => Get.to(() => NotificationsScreen(message: RemoteMessage())),
+          ),
+          
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(

@@ -1,4 +1,5 @@
 // ignore_for_file: file_names
+import 'package:crm_milan_creations/Chat%20App/Chat%20Home%20Page/chatHomeScreen.dart';
 import 'package:crm_milan_creations/Employee/Attendance%20Management/AttendanceScreen.dart';
 import 'package:crm_milan_creations/Employee/Attendance%20History/allendanceHistoryScreen.dart';
 import 'package:crm_milan_creations/Employee/Notifications/notificationsScreen.dart';
@@ -27,7 +28,8 @@ class _BottomNavBarState extends State<HRBottomNavBar> {
       Dashboardscreen(),
       Attendancescreen(checkpagestatus: widget.checkpagestatuss),
       ProfileScreen(),
-      NotificationsScreen(message: RemoteMessage()),
+      // NotificationsScreen(message: RemoteMessage()),
+      ChatHomeScreen(),
       HistoryScreen(),
     ];
   }
@@ -55,7 +57,8 @@ class _BottomNavBarState extends State<HRBottomNavBar> {
           _buildNavItem(Icons.dashboard, "Dashboard", 0),
           _buildNavItem(Icons.group_add_rounded, "Attendance", 1),
           _buildNavItem(Icons.person, "Profile", 2),
-          _buildNavItem(Icons.notifications, "Notifications", 3),
+          // _buildNavItem(Icons.notifications, "Notifications", 3),
+          _buildNavItem(Icons.chat, "Chat", 3),
           _buildNavItem(Icons.wallet, "History", 4),
         ],
       ),

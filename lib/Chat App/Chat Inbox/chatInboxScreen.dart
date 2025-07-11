@@ -46,7 +46,7 @@ class _ChatScreenState extends State<ChatScreen> {
     socketController.initSocket(widget.userId, widget.username);
     chatController.initListeners(widget.userId, widget.peerId);
     chatController.handleMessageActivity();
-
+    chatController.messages.clear(); // update this
     chatController.messages.listen((_) {
       Future.delayed(Duration(milliseconds: 100), () {
         if (_scrollController.hasClients) {

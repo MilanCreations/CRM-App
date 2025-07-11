@@ -23,7 +23,8 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
     ChatUserListController(),
   );
   final chatController = Get.put(ChatController());
-
+  TextEditingController searchController = TextEditingController();
+  RxBool isSearching = false.obs;
   String userId = "";
   String username = "";
 
@@ -41,7 +42,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
   Future<void> getUserData() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     userId = sharedPreferences.getString("id") ?? "";
-    username = sharedPreferences.getString("username") ?? ""; 
+    username = sharedPreferences.getString("username") ?? "";
     print('📥 Logged-in user ID: $userId');
 
     if (userId != null && userId.isNotEmpty) {
@@ -50,6 +51,22 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
       print("⚠️ userId is null or empty");
     }
   }
+
+  Future<void> _resetAndFetchFilteredData() async {
+    objChatUserListController.hasMoreData.value = true;
+    objChatUserListController.currentPage.value = 1;
+    searchController.clear();
+    objChatUserListController.ChatUserListfunctions(searchQuery: "");
+  }
+
+
+
+
+void _onSearchChanged() {
+  final query = searchController.text.trim();
+  objChatUserListController.searchUserLocally(query);
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -85,201 +102,242 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
         ],
       ),
 
-      body: Obx(() {
-        final users = objChatUserListController.ChatUsers;
-        if (objChatUserListController.isLoading.value) {
-          return shimmereffectloader();
-        } if(users.isEmpty) {
-          return const Center(
-            child: Text(
-              'No users found',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-          );
-        }
-        return ListView.builder(
-          itemCount: users.length,
-          itemBuilder: (context, index) {
-            return InkWell(
-              onTap: () async {
-                final selectedPersonID = users[index].id.toString();
-                if (userId != null && selectedPersonID.isNotEmpty) {
-                  print(
-                    'user id:- $userId selected person id:- $selectedPersonID',
-                  );
-                  final result = await Get.to(
-                    ChatScreen(
-                      userId: userId,
-                      peerId: selectedPersonID,
-                      selectedname: users[index].username,
-                      username: users[index].name,
-                    ),
-                  );
-                  if (result == true) {
-                    print("✅ User sent a message. Refreshing list...");
-                    objChatUserListController.ChatUserListfunctions(
-                      isRefresh: true,
-                    );
-                  } else {
-                    print('No message sent. so nee to referesh the list');
-                  }
-                }
-              },
-              child: Card(
-                elevation: 4,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+      body: Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 4,
+                  offset: Offset(0, 2),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 14,
-                  ),
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          if (users[index].profilePic != null &&
-                              users[index].profilePic.isNotEmpty) {
-                            Get.dialog(
-                              Dialog(
-                                backgroundColor: Colors.black,
-                                child: InteractiveViewer(
-                                  panEnabled: true,
-                                  minScale: 0.5,
-                                  maxScale: 4.0,
-                                  child: Image.network(
-                                    users[index].profilePic,
-                                    fit: BoxFit.contain,
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            const Icon(
-                                              Icons.broken_image,
-                                              color: Colors.white,
-                                            ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                        child:
-                            users[index].profilePic != null &&
-                                    users[index].profilePic.isNotEmpty
-                                ? CircleAvatar(
-                                  radius: 28,
-                                  backgroundColor: Colors.grey[300],
-                                  backgroundImage: NetworkImage(
-                                    users[index].profilePic,
-                                  ),
-                                )
-                                : const CircleAvatar(
-                                  radius: 28,
-                                  backgroundColor: Colors.grey,
-                                  child: Icon(Icons.person),
-                                ),
-                      ),
+              ],
+            ),
+            margin: const EdgeInsets.all(12),
+            child: TextField(
+              controller: searchController,
+              onChanged: (_) => _onSearchChanged(),
+              decoration: InputDecoration(
+                hintText: 'Search employee...',
+                prefixIcon: const Icon(Icons.search),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                suffixIcon:
+                    searchController.text.isNotEmpty
+                        ? IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            searchController.clear();
+                            FocusScope.of(context).unfocus();
+                            _resetAndFetchFilteredData();
+                          },
+                        )
+                        : null,
+              ),
+            ),
+          ),
 
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+          Expanded(
+            child: Obx(() {
+              final users = objChatUserListController.chatUsers;
+              if (objChatUserListController.isLoading.value) {
+                return shimmereffectloader();
+              }
+              if (users.isEmpty) {
+                return const Center(
+                  child: Text(
+                    'No users found',
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                );
+              }
+              return ListView.builder(
+                itemCount: users.length,
+                itemBuilder: (context, index) {
+                  return InkWell(
+                    onTap: () async {
+                      final selectedPersonID = users[index].id.toString();
+                      if (userId != null && selectedPersonID.isNotEmpty) {
+                        print(
+                          'user id:- $userId selected person id:- $selectedPersonID',
+                        );
+                        final result = await Get.to(
+                          ChatScreen(
+                            userId: userId,
+                            peerId: selectedPersonID,
+                            selectedname: users[index].username,
+                            username: users[index].name,
+                          ),
+                        );
+                        if (result == true) {
+                          print("✅ User sent a message. Refreshing list...");
+                          objChatUserListController.ChatUserListfunctions(
+                            isRefresh: true,
+                          );
+                        } else {
+                          print('No message sent. so nee to referesh the list');
+                        }
+                      }
+                    },
+                    child: Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 14,
+                        ),
+                        child: Row(
                           children: [
-                            CustomText(
-                              text: users[index].name,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                            GestureDetector(
+                              onTap: () {
+                                if (users[index].profilePic != null &&
+                                    users[index].profilePic.isNotEmpty) {
+                                  Get.dialog(
+                                    Dialog(
+                                      backgroundColor: Colors.black,
+                                      child: InteractiveViewer(
+                                        panEnabled: true,
+                                        minScale: 0.5,
+                                        maxScale: 4.0,
+                                        child: Image.network(
+                                          users[index].profilePic,
+                                          fit: BoxFit.contain,
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  const Icon(
+                                                    Icons.broken_image,
+                                                    color: Colors.white,
+                                                  ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                              child:
+                                  users[index].profilePic != null &&
+                                          users[index].profilePic.isNotEmpty
+                                      ? CircleAvatar(
+                                        radius: 28,
+                                        backgroundColor: Colors.grey[300],
+                                        backgroundImage: NetworkImage(
+                                          users[index].profilePic,
+                                        ),
+                                      )
+                                      : const CircleAvatar(
+                                        radius: 28,
+                                        backgroundColor: Colors.grey,
+                                        child: Icon(Icons.person),
+                                      ),
                             ),
-                            const SizedBox(height: 4),
-                            CustomText(
-                              text: 'This is a sample message preview...',
-                              fontSize: 13,
-                              color: Colors.grey,
+            
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  CustomText(
+                                    text: users[index].name,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  CustomText(
+                                    text: 'This is a sample message preview...',
+                                    fontSize: 13,
+                                    color: Colors.grey,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  '${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}',
+                                  style: TextStyle(
+                                    color: Colors.grey[600],
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                // const SizedBox(height: 6),
+                                // Container(
+                                //   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                //   decoration: BoxDecoration(
+                                //     color: CRMColors.crmMainCOlor,
+                                //     borderRadius: BorderRadius.circular(12),
+                                //   ),
+                                //   child: const CustomText(
+                                //     text: '2',
+                                //     color: Colors.white,
+                                //     fontSize: 10,
+                                //     fontWeight: FontWeight.bold,
+                                //   ),
+                                // )
+                              ],
                             ),
                           ],
                         ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            '${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}',
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 12,
-                            ),
-                          ),
-                          // const SizedBox(height: 6),
-                          // Container(
-                          //   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          //   decoration: BoxDecoration(
-                          //     color: CRMColors.crmMainCOlor,
-                          //     borderRadius: BorderRadius.circular(12),
-                          //   ),
-                          //   child: const CustomText(
-                          //     text: '2',
-                          //     color: Colors.white,
-                          //     fontSize: 10,
-                          //     fontWeight: FontWeight.bold,
-                          //   ),
-                          // )
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        );
-      }),
+                    ),
+                  );
+                },
+              );
+            }),
+          ),
+        ],
+      ),
     );
   }
-Widget shimmereffectloader() {
-  return ListView.builder(
-    itemCount: 10,
-    padding: const EdgeInsets.symmetric(vertical: 8),
-    itemBuilder: (context, index) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        child: Row(
-          children: [
-            FadeShimmer.round(
-              size: 56,
-              fadeTheme: FadeTheme.light, // Or use FadeTheme.dark
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  FadeShimmer(
-                    height: 14,
-                    width: double.infinity,
-                    radius: 4,
-                    millisecondsDelay: 300,
-                    fadeTheme: FadeTheme.light,
-                  ),
-                  const SizedBox(height: 8),
-                  FadeShimmer(
-                    height: 12,
-                    width: MediaQuery.of(context).size.width * 0.4,
-                    radius: 4,
-                    millisecondsDelay: 300,
-                    fadeTheme: FadeTheme.light,
-                    baseColor: CRMColors.darkGrey,
-                    highlightColor: CRMColors.darkGrey,
-                  ),
-                ],
+
+  Widget shimmereffectloader() {
+    return ListView.builder(
+      itemCount: 10,
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Row(
+            children: [
+              FadeShimmer.round(
+                size: 56,
+                fadeTheme: FadeTheme.light, // Or use FadeTheme.dark
               ),
-            ),
-          ],
-        ),
-      );
-    },
-  );
-}
-
-
-
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    FadeShimmer(
+                      height: 14,
+                      width: double.infinity,
+                      radius: 4,
+                      millisecondsDelay: 300,
+                      fadeTheme: FadeTheme.light,
+                    ),
+                    const SizedBox(height: 8),
+                    FadeShimmer(
+                      height: 12,
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      radius: 4,
+                      millisecondsDelay: 300,
+                      fadeTheme: FadeTheme.light,
+                      baseColor: CRMColors.darkGrey,
+                      highlightColor: CRMColors.darkGrey,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 }

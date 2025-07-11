@@ -32,7 +32,7 @@ Future<void> loginAPI() async {
  String devicePlatform = Platform.isAndroid ? 'android' : Platform.isIOS ? 'ios' : 'unknown';
 print('Device platform: $devicePlatform');
 
-// ✅ Save platform in SharedPreferences
+// Save platform in SharedPreferences
 await preferences.setString('platform', devicePlatform);
 
 

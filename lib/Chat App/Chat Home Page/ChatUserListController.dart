@@ -1,7 +1,4 @@
-// ignore_for_file: non_constant_identifier_names, prefer_interpolation_to_compose_strings
-
 import 'dart:convert';
-
 import 'package:crm_milan_creations/API%20Services/BaseURL_&_EndPoints.dart';
 import 'package:crm_milan_creations/Auth/Login/loginScreen.dart';
 import 'package:crm_milan_creations/Chat%20App/Chat%20Home%20Page/ChatUserListModel.dart';
@@ -12,12 +9,15 @@ import 'package:http/http.dart' as http;
 
 class ChatUserListController extends GetxController {
   var isLoading = false.obs;
-  var ChatUsers = [].obs;
+  var chatUsers = [].obs;
   var currentPage = 1.obs;
   var hasMoreData = true.obs;
-  var lastUpdateTime = DateTime.now().obs;
+  var allUsers = <User>[].obs;
 
-  Future<void> ChatUserListfunctions({bool isRefresh = false}) async {
+  Future<void> ChatUserListfunctions({
+    bool isRefresh = false,
+    String searchQuery = '',
+  }) async {
     if (isLoading.value) return;
     if (!isRefresh && !hasMoreData.value) return;
 
@@ -34,15 +34,14 @@ class ChatUserListController extends GetxController {
       }
 
       if (isRefresh) {
-        currentPage.value = 1;
-        hasMoreData.value = true;
-        ChatUsers.clear();
+        chatUsers.clear();
+        allUsers.clear();
       }
 
       Map<String, dynamic> chatuserdata = {'company_id': companyID};
 
       final uri = Uri.parse(
-        "${ApiConstants.chatUserList}?_page=${currentPage.value}",
+        "${ApiConstants.chatUserList}?_page=${currentPage.value}&q=$searchQuery",
       );
       print("Final chat user list API URL: $uri");
 
@@ -50,7 +49,7 @@ class ChatUserListController extends GetxController {
         uri,
         headers: {
           "Authorization": "Bearer $token",
-          "Content-Type": "application/json", // Make sure backend supports this
+          "Content-Type": "application/json",
         },
         body: jsonEncode(chatuserdata),
       );
@@ -64,8 +63,8 @@ class ChatUserListController extends GetxController {
         if (chatUserModel.user.isEmpty) {
           hasMoreData.value = false;
         } else {
-          ChatUsers.addAll(chatUserModel.user);
-          print("Chat user list count: ${ChatUsers.length}");
+          allUsers.addAll(chatUserModel.user);
+          chatUsers.value = allUsers.toList(); // initially unfiltered
           currentPage.value++;
         }
       } else if (response.statusCode == 401) {
@@ -96,4 +95,16 @@ class ChatUserListController extends GetxController {
     );
     Get.offAll(LoginScreen());
   }
+
+    void searchUserLocally(String query) {
+  if (query.isEmpty) {
+    chatUsers.value = allUsers;
+  } else {
+    final lower = query.toLowerCase();
+    chatUsers.value = allUsers.where((user) {
+      return user.name!.toLowerCase().contains(lower) ||
+             user.username.toLowerCase().contains(lower);
+    }).toList();
+  }
+}
 }

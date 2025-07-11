@@ -1,9 +1,11 @@
 // ignore_for_file: deprecated_member_use
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
+import 'package:crm_milan_creations/HR%20App/Employee%20List/EmployeeListController.dart';
+import 'package:crm_milan_creations/HR%20App/Employee%20List/EmployeeListScreen.dart';
 import 'package:crm_milan_creations/HR%20App/HR%20Dashboard/Dashboard%20Home%20Page/dashboardController.dart';
 import 'package:crm_milan_creations/HR%20App/HR%20Dashboard/HR%20Leads/hrLeadsScreen.dart';
 import 'package:crm_milan_creations/HR%20App/HR%20Dashboard/Today%20Leave%20Request/todayLeaveScreen.dart';
@@ -14,6 +16,7 @@ import 'package:crm_milan_creations/widgets/appBar.dart';
 import 'package:crm_milan_creations/widgets/connectivity_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Dashboardscreen extends StatefulWidget {
   const Dashboardscreen({super.key});
@@ -24,40 +27,56 @@ class Dashboardscreen extends StatefulWidget {
 
 class _DashboardscreenState extends State<Dashboardscreen> {
   final Dashboardcontroller controller = Get.put(Dashboardcontroller());
-    NointernetScreen noInternetScreen = const NointernetScreen();
   final ConnectivityService _connectivityService = ConnectivityService();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+
+  String companyName = "";
+  String userRole = "";
+  List<String> chartData = [];
 
   @override
   void initState() {
     super.initState();
     controller.dashboardFunction();
-       _checkInitialConnection();
-   _setupConnectivityListener();
+    _checkInitialConnection();
+    _setupConnectivityListener();
+    getUserData();
   }
 
-    @override
+  @override
   void dispose() {
-   _connectivitySubscription.cancel();
+    _connectivitySubscription.cancel();
     super.dispose();
   }
 
-      Future<void> _checkInitialConnection() async {
+  Future<void> _checkInitialConnection() async {
     if (!(await _connectivityService.isConnected())) {
       _connectivityService.showNoInternetScreen();
     }
   }
 
-    void _setupConnectivityListener() {
+  void _setupConnectivityListener() {
     _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
-      onConnected: () {
-        // Optional: You can automatically go back if connection is restored
-        // Get.back();
-      },
+      onConnected: () {},
       onDisconnected: () {
         _connectivityService.showNoInternetScreen();
       },
     );
+  }
+
+  Future<void> getUserData() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    companyName = sharedPreferences.getString("company_name") ?? "";
+    userRole = sharedPreferences.getString("user_role") ?? "";
+    String? permissionsJson = sharedPreferences.getString("permissions");
+if (permissionsJson != null) {
+  chartData = List<String>.from(jsonDecode(permissionsJson));
+}
+
+    print('Company name: $companyName');
+    print('User role: $userRole');
+    print('Permissions: $chartData');
+    setState(() {});
   }
 
   Widget buildDashboardTile(
@@ -89,7 +108,6 @@ class _DashboardscreenState extends State<Dashboardscreen> {
           padding: const EdgeInsets.all(16),
           child: Stack(
             children: [
-              // Decorative curves in the corner (unchanged)
               Positioned(
                 top: -10,
                 right: -10,
@@ -114,12 +132,9 @@ class _DashboardscreenState extends State<Dashboardscreen> {
                   ),
                 ),
               ),
-              // Centered content column
               Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Icon(icon, color: Colors.white, size: 36),
                     const SizedBox(height: 15),
@@ -136,7 +151,7 @@ class _DashboardscreenState extends State<Dashboardscreen> {
                     Text(
                       title,
                       style: const TextStyle(
-                        color: Colors.white70,
+                        color: Colors.white,
                         fontSize: 16,
                       ),
                       textAlign: TextAlign.center,
@@ -162,8 +177,8 @@ class _DashboardscreenState extends State<Dashboardscreen> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        title: const CustomText(
-          text: "Dashboard",
+        title: CustomText(
+          text: "Welcome $companyName",
           color: CRMColors.whiteColor,
           fontSize: 20,
           fontWeight: FontWeight.bold,
@@ -181,68 +196,6 @@ class _DashboardscreenState extends State<Dashboardscreen> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              // Header with decorative curve
-              Container(
-                height: Get.height * 0.2,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF4A00E0), Color(0xFF8E2DE2)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(25),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.purple.withOpacity(0.3),
-                      blurRadius: 12,
-                      offset: const Offset(0, 6),
-                    ),
-                  ],
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 20,
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.bar_chart,
-                        color: Colors.white,
-                        size: 32,
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Text(
-                          "Today's Overview",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 6),
-                        CustomText(
-                         text:  "Check your daily statistics",
-                         color: Colors.white70, fontSize: 14
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
               const SizedBox(height: 30),
               Expanded(
                 child: GridView.count(
@@ -251,15 +204,16 @@ class _DashboardscreenState extends State<Dashboardscreen> {
                   crossAxisSpacing: 20,
                   childAspectRatio: 0.9,
                   children: [
-                    buildDashboardTile(
-                      "My Leads",
-                      controller.myLeads,
-                      Icons.assessment,
-                      [Color(0xFFDA22FF), Color(0xFF9733EE)],
-                      onTap: () {
-                        Get.to(HrleadsScreen());
-                      },
-                    ),
+                    if (chartData.contains("view-leads") || userRole == "HR_MANAGER")
+                      buildDashboardTile(
+                        "My Leads",
+                        controller.myLeads,
+                        Icons.assessment,
+                        [Color(0xFFDA22FF), Color(0xFF9733EE)],
+                        onTap: () {
+                          Get.to(() => HrleadsScreen());
+                        },
+                      ),
                     buildDashboardTile(
                       "Today Attendance",
                       controller.todayAttendanceCount,
@@ -284,11 +238,7 @@ class _DashboardscreenState extends State<Dashboardscreen> {
                       Icons.pending_actions,
                       [Color(0xFFED213A), Color(0xFF93291E)],
                       onTap: () {
-                        Get.to(
-                          () => const HrLeaveRequestScreen(
-                            statusFilter: "pending",
-                          ),
-                        );
+                        Get.to(() => const HrLeaveRequestScreen(statusFilter: "pending"));
                       },
                     ),
                     buildDashboardTile(
@@ -297,12 +247,18 @@ class _DashboardscreenState extends State<Dashboardscreen> {
                       Icons.verified,
                       [Color(0xFF56AB2F), Color(0xFFA8E063)],
                       onTap: () {
-                        Get.to(
-                          () => const HrLeaveRequestScreen(
-                            statusFilter: "approved",
-                          ),
-                        );
+                        Get.to(() => const HrLeaveRequestScreen(statusFilter: "approved"));
                       },
+                    ),
+
+                    buildDashboardTile(
+                        "Total Employees",
+                        controller.totalEmployees,
+                        Icons.groups,
+                        	[Color(0xFF00B4DB), Color(0xFF0083B0)],
+                        onTap: () {
+                          Get.to(() => const EmployeeListScreen());
+                        },
                     ),
                   ],
                 ),
