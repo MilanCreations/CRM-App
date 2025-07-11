@@ -45,5 +45,9 @@
     <true/>
     <key>UIApplicationSupportsIndirectInputEvents</key>
     <true/>
+    <key>NSLocalNetworkUsageDescription</key>
+     <string>This app needs access to the local network for debugging and development.</string>
+    <key>GOOGLE_APP_ID</key>
+     <string>1:337846184291:ios:aae63bba07ce419229cb56</string>
   </dict>
 </plist>

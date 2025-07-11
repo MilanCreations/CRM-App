@@ -35,7 +35,7 @@ class _SplashscreenState extends State<Splashscreen> {
     final token = prefs.getString('token');
     final role = prefs.getString('role_code');
     final fullName = prefs.getString('fullname');
-    print("Full Name in splash: $fullName");
+    
 
     if (token != null && token.isNotEmpty) {
       await objCheckClockInController.checkClockInController();
@@ -74,7 +74,7 @@ class _SplashscreenState extends State<Splashscreen> {
       backgroundColor: Colors.black,
       body: Center(
         child: Image.asset(
-          'assets/mainlogo.png', // 🔁 Replace with your actual image path
+          'assets/mainlogo.png',
           width: 200,
           height: 200,
           fit: BoxFit.contain,
