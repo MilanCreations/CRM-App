@@ -168,16 +168,16 @@ class CheckClockInController extends GetxController {
         return;
       }
 
-      if (response.statusCode == 500) {
-        isLoading.value = false;
-        Get.snackbar(
-          'Error',
-          'No More Data',
-          backgroundColor: CRMColors.error,
-          colorText: CRMColors.textWhite,
-        );
-        return;
-      }
+      // if (response.statusCode == 500) {
+      //   isLoading.value = false;
+      //   Get.snackbar(
+      //     'Error',
+      //     'No More Data',
+      //     backgroundColor: CRMColors.error,
+      //     colorText: CRMColors.textWhite,
+      //   );
+      //   return;
+      // }
 
       if (response.statusCode == 404) {
         isLoading.value = false;

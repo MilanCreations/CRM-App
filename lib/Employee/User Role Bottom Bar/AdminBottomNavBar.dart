@@ -1,34 +1,33 @@
-
 // ignore_for_file: file_names
+import 'package:crm_milan_creations/Admin/Dashboard/AdminDashboardScreen.dart';
 import 'package:crm_milan_creations/Employee/Notifications/notificationsScreen.dart';
 import 'package:crm_milan_creations/Employee/profile/profileScreen.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-class SuperAdminBottomNavBar extends StatefulWidget {
+
+class AdminBottomNavBar extends StatefulWidget {
   final String checkpagestatuss;
-  const SuperAdminBottomNavBar({super.key,required this.checkpagestatuss});
+  const AdminBottomNavBar({super.key, required this.checkpagestatuss});
 
   @override
-  State<SuperAdminBottomNavBar> createState() => _SuperAdminBottomNavBarState();
+  State<AdminBottomNavBar> createState() => _AdminBottomNavBarState();
 }
 
-class _SuperAdminBottomNavBarState extends State<SuperAdminBottomNavBar> {
+class _AdminBottomNavBarState extends State<AdminBottomNavBar> {
   int _selectedIndex = 0;
-   late List<Widget> _screens;
+  late List<Widget> _screens;
 
-
- @override
+  @override
   void initState() {
     super.initState();
     _screens = [
-      // Dashboardscreen(checkpagestatus: widget.checkpagestatuss),
+      AdminDashboardScreen(),
       ProfileScreen(),
       // NotificationsScreen(),
       NotificationsScreen(message: RemoteMessage()),
     ];
   }
-
 
   void _onItemTapped(int index) {
     setState(() {
@@ -50,10 +49,10 @@ class _SuperAdminBottomNavBarState extends State<SuperAdminBottomNavBar> {
         selectedItemColor: CRMColors.crmMainCOlor, // Just a fallback color
         unselectedItemColor: Colors.grey,
         items: [
-          // _buildNavItem(Icons.dashboard, "Dashboard", 0),
+          _buildNavItem(Icons.dashboard, "Dashboard", 0),
           _buildNavItem(Icons.person, "Profile", 1),
           // _buildNavItem(Icons.notifications, "super", 2),
-          _buildNavItem(Icons.notifications_active, "Notification", 3),  
+          _buildNavItem(Icons.notifications_active, "Notification", 3),
         ],
       ),
     );
@@ -69,11 +68,11 @@ class _SuperAdminBottomNavBarState extends State<SuperAdminBottomNavBar> {
       icon: ShaderMask(
         shaderCallback: (Rect bounds) {
           return isSelected
-              ?LinearGradient(
-          colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ).createShader(bounds)
+              ? LinearGradient(
+                colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ).createShader(bounds)
               : LinearGradient(
                 colors: [Colors.grey, Colors.grey], // Keep grey for unselected
               ).createShader(bounds);
@@ -84,7 +83,6 @@ class _SuperAdminBottomNavBarState extends State<SuperAdminBottomNavBar> {
         ), // Keep white, shader applies color
       ),
       label: label,
-
     );
   }
 }

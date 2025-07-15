@@ -570,7 +570,7 @@ class _HrleadsScreenState extends State<HrleadsScreen> {
               if (hrLeadcontroller.hrLeadList.isEmpty) {
                 return const Center(
                   child: Text(
-                    "No HR Leads Found",
+                    "No Leads are Found",
                     style: TextStyle(fontSize: 18, color: CRMColors.black1),
                   ),
                 );
@@ -651,7 +651,7 @@ class _HrleadsScreenState extends State<HrleadsScreen> {
                                     horizontal: 8.0,
                                   ),
                                   child: CustomText(
-                                   text:  lead.name ?? 'No Name',
+                                    text: lead.name ?? 'No Name',
                                     fontSize: 14,
                                   ),
                                 ),
@@ -703,7 +703,6 @@ class _HrleadsScreenState extends State<HrleadsScreen> {
                       ),
                     );
                   },
-                
                 ),
               );
             }),

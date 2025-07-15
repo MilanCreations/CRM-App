@@ -35,7 +35,8 @@ class CustomDropdownButton2 extends StatefulWidget {
     this.prefixIcon,
     this.borderRadius = 12.0,
     this.focusBorderColor = Colors.black,
-    this.borderColor = Colors.black, // ✅ new customizable border color
+    this.borderColor = Colors.black,
+    this.enableSearch = false, // ✅ New
   });
 
   final Widget hint;
@@ -65,17 +66,38 @@ class CustomDropdownButton2 extends StatefulWidget {
   final Widget? prefixIcon;
   final double borderRadius;
   final Color focusBorderColor;
-  final Color borderColor; // ✅ exposed to user
+  final Color borderColor;
   final Color selectedItemTextColor;
   final FontWeight selectedItemFontWeight;
+  final bool enableSearch;
 
   @override
   State<CustomDropdownButton2> createState() => _CustomDropdownButton2State();
 }
 
 class _CustomDropdownButton2State extends State<CustomDropdownButton2> {
-  bool isDropdownOpen = false;
-  bool isSelected = false;
+  late List<String> filteredItems;
+  final TextEditingController searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    filteredItems = List.from(widget.dropdownItems);
+  }
+
+  @override
+  void didUpdateWidget(covariant CustomDropdownButton2 oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.dropdownItems != widget.dropdownItems) {
+      filteredItems = List.from(widget.dropdownItems);
+    }
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +145,7 @@ class _CustomDropdownButton2State extends State<CustomDropdownButton2> {
             );
           }).toList();
         },
-        items: widget.dropdownItems
+        items: (widget.enableSearch ? filteredItems : widget.dropdownItems)
             .map((String item) => DropdownMenuItem<String>(
                   value: item,
                   child: Align(
@@ -138,27 +160,53 @@ class _CustomDropdownButton2State extends State<CustomDropdownButton2> {
                 ))
             .toList(),
         onChanged: (value) {
-          setState(() {
-            isSelected = true;
-          });
           if (widget.onChanged != null) {
             widget.onChanged!(value);
           }
         },
         onMenuStateChange: (isOpen) {
-          setState(() {
-            isDropdownOpen = isOpen;
-          });
+          if (!isOpen && widget.enableSearch) {
+            searchController.clear();
+            filteredItems = List.from(widget.dropdownItems);
+          }
         },
+        dropdownSearchData: widget.enableSearch
+            ? DropdownSearchData(
+                searchController: searchController,
+                searchInnerWidgetHeight: 50,
+                searchInnerWidget: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Search...',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        filteredItems = widget.dropdownItems
+                            .where((item) =>
+                                item.toLowerCase().contains(value.toLowerCase()))
+                            .toList();
+                      });
+                    },
+                  ),
+                ),
+              )
+            : null,
         buttonStyleData: ButtonStyleData(
           height: widget.buttonHeight ?? 60,
           width: widget.buttonWidth ?? double.infinity,
-          padding: widget.buttonPadding ?? const EdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(widget.borderRadius),
-            border: Border.all(color: resolvedBorderColor),
-          ),
+          padding: widget.buttonPadding ??
+              const EdgeInsets.symmetric(horizontal: 16),
+          decoration: widget.buttonDecoration ??
+              BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(widget.borderRadius),
+                border: Border.all(color: resolvedBorderColor),
+              ),
           elevation: widget.buttonElevation,
         ),
         iconStyleData: IconStyleData(
@@ -190,7 +238,8 @@ class _CustomDropdownButton2State extends State<CustomDropdownButton2> {
         ),
         menuItemStyleData: MenuItemStyleData(
           height: widget.itemHeight ?? 48,
-          padding: widget.itemPadding ?? const EdgeInsets.symmetric(horizontal: 16),
+          padding:
+              widget.itemPadding ?? const EdgeInsets.symmetric(horizontal: 16),
         ),
       ),
     );

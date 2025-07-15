@@ -1,45 +1,54 @@
-// ignore_for_file: deprecated_member_use
-
 import 'dart:async';
 import 'dart:convert';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:crm_milan_creations/Employee/Notifications/notificationsScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Employee%20List/EmployeeListScreen.dart';
 import 'package:crm_milan_creations/HR%20App/HR%20Dashboard/Dashboard%20Home%20Page/dashboardController.dart';
 import 'package:crm_milan_creations/HR%20App/HR%20Dashboard/HR%20Leads/hrLeadsScreen.dart';
-import 'package:crm_milan_creations/HR%20App/HR%20Dashboard/Today%20Leave%20Request/todayLeaveScreen.dart';
 import 'package:crm_milan_creations/HR%20App/HR%20Dashboard/Today%20Attendance/todayAttendanceScreen.dart';
+import 'package:crm_milan_creations/HR%20App/HR%20Dashboard/Today%20Leave%20Request/todayLeaveScreen.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
 import 'package:crm_milan_creations/widgets/connectivity_service.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Dashboardscreen extends StatefulWidget {
-  const Dashboardscreen({super.key});
+class AdminDashboardScreen extends StatefulWidget {
+  const AdminDashboardScreen({super.key});
 
   @override
-  State<Dashboardscreen> createState() => _DashboardscreenState();
+  State<AdminDashboardScreen> createState() => _AdminDashboardScreenState();
 }
 
-class _DashboardscreenState extends State<Dashboardscreen> {
-  final Dashboardcontroller controller = Get.put(Dashboardcontroller());
+class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   final ConnectivityService _connectivityService = ConnectivityService();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
-
-  String companyName = "";
+  final Dashboardcontroller controller = Get.put(Dashboardcontroller());
   String userRole = "";
   List<String> chartData = [];
 
   @override
   void initState() {
-    super.initState();
-    controller.dashboardFunction();
+    getUserData();
     _checkInitialConnection();
     _setupConnectivityListener();
-    getUserData();
+    print('employee:-${controller.totalEmployees.value}');
+    super.initState();
+  }
+
+  Future<void> getUserData() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    userRole = sharedPreferences.getString("role_code") ?? "";
+    String? permissionsJson = sharedPreferences.getString("permissions");
+    if (permissionsJson != null) {
+      chartData = List<String>.from(jsonDecode(permissionsJson));
+    }
+    print("User Role: $userRole");
+    setState(() {});
   }
 
   @override
@@ -55,27 +64,13 @@ class _DashboardscreenState extends State<Dashboardscreen> {
   }
 
   void _setupConnectivityListener() {
-    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
-      onConnected: () {},
-      onDisconnected: () {
-        _connectivityService.showNoInternetScreen();
-      },
-    );
-  }
-
-  Future<void> getUserData() async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    companyName = sharedPreferences.getString("company_name") ?? "";
-    userRole = sharedPreferences.getString("user_role") ?? "";
-    String? permissionsJson = sharedPreferences.getString("permissions");
-if (permissionsJson != null) {
-  chartData = List<String>.from(jsonDecode(permissionsJson));
-}
-
-    print('Company name: $companyName');
-    print('User role: $userRole');
-    print('Permissions: $chartData');
-    setState(() {});
+    _connectivitySubscription = _connectivityService
+        .listenToConnectivityChanges(
+          onConnected: () {},
+          onDisconnected: () {
+            _connectivityService.showNoInternetScreen();
+          },
+        );
   }
 
   Widget buildDashboardTile(
@@ -149,10 +144,7 @@ if (permissionsJson != null) {
                     const SizedBox(height: 8),
                     Text(
                       title,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -169,19 +161,26 @@ if (permissionsJson != null) {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        showBackArrow: false,
-        leadingIcon: Icons.dashboard,
         gradient: const LinearGradient(
           colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         title: CustomText(
-          text: "Welcome $companyName",
+          text: 'Welcome $userRole',
           color: CRMColors.whiteColor,
           fontSize: 20,
           fontWeight: FontWeight.bold,
         ),
+        // backgroundColor: CRMColors.crmMainCOlor,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications, color: Colors.white),
+            onPressed:
+                () =>
+                    Get.to(() => NotificationsScreen(message: RemoteMessage())),
+          ),
+        ],
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -203,19 +202,22 @@ if (permissionsJson != null) {
                   crossAxisSpacing: 20,
                   childAspectRatio: 0.9,
                   children: [
-                    if (chartData.contains("view-leads") || userRole == "HR_MANAGER")
-                      buildDashboardTile(
-                        "My Leads",
-                        controller.myLeads,
-                        Icons.assessment,
-                        [Color(0xFFDA22FF), Color(0xFF9733EE)],
-                        onTap: () {
-                          Get.to(() => HrleadsScreen());
-                        },
-                      ),
+                    // if (chartData.contains("view-leads") ||
+                    //     userRole == "HR_MANAGER")
+                    buildDashboardTile(
+                      "My Leads",
+                      // controller.myLeads,
+                      RxString("0"),
+                      Icons.assessment,
+                      [Color(0xFFDA22FF), Color(0xFF9733EE)],
+                      onTap: () {
+                        Get.to(() => HrleadsScreen());
+                      },
+                    ),
                     buildDashboardTile(
                       "Today Attendance",
-                      controller.todayAttendanceCount,
+                      // controller.todayAttendanceCount,
+                      RxString("0"),
                       Icons.group,
                       [Color(0xFF1A2980), Color(0xFF26D0CE)],
                       onTap: () {
@@ -224,7 +226,8 @@ if (permissionsJson != null) {
                     ),
                     buildDashboardTile(
                       "Today Leaves",
-                      controller.todayLeaves,
+                      // controller.todayLeaves,
+                      RxString("0"),
                       Icons.today,
                       [Color(0xFFFF8008), Color(0xFFFE642E)],
                       onTap: () {
@@ -233,31 +236,43 @@ if (permissionsJson != null) {
                     ),
                     buildDashboardTile(
                       "Pending Leaves",
-                      controller.pendingLeaves,
+                      // controller.pendingLeaves,
+                      RxString("0"),
                       Icons.pending_actions,
                       [Color(0xFFED213A), Color(0xFF93291E)],
                       onTap: () {
-                        Get.to(() => const HrLeaveRequestScreen(statusFilter: "pending"));
+                        Get.to(
+                          () => const HrLeaveRequestScreen(
+                            statusFilter: "pending",
+                          ),
+                        );
                       },
                     ),
                     buildDashboardTile(
                       "Approved Leaves",
-                      controller.approvedLeaves,
+                      // controller.approvedLeaves,
+                      RxString("0"),
                       Icons.verified,
                       [Color(0xFF56AB2F), Color(0xFFA8E063)],
                       onTap: () {
-                        Get.to(() => const HrLeaveRequestScreen(statusFilter: "approved"));
+                        Get.to(
+                          () => const HrLeaveRequestScreen(
+                            statusFilter: "approved",
+                          ),
+                        );
                       },
                     ),
 
                     buildDashboardTile(
-                        "Total Employees",
-                        controller.totalEmployees,
-                        Icons.groups,
-                        	[Color(0xFF00B4DB), Color(0xFF0083B0)],
-                        onTap: () {
-                          Get.to(() => const EmployeeListScreen());
-                        },
+                      "Total Employees",
+                      controller.totalEmployees.value.isEmpty
+                          ? RxString("0")
+                          : controller.totalEmployees,
+                      Icons.groups,
+                      [Color(0xFF00B4DB), Color(0xFF0083B0)],
+                      onTap: () {
+                        Get.to(() => const EmployeeListScreen());
+                      },
                     ),
                   ],
                 ),
@@ -266,7 +281,6 @@ if (permissionsJson != null) {
           ),
         ),
       ),
-   
     );
   }
 }

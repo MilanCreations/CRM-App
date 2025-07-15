@@ -3,6 +3,7 @@
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:crm_milan_creations/Admin/Create%20Company/create%20company/createCompanyScreen.dart';
 import 'package:crm_milan_creations/Auth/Login/loginController.dart';
 import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
@@ -32,32 +33,33 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
 
-   _checkInitialConnection();
-   _setupConnectivityListener();
+    _checkInitialConnection();
+    _setupConnectivityListener();
   }
 
   @override
   void dispose() {
-   _connectivitySubscription.cancel();
+    _connectivitySubscription.cancel();
     super.dispose();
   }
 
-    Future<void> _checkInitialConnection() async {
+  Future<void> _checkInitialConnection() async {
     if (!(await _connectivityService.isConnected())) {
       _connectivityService.showNoInternetScreen();
     }
   }
 
-    void _setupConnectivityListener() {
-    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
-      onConnected: () {
-        // Optional: You can automatically go back if connection is restored
-        // Get.back();
-      },
-      onDisconnected: () {
-        _connectivityService.showNoInternetScreen();
-      },
-    );
+  void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService
+        .listenToConnectivityChanges(
+          onConnected: () {
+            // Optional: You can automatically go back if connection is restored
+            // Get.back();
+          },
+          onDisconnected: () {
+            _connectivityService.showNoInternetScreen();
+          },
+        );
   }
 
   @override
@@ -165,7 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           CustomButton(
                             text: 'Sign In',
                             onPressed: _handleLogin,
-                            
+
                             textStyle: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -182,19 +184,15 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           const SizedBox(height: 20),
-                          Align(
-                            alignment: Alignment.center,
-                            child: GestureDetector(
-                              onTap: () {
-                                showAdminContactDialog();
-                              },
-                              child: Text(
-                                "Employee Sign Up",
-                                style: TextStyle(
-                                  color: CRMColors.white,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
-                                ),
+
+                          GestureDetector(
+                            onTap: () => Get.to(CreateCompanyScreen()),
+                            child: Text(
+                              "Create Employeer Account",
+                              style: TextStyle(
+                                color: CRMColors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
@@ -303,8 +301,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
     );
   }
-  
-  
+
   Future<void> _handleLogin() async {
     String email = objLoginController.emailController.text;
     String password = objLoginController.passwordController.text;
@@ -352,6 +349,4 @@ class _LoginScreenState extends State<LoginScreen> {
     // All good - proceed with login
     objLoginController.loginAPI();
   }
-
-
 }

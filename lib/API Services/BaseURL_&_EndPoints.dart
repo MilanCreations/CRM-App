@@ -1,14 +1,15 @@
 // ignore_for_file: constant_identifier_names
 
 class ApiConstants {
-//  static const String baseUrls = "http://192.168.1.31:3000"; // Replace with your base URL
- static const String baseUrls = "https://crm.venusstudies.com/api"; // Replace with your base URL
-
+  //   static const String baseUrls = "http://192.168.1.9:3000"; // Replace with your base URL
+  // static const String baseUrls = "https://crm.venusstudies.com/api"; // Replace with your base URL
+  static const String baseUrls =
+      "https://haazirjanaab.in/api"; // Replace with your base URL
 
   // Login end-point
   static const String login = "$baseUrls/auth/login";
 
-    // Logout end-point
+  // Logout end-point
   static const String logout = "$baseUrls/auth/logout";
 
   // Clock-In
@@ -23,109 +24,131 @@ class ApiConstants {
   // Breal-Out
   static const String breakOut = "$baseUrls/payroll/attendance/break-end";
 
-//   // Check check-in
+  //   // Check check-in
   static const String checkInStatus = "$baseUrls/payroll/attendance/check";
-  
-// Leave type
-static const String leaveType = "$baseUrls/payroll/attendance/leaves/type";
 
-// Apply Leave
-static const String applyLeave = "$baseUrls/payroll/attendance/leaves";
+  // Leave type
+  static const String leaveType = "$baseUrls/payroll/attendance/leaves/type";
 
-// Attendance history
-static const String attendanceHistory = "$baseUrls/payroll/attendance";
+  // Apply Leave
+  static const String applyLeave = "$baseUrls/payroll/attendance/leaves";
 
-// Profile
-static const String profile = "$baseUrls/auth/user/profile";
-//
-// Leave history
-static const String leaveHistory = "$baseUrls/payroll/attendance/leaves";
+  // Attendance history
+  static const String attendanceHistory = "$baseUrls/payroll/attendance";
 
-// Get All Employee Leave Data
-static const String allleaveHistory = "$baseUrls/payroll/attendance/leaves";
+  // Profile
+  static const String profile = "$baseUrls/auth/user/profile";
+  //
+  // Leave history
+  static const String leaveHistory = "$baseUrls/payroll/attendance/leaves";
 
-// Get all employee list
-static const String getAllEmployeeList = "$baseUrls/payroll/employee/list";
+  // Get All Employee Leave Data
+  static const String allleaveHistory = "$baseUrls/payroll/attendance/leaves";
 
-////////////////////////////////// HR Module end points //////////////////////////////////
-static const String employeeList = "$baseUrls/payroll/employee";
-// Employee Department
-static const String employeeDepartment = "$baseUrls/payroll/department";
+  // Get all employee list
+  static const String getAllEmployeeList = "$baseUrls/payroll/employee/list";
 
-// Employee Designation
-static const String employeeDesignation = "$baseUrls/payroll/designation";
+  ////////////////////////////////// HR Module end points //////////////////////////////////
+  static const String employeeList = "$baseUrls/payroll/employee";
+  // Employee Department
+  static const String employeeDepartment = "$baseUrls/payroll/department";
 
-// Employee Invite
-static const String inviteEmployee = "$baseUrls/payroll/company/invite-employee";
+  // Employee Designation
+  static const String employeeDesignation = "$baseUrls/payroll/designation";
 
-// Change Employee Status
-static const String changeEmpStatus = "$baseUrls/payroll/employee/change/status";
+  // Employee Invite
+  static const String inviteEmployee =
+      "$baseUrls/payroll/company/invite-employee";
 
-// Employee Details
-static const String employeeDetails = "$baseUrls/payroll/employee";
-static const String editEmployeeDetails = "$baseUrls/payroll/employee";
+  // Change Employee Status
+  static const String changeEmpStatus =
+      "$baseUrls/payroll/employee/change/status";
 
-// approve and reject leave
-static const String leaveAction = "$baseUrls/payroll/attendance/leaves";
+  // Employee Details
+  static const String employeeDetails = "$baseUrls/payroll/employee";
+  static const String editEmployeeDetails = "$baseUrls/payroll/employee";
 
-// Get All Companirs
-static const String getAllComapies = "$baseUrls/payroll/company/index";
+  // approve and reject leave
+  static const String leaveAction = "$baseUrls/payroll/attendance/leaves";
 
-// Dashboard
-static const String hrDashboard = "$baseUrls/payroll/dashboard/hr";
+  // Get All Companirs
+  static const String getAllComapies = "$baseUrls/payroll/company/index";
 
-////////////////////////// Lead Managament ////////////////////////////
-// Create leads
-static const String creatLead = "$baseUrls/payroll/leads";
+  // Dashboard
+  static const String hrDashboard = "$baseUrls/payroll/dashboard/hr";
 
-// Get My Lead List
-static const String myleadList = "$baseUrls/payroll/leads/all/assignedLeads";
+  ////////////////////////// Lead Managament ////////////////////////////
+  // Create leads
+  static const String creatLead = "$baseUrls/payroll/leads";
 
-// Get All Leads List
-static const String allleadList = "$baseUrls/payroll/leads";
+  // Get My Lead List
+  static const String myleadList = "$baseUrls/payroll/leads/all/assignedLeads";
 
-// Assign Lead to employees
-static const String assignLeadToEmployees = "$baseUrls/payroll/leads/assignLeads";
+  // Get All Leads List
+  static const String allleadList = "$baseUrls/payroll/leads";
 
-// Lead Status List
-static const String leadStatus = "$baseUrls/payroll/leads/status";
+  // Assign Lead to employees
+  static const String assignLeadToEmployees =
+      "$baseUrls/payroll/leads/assignLeads";
 
-// Update Lead Status
-static const String updateLeadStatus = "$baseUrls/payroll/leads/update/lead";
+  // Lead Status List
+  static const String leadStatus = "$baseUrls/payroll/leads/status";
 
-// Lead Details
-static const String leadDetails = "$baseUrls/payroll/leads/history";
+  // Update Lead Status
+  static const String updateLeadStatus = "$baseUrls/payroll/leads/update/lead";
 
-// Sources list in lead create
-static const String sourceList = "$baseUrls/payroll/leads/sources";
+  // Lead Details
+  static const String leadDetails = "$baseUrls/payroll/leads/history";
 
-////////////////////////////// Get and Updated Lead Details //////////////////////
-// Get Lead Details for Update
-static const String getLeadDetails = "$baseUrls/payroll/leads";
+  // Sources list in lead create
+  static const String sourceList = "$baseUrls/payroll/leads/sources";
 
-// Update Lead Details
-static const String updateLead = "$baseUrls/payroll/leads";
+  ////////////////////////////// Get and Updated Lead Details //////////////////////
+  // Get Lead Details for Update
+  static const String getLeadDetails = "$baseUrls/payroll/leads";
 
-//////////////////// Salary Management //////////////////
-static const String salaryList = "$baseUrls/payroll//employee/gererate-salary-report-new";
+  // Update Lead Details
+  static const String updateLead = "$baseUrls/payroll/leads";
 
+  //////////////////// Salary Management //////////////////
+  static const String salaryList =
+      "$baseUrls/payroll//employee/gererate-salary-report-new";
 
-// HR Dashboard 
-static const String todayAttendanceHistory = "$baseUrls/payroll/attendance";
+  // HR Dashboard
+  static const String todayAttendanceHistory = "$baseUrls/payroll/attendance";
 
-// HR Leads
-static const String hrleadList = "$baseUrls/payroll/leads/all/assignedLeads";
+  // HR Leads
+  static const String hrleadList = "$baseUrls/payroll/leads/all/assignedLeads";
 
-////////////////////////////// Notifications ////////////////////////////////////
-///
-static const String notificationsList = "$baseUrls/payroll/notifications";
+  ////////////////////////////// Notifications ////////////////////////////////////
+  ///
+  static const String notificationsList = "$baseUrls/payroll/notifications";
 
-////////////////////////////// Chat ////////////////////////////////////
+  ////////////////////////////// Chat ////////////////////////////////////
 
-// Chat User list
-static const String chatUserList = "$baseUrls/auth/chat/list";
+  // Chat User list
+  static const String chatUserList = "$baseUrls/auth/chat/list";
 
-// Inbox Chat history
-static const String messageList = "$baseUrls/payroll/chat/chat-hostory/private";
-  
+  // Inbox Chat history
+  static const String messageList =
+      "$baseUrls/payroll/chat/chat-hostory/private";
+
+  ////////////////////////////// Admin ////////////////////////////////////
+  //Gat company types list
+  static const String companyTyplesList =
+      "$baseUrls/payroll/location/companyTypes";
+
+  // Get all countries list
+  static const String getAllCountriesList =
+      "$baseUrls/payroll/location/countries";
+
+  // get all states list
+  static const String getAllStatesList = "$baseUrls/payroll/location/states";
+
+  // Get All cities List
+  static const String getCitiesListList = "$baseUrls/payroll/location/cities";
+
+  // Create compsny
+  static const String createNewCompany =
+      "$baseUrls/payroll/company/without-auth";
 }

@@ -1,5 +1,5 @@
 import 'package:crm_milan_creations/Auth/Login/loginScreen.dart';
-import 'package:crm_milan_creations/Employee/User%20Role%20Bottom%20Bar/CompanyAdminBottomBar.dart';
+import 'package:crm_milan_creations/Employee/User%20Role%20Bottom%20Bar/AdminBottomNavBar.dart';
 import 'package:crm_milan_creations/Employee/User%20Role%20Bottom%20Bar/EmployeeBottomNavBar.dart';
 import 'package:crm_milan_creations/Employee/check%20clockin%20status/check-In-StatusController.dart';
 import 'package:crm_milan_creations/Employee/User%20Role%20Bottom%20Bar/HRbottomNavBar.dart';
@@ -52,14 +52,8 @@ class _SplashscreenState extends State<Splashscreen> {
       case "HR_MANAGER":
         Get.off(() => HRBottomNavBar(checkpagestatuss: "splash"));
         break;
-      case "SUPER_ADMIN":
-        Get.off(() => SuperAdminBottomNavBar(checkpagestatuss: "splash"));
-        break;
-      case "Manager":
-        // Get.off(() => ManagerBottomNavBar(checkpagestatuss: "splash"));
-        break;
-      case "TeamLead":
-        // Get.off(() => TeamLeadBottomNavBar(checkpagestatuss: "splash"));
+      case "COMPANY_ADMIN":
+        Get.off(() => AdminBottomNavBar(checkpagestatuss: "splash"));
         break;
       case "EMPLOYEE":
         Get.off(() => EmployeeBottomNavBar(checkpagestatuss: "login"));

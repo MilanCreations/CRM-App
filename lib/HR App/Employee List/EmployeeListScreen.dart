@@ -34,7 +34,7 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
 
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
-    NointernetScreen noInternetScreen = const NointernetScreen();
+  NointernetScreen noInternetScreen = const NointernetScreen();
   final ConnectivityService _connectivityService = ConnectivityService();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
   String searchQuery = "";
@@ -47,7 +47,7 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
     _scrollController.addListener(_onScroll);
     employeeListcontroller.employeeListFunction();
     _checkInitialConnection();
-   _setupConnectivityListener();
+    _setupConnectivityListener();
   }
 
   void _onScroll() {
@@ -64,7 +64,7 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _searchController.dispose();
-     _connectivitySubscription.cancel();
+    _connectivitySubscription.cancel();
     super.dispose();
   }
 
@@ -75,22 +75,23 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
     });
   }
 
-      Future<void> _checkInitialConnection() async {
+  Future<void> _checkInitialConnection() async {
     if (!(await _connectivityService.isConnected())) {
       _connectivityService.showNoInternetScreen();
     }
   }
 
-    void _setupConnectivityListener() {
-    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
-      onConnected: () {
-        // Optional: You can automatically go back if connection is restored
-        // Get.back();
-      },
-      onDisconnected: () {
-        _connectivityService.showNoInternetScreen();
-      },
-    );
+  void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService
+        .listenToConnectivityChanges(
+          onConnected: () {
+            // Optional: You can automatically go back if connection is restored
+            // Get.back();
+          },
+          onDisconnected: () {
+            _connectivityService.showNoInternetScreen();
+          },
+        );
   }
 
   @override
@@ -98,7 +99,7 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
     return Scaffold(
       appBar: CustomAppBar(
         showBackArrow: true,
-         leadingIcon: Icons.arrow_back_ios_new_sharp,
+        leadingIcon: Icons.arrow_back_ios_new_sharp,
         gradient: const LinearGradient(
           colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
           begin: Alignment.topLeft,
@@ -162,8 +163,14 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
           Expanded(
             child: Obx(() {
               final list = employeeListcontroller.employeeList;
-              if (list.isEmpty) {
+
+              if (employeeListcontroller.isLoading.value) {
                 return const Center(child: CircularProgressIndicator());
+              }
+              if (list.isEmpty) {
+                return const Center(
+                  child: CustomText(text: "No Employees Found"),
+                );
               }
 
               return ListView.builder(
@@ -232,16 +239,14 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
                                   color: Colors.transparent,
                                   child: InkWell(
                                     borderRadius: BorderRadius.circular(8),
-                                    onTap:
-                                        () {
-                                          Get.to(
-                                          ViewEmployeePersonalDetailsScreen(
-                                            employeeId: employee.id!.toString(),
-                                          ),
-                                        );
-                                        
-                                        },
-                                        
+                                    onTap: () {
+                                      Get.to(
+                                        ViewEmployeePersonalDetailsScreen(
+                                          employeeId: employee.id!.toString(),
+                                        ),
+                                      );
+                                    },
+
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 16,
