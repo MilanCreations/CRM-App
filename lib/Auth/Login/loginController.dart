@@ -46,7 +46,7 @@ class LoginController extends GetxController {
       isLoading.value = true;
 
       final email = emailController.text.trim();
-      final password = passwordController.text;
+      final password = passwordController.text.trim();
 
       print('Email: $email');
       print('Password: $password');

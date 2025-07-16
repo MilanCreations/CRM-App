@@ -2,10 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:crm_milan_creations/Admin/Dashboard/CompAdminDashController.dart';
 import 'package:crm_milan_creations/Employee/Notifications/notificationsScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Employee%20List/EmployeeListScreen.dart';
-import 'package:crm_milan_creations/HR%20App/HR%20Dashboard/Dashboard%20Home%20Page/dashboardController.dart';
-import 'package:crm_milan_creations/HR%20App/HR%20Dashboard/HR%20Leads/hrLeadsScreen.dart';
 import 'package:crm_milan_creations/HR%20App/HR%20Dashboard/Today%20Attendance/todayAttendanceScreen.dart';
 import 'package:crm_milan_creations/HR%20App/HR%20Dashboard/Today%20Leave%20Request/todayLeaveScreen.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
@@ -27,7 +26,9 @@ class AdminDashboardScreen extends StatefulWidget {
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   final ConnectivityService _connectivityService = ConnectivityService();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
-  final Dashboardcontroller controller = Get.put(Dashboardcontroller());
+  final CompanyAdminDashboardController companyAdminDashboardController =
+      Get.put(CompanyAdminDashboardController());
+
   String userRole = "";
   List<String> chartData = [];
 
@@ -36,7 +37,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     getUserData();
     _checkInitialConnection();
     _setupConnectivityListener();
-    print('employee:-${controller.totalEmployees.value}');
+    companyAdminDashboardController.companyAdminDashboardFunction();
     super.initState();
   }
 
@@ -80,78 +81,80 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     List<Color> gradientColors, {
     VoidCallback? onTap,
   }) {
-    return Obx(
-      () => GestureDetector(
-        onTap: onTap,
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: gradientColors,
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: gradientColors.last.withOpacity(0.3),
-                offset: const Offset(0, 6),
-                blurRadius: 12,
-              ),
-            ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: gradientColors,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          padding: const EdgeInsets.all(16),
-          child: Stack(
-            children: [
-              Positioned(
-                top: -10,
-                right: -10,
-                child: Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(30),
-                  ),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: gradientColors.last.withOpacity(0.3),
+              offset: const Offset(0, 6),
+              blurRadius: 12,
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Stack(
+          children: [
+            Positioned(
+              top: -10,
+              right: -10,
+              child: Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(30),
                 ),
               ),
-              Positioned(
-                bottom: -20,
-                left: -20,
-                child: Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(40),
-                  ),
+            ),
+            Positioned(
+              bottom: -20,
+              left: -20,
+              child: Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(40),
                 ),
               ),
-              Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(icon, color: Colors.white, size: 36),
-                    const SizedBox(height: 15),
-                    Text(
+            ),
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(icon, color: Colors.white, size: 36),
+                  const SizedBox(height: 15),
+                  Obx(
+                    () => Text(
                       value.value,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
-                      textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      title,
-                      style: const TextStyle(color: Colors.white, fontSize: 16),
-                      textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -204,16 +207,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   children: [
                     // if (chartData.contains("view-leads") ||
                     //     userRole == "HR_MANAGER")
-                    buildDashboardTile(
-                      "My Leads",
-                      // controller.myLeads,
-                      RxString("0"),
-                      Icons.assessment,
-                      [Color(0xFFDA22FF), Color(0xFF9733EE)],
-                      onTap: () {
-                        Get.to(() => HrleadsScreen());
-                      },
-                    ),
+                    // buildDashboardTile(
+                    //   "My Leads",
+                    //   // controller.myLeads,
+                    //   RxString("0"),
+                    //   Icons.assessment,
+                    //   [Color(0xFFDA22FF), Color(0xFF9733EE)],
+                    //   onTap: () {
+                    //     Get.to(() => HrleadsScreen());
+                    //   },
+                    // ),
                     buildDashboardTile(
                       "Today Attendance",
                       // controller.todayAttendanceCount,
@@ -265,14 +268,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
                     buildDashboardTile(
                       "Total Employees",
-                      controller.totalEmployees.value.isEmpty
-                          ? RxString("0")
-                          : controller.totalEmployees,
+                      companyAdminDashboardController.totalEmployees,
                       Icons.groups,
                       [Color(0xFF00B4DB), Color(0xFF0083B0)],
-                      onTap: () {
-                        Get.to(() => const EmployeeListScreen());
-                      },
+                      onTap: () => Get.to(() => const EmployeeListScreen()),
                     ),
                   ],
                 ),

@@ -160,6 +160,7 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
               },
             ),
           ),
+
           Expanded(
             child: Obx(() {
               final list = employeeListcontroller.employeeList;
@@ -395,17 +396,47 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
   }
 
   void _showStatusChangeDialog(int employeeId, String newStatus) {
-    Get.defaultDialog(
-      title: "Change Status",
-      middleText:
-          "Do you want to change the status to ${newStatus.toUpperCase()}?",
-      textCancel: "Cancel",
-      textConfirm: "Yes",
-      confirmTextColor: Colors.white,
-      onConfirm: () {
-        Navigator.of(context).pop(); // Close dialog
-        _changeEmployeeStatus(employeeId);
-      },
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: Colors.white,
+        title: Row(
+          children: [
+            const Icon(Icons.warning_amber_rounded, color: Colors.red),
+            const SizedBox(width: 8),
+            const Text(
+              "Change Status",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        content: Text(
+          "Are you sure you want to change the status to '${newStatus.toUpperCase()}'?",
+          style: const TextStyle(fontSize: 16),
+        ),
+        actionsAlignment: MainAxisAlignment.spaceBetween,
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            style: TextButton.styleFrom(foregroundColor: Colors.grey[700]),
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Get.back(); // Close the dialog
+              _changeEmployeeStatus(employeeId);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blueAccent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: const Text("Yes", style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+      barrierDismissible: false,
     );
   }
 

@@ -10,6 +10,7 @@ import 'package:crm_milan_creations/Employee/Apply%20Leave/applyLeaveScreen.dart
 import 'package:crm_milan_creations/Employee/Attendance%20History/allendanceHistoryScreen.dart';
 import 'package:crm_milan_creations/Employee/Leave%20History/leaveHistoryScreen.dart';
 import 'package:crm_milan_creations/Employee/Notifications/notificationsScreen.dart';
+import 'package:crm_milan_creations/HR%20App/Add%20Employee/addEmployeeScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Employee%20Leave%20Request/empLeaveRequestScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Employee%20List/EmployeeListScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Salary/SalaryScreen.dart';
@@ -45,7 +46,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String employeeID = "";
   String visitTime = "";
   String profilePicPath = ""; // Could be local path or base64
-    NointernetScreen noInternetScreen = const NointernetScreen();
+  NointernetScreen noInternetScreen = const NointernetScreen();
   final ConnectivityService _connectivityService = ConnectivityService();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
@@ -59,32 +60,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     getUserData();
     loadDataFromLocal();
-       _checkInitialConnection();
-   _setupConnectivityListener();
+    _checkInitialConnection();
+    _setupConnectivityListener();
   }
 
-    @override
+  @override
   void dispose() {
-   _connectivitySubscription.cancel();
+    _connectivitySubscription.cancel();
     super.dispose();
   }
 
-      Future<void> _checkInitialConnection() async {
+  Future<void> _checkInitialConnection() async {
     if (!(await _connectivityService.isConnected())) {
       _connectivityService.showNoInternetScreen();
     }
   }
 
-    void _setupConnectivityListener() {
-    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
-      onConnected: () {
-        // Optional: You can automatically go back if connection is restored
-        // Get.back();
-      },
-      onDisconnected: () {
-        _connectivityService.showNoInternetScreen();
-      },
-    );
+  void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService
+        .listenToConnectivityChanges(
+          onConnected: () {
+            // Optional: You can automatically go back if connection is restored
+            // Get.back();
+          },
+          onDisconnected: () {
+            _connectivityService.showNoInternetScreen();
+          },
+        );
   }
 
   Future<void> getUserData() async {
@@ -92,7 +94,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() {
       username = prefs.getString("fullname") ?? "";
       useremail = prefs.getString("email") ?? "";
-      userRole = prefs.getString("role_code") ?? ""; 
+      userRole = prefs.getString("role_code") ?? "";
       token = prefs.getString('token') ?? "";
       employeeID = prefs.getString('employee_id') ?? "";
       // companyId = prefs.getString('company_id') ?? "";
@@ -423,9 +425,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications, color: Colors.white),
-            onPressed: () => Get.to(() => NotificationsScreen(message: RemoteMessage())),
+            onPressed:
+                () =>
+                    Get.to(() => NotificationsScreen(message: RemoteMessage())),
           ),
-          
         ],
       ),
       body: SingleChildScrollView(
@@ -472,22 +475,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 children: [
                   buildMenuItem(
-                    icon: Icons.person_outline,
+                    icon: Icons.person,
                     text: "Profile Details",
                     onTap:
                         () => Get.to(
-                          ViewEmployeePersonalDetailsScreen(employeeId: employeeID),
+                          ViewEmployeePersonalDetailsScreen(
+                            employeeId: employeeID,
+                          ),
                         ),
                   ),
                   userRole != "EMPLOYEE"
                       ? buildMenuItem(
-                        icon: Icons.person_outline,
+                        icon: Icons.groups_2,
                         text: 'Employee List',
                         onTap: () {
                           Get.to(EmployeeListScreen());
                         }, // Navigate to profile detail screen if needed
                       )
                       : const SizedBox(),
+
+                  userRole != "EMPLOYEE"
+                      ? buildMenuItem(
+                        icon: Icons.person_add,
+                        text: 'Add Employee',
+                        onTap: () {
+                          Get.to(AddemployeeScreen());
+                        }, // Navigate to profile detail screen if needed
+                      )
+                      : const SizedBox(),
+
                   userRole != "COMPANY_ADMIN"
                       ? buildMenuItem(
                         icon: Icons.calendar_month_outlined,
@@ -508,7 +524,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       )
                       : const SizedBox(),
                   userRole != "COMPANY_ADMIN"
-                      ? buildMenuItem( 
+                      ? buildMenuItem(
                         icon: Icons.history,
                         text: 'Attendance History',
                         onTap: () => Get.to(() => const HistoryScreen()),
@@ -525,22 +541,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     onTap: () => Get.to(() => TaskScreen()),
                   ),
                   widgetshowpermissionswise(),
-                  userRole == "COMPANY_ADMIN"
-                      ? buildMenuItem(
-                        icon: Icons.leaderboard,
-                        text: 'Create Lead',
-                        onTap:
-                            () => Get.to(
-                              () => CreateLeadsScreen(
-                                token: token,
-                                name: name,
-                                visitTime: visitTime,
-                                employeeid: employeeID,
-                              ),
-                            ),
-                      )
-                      : const SizedBox(),
 
+                  // userRole != "COMPANY_ADMIN" &&
+                  //         userRole != "EMPLOYEE" &&
+                  //         userRole != "HR_MANAGER"
+                  //     ? buildMenuItem(
+                  //       icon: Icons.leaderboard,
+                  //       text: 'Create Lead',
+                  //       onTap:
+                  //           () => Get.to(
+                  //             () => CreateLeadsScreen(
+                  //               token: token,
+                  //               name: name,
+                  //               visitTime: visitTime,
+                  //               employeeid: employeeID,
+                  //             ),
+                  //           ),
+                  //     )
+                  //     : const SizedBox(),
                   userRole != "EMPLOYEE"
                       ? buildMenuItem(
                         icon: Icons.inventory,
@@ -554,12 +572,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     text: 'Inventory History',
                     onTap: () => Get.to(() => IssueInventoryHistoryScreen()),
                   ),
-                  userRole != "HR_MANAGER"
-                  ?buildMenuItem(
-                    icon: Icons.leak_add_sharp,
-                    text: 'All Leads',
-                    onTap: () => Get.to(() => AllLeadsScreen()),
-                  ): SizedBox(),
+                  // userRole != "HR_MANAGER"
+                  //     ? buildMenuItem(
+                  //       icon: Icons.leak_add_sharp,
+                  //       text: 'All Leads',
+                  //       onTap: () => Get.to(() => AllLeadsScreen()),
+                  //     )
+                  //     : SizedBox(),
                   buildMenuItem(
                     icon: Icons.logout,
                     text: 'Logout',
@@ -594,7 +613,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
               );
-            } else if (element == "view-leads" || userRole == "HR_MANAGER" ) {
+            } else if (element == "view-leads" || userRole == "HR_MANAGER") {
               return buildMenuItem(
                 icon: Icons.lan_outlined,
                 text: 'My Leads',
@@ -612,6 +631,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
           }).toList(),
     );
   }
-
-
 }

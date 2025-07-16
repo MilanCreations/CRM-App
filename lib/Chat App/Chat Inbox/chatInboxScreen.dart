@@ -73,7 +73,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
 
     msgCtrl.clear();
-    setState((){
+    setState(() {
       selectedFile = null;
       messageSent = true;
     });
@@ -100,7 +100,7 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: CustomAppBar(
         showBackArrow: true,
         leadingOnPressed: () {
-           Get.back(result: messageSent);
+          Get.back(result: messageSent);
         },
         title: CustomText(
           text: widget.username,
@@ -158,11 +158,9 @@ class _ChatScreenState extends State<ChatScreen> {
                                 : CrossAxisAlignment.start,
                         children: [
                           if (msg.message.isNotEmpty)
-                            Text(
-                              msg.message,
-                              style: TextStyle(
-                                color: isMe ? Colors.white : Colors.black87,
-                              ),
+                            CustomText(
+                              text: msg.message,
+                              color: isMe ? Colors.white : Colors.black87,
                             ),
                           if (msg.file != null)
                             Padding(
@@ -186,7 +184,6 @@ class _ChatScreenState extends State<ChatScreen> {
                             ),
                         ],
                       ),
-                   
                     ),
                   );
                 },
@@ -246,7 +243,8 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
     );
   }
+
   String formatTime(DateTime timestamp) {
-  return DateFormat('hh:mm a').format(timestamp.toLocal());
-}
+    return DateFormat('hh:mm a').format(timestamp.toLocal());
+  }
 }
