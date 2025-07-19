@@ -80,10 +80,15 @@ class Myprofilecontroller extends GetxController{
     } else if (response.statusCode == 401) {
       Get.snackbar('Message', 'Login session expired',
           backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
-    } else if (response.statusCode == 500 || response.statusCode == 404) {
-      Get.snackbar('Error', 'No More Data',
+    } else if (response.statusCode == 500) {
+      Get.snackbar('Message', 'Internal Server Error',
           backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
-    } else {
+    }  else if (response.statusCode == 404) {
+      Get.snackbar('Message', 'Not found 404',
+          backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
+    }
+    
+     else {
       Get.snackbar("Error", "Failed to fetch attendance history",
           backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
     }

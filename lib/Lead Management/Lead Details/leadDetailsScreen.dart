@@ -25,15 +25,15 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
     Leaddetailscontroller(),
   );
   final TextEditingController searchController = TextEditingController();
-    NointernetScreen noInternetScreen = const NointernetScreen();
+  NointernetScreen noInternetScreen = const NointernetScreen();
   final ConnectivityService _connectivityService = ConnectivityService();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
   @override
   void initState() {
     super.initState();
-       _checkInitialConnection();
-   _setupConnectivityListener();
+    _checkInitialConnection();
+    _setupConnectivityListener();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       leadDetailsController.leadDetailsFunction(
         assignId: widget.assignID,
@@ -42,25 +42,24 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
     });
   }
 
-
-    Future<void> _checkInitialConnection() async {
+  Future<void> _checkInitialConnection() async {
     if (!(await _connectivityService.isConnected())) {
       _connectivityService.showNoInternetScreen();
     }
   }
 
-    void _setupConnectivityListener() {
-    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
-      onConnected: () {
-        // Optional: You can automatically go back if connection is restored
-        // Get.back();
-      },
-      onDisconnected: () {
-        _connectivityService.showNoInternetScreen();
-      },
-    );
+  void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService
+        .listenToConnectivityChanges(
+          onConnected: () {
+            // Optional: You can automatically go back if connection is restored
+            // Get.back();
+          },
+          onDisconnected: () {
+            _connectivityService.showNoInternetScreen();
+          },
+        );
   }
-
 
   void _onSearchChanged() {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
@@ -95,7 +94,7 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
           fontWeight: FontWeight.w600,
         ),
         elevation: 0,
-         gradient: const LinearGradient(
+        gradient: const LinearGradient(
           colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -112,7 +111,7 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -124,18 +123,23 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
                   decoration: InputDecoration(
                     hintText: 'Search leads...',
                     hintStyle: TextStyle(color: Colors.grey.shade500),
-                    prefixIcon: Icon(Icons.search_rounded, 
-                        color: Colors.grey.shade500),
-                    suffixIcon: searchController.text.isNotEmpty
-                        ? IconButton(
-                            icon: Icon(Icons.clear_rounded, 
-                                color: Colors.grey.shade500),
-                            onPressed: () {
-                              searchController.clear();
-                              _onSearchChanged();
-                            },
-                          )
-                        : null,
+                    prefixIcon: Icon(
+                      Icons.search_rounded,
+                      color: Colors.grey.shade500,
+                    ),
+                    suffixIcon:
+                        searchController.text.isNotEmpty
+                            ? IconButton(
+                              icon: Icon(
+                                Icons.clear_rounded,
+                                color: Colors.grey.shade500,
+                              ),
+                              onPressed: () {
+                                searchController.clear();
+                                _onSearchChanged();
+                              },
+                            )
+                            : null,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
@@ -161,7 +165,8 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          CRMColors.black1),
+                          CRMColors.black1,
+                        ),
                       ),
                     );
                   }
@@ -177,16 +182,16 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
                         ),
                         const SizedBox(height: 16),
                         CustomText(
-                         text:  'No Lead Details Found',
-                         fontSize: 18,
-                            color: Colors.grey.shade600,
-                            fontWeight: FontWeight.w500,
+                          text: 'No Lead Details Found',
+                          fontSize: 18,
+                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.w500,
                         ),
                         const SizedBox(height: 8),
                         CustomText(
-                        text:  'Try adjusting your search or filter',
-                            fontSize: 14,
-                            color: Colors.grey.shade500,
+                          text: 'Try adjusting your search or filter',
+                          fontSize: 14,
+                          color: Colors.grey.shade500,
                         ),
                       ],
                     );
@@ -205,7 +210,8 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
                       physics: const AlwaysScrollableScrollPhysics(),
                       separatorBuilder: (_, __) => const SizedBox(height: 16),
                       itemBuilder: (context, index) {
-                        final lead = leadDetailsController.leadDetailsList[index];
+                        final lead =
+                            leadDetailsController.leadDetailsList[index];
 
                         String formattedVisit = '';
                         if (lead.visitTime != null) {
@@ -218,10 +224,12 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
                           }
                         }
 
-                        String updatedAt = lead.updatedAt != null
-                            ? DateFormat('d MMM y, hh:mm a')
-                                .format(lead.updatedAt!.toLocal())
-                            : "Not Available";
+                        String updatedAt =
+                            lead.updatedAt != null
+                                ? DateFormat(
+                                  'd MMM y, hh:mm a',
+                                ).format(lead.updatedAt!.toLocal())
+                                : "Not Available";
 
                         return Container(
                           decoration: BoxDecoration(
@@ -229,10 +237,11 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
                             color: Colors.white,
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
+                                color: Colors.black.withValues(alpha: 0.05),
                                 blurRadius: 10,
                                 offset: const Offset(0, 4),
-                          )],
+                              ),
+                            ],
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(16),
@@ -241,7 +250,8 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
                               children: [
                                 // Name Row with Status
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Expanded(
                                       child: Text(
@@ -278,7 +288,7 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
                                   crossAxisSpacing: 8,
                                   mainAxisSpacing: 8,
                                   children: [
-                                     // Company Name
+                                    // Company Name
                                     if (lead.companyName != null)
                                       _buildInfoTile(
                                         Icons.business_rounded,
@@ -291,8 +301,9 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
                                       Icons.calendar_today_rounded,
                                       "Follow Up",
                                       lead.followupDate != null
-                                          ? DateFormat('d MMM y')
-                                              .format(lead.followupDate!.toLocal())
+                                          ? DateFormat(
+                                            'd MMM y',
+                                          ).format(lead.followupDate!.toLocal())
                                           : "No Date",
                                     ),
 
@@ -311,20 +322,21 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
                                       updatedAt,
                                     ),
 
-                                   
-
-
-                                       if (lead.purpose != null)
-                                      _buildInfoTile(Icons.assignment_rounded, 
-                                          "Purpose", lead.purpose!),
-
+                                    if (lead.purpose != null)
+                                      _buildInfoTile(
+                                        Icons.assignment_rounded,
+                                        "Purpose",
+                                        lead.purpose!,
+                                      ),
                                   ],
                                 ),
 
                                 // Remark (full width)
-                                if (lead.remark != null && lead.remark!.isNotEmpty)
+                                if (lead.remark != null &&
+                                    lead.remark!.isNotEmpty)
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       const SizedBox(height: 12),
                                       Text(
@@ -373,18 +385,15 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
             children: [
               Text(
                 label,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey.shade500,
-                ),
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
               ),
               const SizedBox(height: 2),
               Expanded(
                 child: CustomText(
-                 text:  value,
-                 fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey.shade800,
+                  text: value,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey.shade800,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),

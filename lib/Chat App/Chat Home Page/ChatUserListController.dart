@@ -14,7 +14,7 @@ class ChatUserListController extends GetxController {
   var hasMoreData = true.obs;
   var allUsers = <User>[].obs;
 
-  Future<void> ChatUserListfunctions({
+  Future<void> chatUserListfunctions({
     bool isRefresh = false,
     String searchQuery = '',
   }) async {

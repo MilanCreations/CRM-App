@@ -122,12 +122,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             controller: objLoginController.emailController,
                             prefixIcon: const Icon(
                               Icons.email_outlined,
-                              color: Colors.white,
+                              color: CRMColors.white,
                             ),
                             borderColor: Colors.transparent,
                             width: double.infinity,
                             backgroundColor: Colors.white.withOpacity(0.15),
-                            textColor: Colors.white,
+                            textColor: CRMColors.white,
                             keyboardType: TextInputType.emailAddress,
                           ),
 
@@ -144,8 +144,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             obscureText: _obscurePassword,
                             borderColor: Colors.transparent,
-                            backgroundColor: Colors.white.withOpacity(0.15),
-                            textColor: Colors.white,
+                            backgroundColor: CRMColors.white.withOpacity(0.15),
+                            textColor: CRMColors.white,
                             suffixIcon: IconButton(
                               onPressed: () {
                                 setState(() {
@@ -169,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             onPressed: _handleLogin,
 
                             textStyle: const TextStyle(
-                              color: Colors.white,
+                              color: CRMColors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                               letterSpacing: 1.2,
@@ -191,8 +191,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               "Create Employeer Account",
                               style: TextStyle(
                                 color: CRMColors.white,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),

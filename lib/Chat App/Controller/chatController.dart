@@ -39,7 +39,6 @@ class ChatController extends GetxController {
     await chatHistory.messagesListFunction(isRefresh: true, peerId: peerId);
 
     for (var item in chatHistory.messageList) {
-      
       messages.add(
         ChatMessage(
           id: item.id?.toString() ?? '',
@@ -114,7 +113,7 @@ class ChatController extends GetxController {
     socket.on('messageActivity', (data) {
       print('🔔 Message activity detected - refreshing user list');
 
-      chatuserlistcontroller.ChatUserListfunctions(isRefresh: true).then((_) {
+      chatuserlistcontroller.chatUserListfunctions(isRefresh: true).then((_) {
         chatuserlistcontroller.chatUsers.refresh();
       });
       chatuserlistcontroller.chatUsers.refresh();

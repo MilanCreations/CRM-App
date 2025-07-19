@@ -108,11 +108,58 @@ class CreateCompanyController extends GetxController {
           colorText: CRMColors.textWhite,
         );
         return true;
+      }
+      if (response.statusCode == 409) {
+        var addcompanyModel = createNewCompanyModelFromJson(responseBody);
+        Get.snackbar(
+          "Message",
+          addcompanyModel.message,
+          backgroundColor: CRMColors.success,
+          colorText: CRMColors.textWhite,
+        );
+        return true;
+      }
+      if (response.statusCode == 400) {
+        var addcompanyModel = createNewCompanyModelFromJson(responseBody);
+        Get.snackbar(
+          "Message",
+          addcompanyModel.message,
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+        return false;
+      }
+      if (response.statusCode == 500) {
+        Get.snackbar(
+          "Message",
+          "Internal Server Error",
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+        return false;
+      }
+      if (response.statusCode == 403) {
+        Get.snackbar(
+          "Message",
+          "Forbidden Access",
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+        return false;
+      }
+      if (response.statusCode == 401) {
+        Get.snackbar(
+          "Message",
+          "Unauthorized Access",
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+        return false;
       } else {
-        print('❌ Error from server: ${decoded['message']}');
+        print('Error from server: ${decoded['message']}');
 
         Get.snackbar(
-          "Error",
+          "Message",
           decoded['message'] ?? 'Something went wrong',
           backgroundColor: CRMColors.error,
           colorText: CRMColors.textWhite,
@@ -120,7 +167,7 @@ class CreateCompanyController extends GetxController {
         return false;
       }
     } catch (e) {
-      print("❌ Exception occurred: $e");
+      print("Exception occurred: $e");
 
       Get.snackbar(
         "Exception",

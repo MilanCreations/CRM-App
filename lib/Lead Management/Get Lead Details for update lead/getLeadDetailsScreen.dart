@@ -1,3 +1,5 @@
+// ignore_for_file: unrelated_type_equality_checks
+
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -16,45 +18,48 @@ class GetAndEditleadDetailsScreen extends StatefulWidget {
   const GetAndEditleadDetailsScreen({super.key, required this.leadId});
 
   @override
-  State<GetAndEditleadDetailsScreen> createState() => _GetAndEditleadDetailsScreenState();
+  State<GetAndEditleadDetailsScreen> createState() =>
+      _GetAndEditleadDetailsScreenState();
 }
 
-class _GetAndEditleadDetailsScreenState extends State<GetAndEditleadDetailsScreen> {
+class _GetAndEditleadDetailsScreenState
+    extends State<GetAndEditleadDetailsScreen> {
   final GetLeadDetails getLeadDetailsController = Get.put(GetLeadDetails());
-    NointernetScreen noInternetScreen = const NointernetScreen();
+  NointernetScreen noInternetScreen = const NointernetScreen();
   final ConnectivityService _connectivityService = ConnectivityService();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
   @override
   void initState() {
     super.initState();
-       _checkInitialConnection();
-   _setupConnectivityListener();
+    _checkInitialConnection();
+    _setupConnectivityListener();
     getLeadDetailsController.fetchLeadDetails(widget.leadId!);
   }
 
-    @override
+  @override
   void dispose() {
-   _connectivitySubscription.cancel();
+    _connectivitySubscription.cancel();
     super.dispose();
   }
 
-    Future<void> _checkInitialConnection() async {
+  Future<void> _checkInitialConnection() async {
     if (!(await _connectivityService.isConnected())) {
       _connectivityService.showNoInternetScreen();
     }
   }
 
-    void _setupConnectivityListener() {
-    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
-      onConnected: () {
-        // Optional: You can automatically go back if connection is restored
-        // Get.back();
-      },
-      onDisconnected: () {
-        _connectivityService.showNoInternetScreen();
-      },
-    );
+  void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService
+        .listenToConnectivityChanges(
+          onConnected: () {
+            // Optional: You can automatically go back if connection is restored
+            // Get.back();
+          },
+          onDisconnected: () {
+            _connectivityService.showNoInternetScreen();
+          },
+        );
   }
 
   @override
@@ -85,7 +90,7 @@ class _GetAndEditleadDetailsScreenState extends State<GetAndEditleadDetailsScree
             ),
           );
         }
-        
+
         return SingleChildScrollView(
           padding: EdgeInsets.all(16),
           child: Column(
@@ -111,10 +116,10 @@ class _GetAndEditleadDetailsScreenState extends State<GetAndEditleadDetailsScree
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: Colors.blue.withOpacity(0.2),
+                color: Colors.blue.withValues(alpha: 0.2),
                 blurRadius: 10,
                 spreadRadius: 2,
-              )
+              ),
             ],
           ),
           child: CircleAvatar(
@@ -166,21 +171,31 @@ class _GetAndEditleadDetailsScreenState extends State<GetAndEditleadDetailsScree
   Widget _buildInfoCard() {
     return Card(
       elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       color: Colors.white,
       child: Padding(
         padding: EdgeInsets.all(20),
         child: Column(
           children: [
-            _buildInfoRow(Icons.phone, 'Phone', getLeadDetailsController.phone.value),
+            _buildInfoRow(
+              Icons.phone,
+              'Phone',
+              getLeadDetailsController.phone.value,
+            ),
             Divider(height: 24, thickness: 0.5, color: Colors.grey[200]),
             if (getLeadDetailsController.email.value.isNotEmpty)
-              _buildInfoRow(Icons.email, 'Email', getLeadDetailsController.email.value),
+              _buildInfoRow(
+                Icons.email,
+                'Email',
+                getLeadDetailsController.email.value,
+              ),
             if (getLeadDetailsController.email.value.isNotEmpty)
               Divider(height: 24, thickness: 0.5, color: Colors.grey[200]),
-            _buildInfoRow(Icons.location_on, 'Address', getLeadDetailsController.address.value),
+            _buildInfoRow(
+              Icons.location_on,
+              'Address',
+              getLeadDetailsController.address.value,
+            ),
           ],
         ),
       ),
@@ -214,17 +229,35 @@ class _GetAndEditleadDetailsScreenState extends State<GetAndEditleadDetailsScree
             padding: EdgeInsets.all(20),
             child: Column(
               children: [
-                _buildDetailItem('Lead Creator', formatDate(getLeadDetailsController.leadCreator.value)),
+                _buildDetailItem(
+                  'Lead Creator',
+                  formatDate(getLeadDetailsController.leadCreator.value),
+                ),
                 SizedBox(height: 16),
-                _buildDetailItem('Visit Time', formatDate(getLeadDetailsController.visitTime.value)),
+                _buildDetailItem(
+                  'Visit Time',
+                  formatDate(getLeadDetailsController.visitTime.value),
+                ),
                 SizedBox(height: 16),
-                _buildDetailItem('Source', getLeadDetailsController.source.value),
+                _buildDetailItem(
+                  'Source',
+                  getLeadDetailsController.source.value,
+                ),
                 SizedBox(height: 16),
-                _buildDetailItem('Branch', getLeadDetailsController.branchName.value),
+                _buildDetailItem(
+                  'Branch',
+                  getLeadDetailsController.branchName.value,
+                ),
                 SizedBox(height: 16),
-                _buildDetailItem('Purpose', getLeadDetailsController.remark.value),
+                _buildDetailItem(
+                  'Purpose',
+                  getLeadDetailsController.remark.value,
+                ),
                 SizedBox(height: 16),
-                _buildDetailItem('Query type', getLeadDetailsController.queryType.value),
+                _buildDetailItem(
+                  'Query type',
+                  getLeadDetailsController.queryType.value,
+                ),
               ],
             ),
           ),
@@ -241,7 +274,7 @@ class _GetAndEditleadDetailsScreenState extends State<GetAndEditleadDetailsScree
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: CRMColors.crmMainCOlor.withOpacity(0.1),
+            color: CRMColors.crmMainCOlor.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: Icon(icon, size: 20, color: CRMColors.crmMainCOlor),

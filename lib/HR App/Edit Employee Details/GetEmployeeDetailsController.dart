@@ -13,15 +13,15 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-class GetEmployeeDetailsController extends GetxController{
+class GetEmployeeDetailsController extends GetxController {
   var isLoading = false.obs;
   var documentsList = [].obs;
   final allowedExtensions = {'png', 'jpg', 'jpeg', 'gif', 'pdf'};
-   // Employee details
+  // Employee details
   RxString department = ''.obs;
   RxString designation = ''.obs;
 
-    // Time and date observables
+  // Time and date observables
   Rx<TimeOfDay?> shiftStart = Rx<TimeOfDay?>(null);
   Rx<TimeOfDay?> shiftEnd = Rx<TimeOfDay?>(null);
   Rx<DateTime?> joinDate = Rx<DateTime?>(null);
@@ -31,7 +31,7 @@ class GetEmployeeDetailsController extends GetxController{
   Rx<File?> aadhaarCardFile = Rx<File?>(null);
   Rx<File?> profileImage = Rx<File?>(null);
 
-   final nameController = TextEditingController();
+  final nameController = TextEditingController();
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
   final salaryController = TextEditingController();
@@ -43,132 +43,171 @@ class GetEmployeeDetailsController extends GetxController{
   final accountNumberController = TextEditingController();
   final ifscController = TextEditingController();
   final roleController = TextEditingController();
-  
-
 
   var id = 0.obs;
   var user_id = 0.obs;
   var email = ''.obs;
   var name = ''.obs;
   var phone = ''.obs;
-  var address = ''.obs; 
+  var address = ''.obs;
   var joindate = ''.obs;
   var salary = ''.obs;
   var bank_account = ''.obs;
-  var bank_name = ''.obs; 
-  var ifsc_code = ''.obs; 
-  var company_id = ''.obs; 
-  var department_id = ''.obs; 
-  var designation_id = ''.obs; 
-  RxString profile_pic = ''.obs; 
-  var emergency_contact = ''.obs; 
-  var role = ''.obs; 
-  var shiftstart = ''.obs; 
-  var shiftend = ''.obs; 
-  var panCard = ''.obs; 
-  var aadharCard = ''.obs; 
-
+  var bank_name = ''.obs;
+  var ifsc_code = ''.obs;
+  var company_id = ''.obs;
+  var department_id = ''.obs;
+  var designation_id = ''.obs;
+  RxString profile_pic = ''.obs;
+  var emergency_contact = ''.obs;
+  var role = ''.obs;
+  var shiftstart = ''.obs;
+  var shiftend = ''.obs;
+  var panCard = ''.obs;
+  var aadharCard = ''.obs;
 
   Future<void> editEmployeeFunction(String editEmployeeDetails) async {
     print("Edit Employee Function called with ID: $editEmployeeDetails");
-    try{
+    try {
       isLoading.value = true;
-        final prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('token');
+      final prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
 
-    if (token == null) {
-      isLoading.value = false;
-      clearSharedPreferences();
-      Get.snackbar("Error", "User is not authenticated. Login again!",
-          backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
-      return;
-    }
+      if (token == null) {
+        isLoading.value = false;
+        clearSharedPreferences();
+        Get.snackbar(
+          "Error",
+          "User is not authenticated. Login again!",
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+        return;
+      }
       final url = Uri.parse(
-        "${ApiConstants.employeeDetails}/$editEmployeeDetails");
-  
+        "${ApiConstants.employeeDetails}/$editEmployeeDetails",
+      );
 
-        print("Sending request to URL in edit employee: $url");
-        print("Employee ID: $editEmployeeDetails");
-        print("Request headers: Authorization: Bearer $token");
+      print("Sending request to URL in edit employee: $url");
+      print("Employee ID: $editEmployeeDetails");
+      print("Request headers: Authorization: Bearer $token");
 
-    final response = await http.get(url,
-    headers: {"Authorization": "Bearer $token"},
-    );  
-    print("API Status Code in Get Employee controller: ${response.statusCode}");
-    print("Body Response in Get Employee controller: ${response.body}");
+      final response = await http.get(
+        url,
+        headers: {"Authorization": "Bearer $token"},
+      );
+      print(
+        "API Status Code in Get Employee controller: ${response.statusCode}",
+      );
+      print("Body Response in Get Employee controller: ${response.body}");
 
-        if (response.statusCode == 200) {
-      var editEmployeeDetailsModel = employeeDetailsModelFromJson(response.body);
-       print("Get Employee details model called");
-      documentsList.addAll(editEmployeeDetailsModel.data.documentType);
-       id = RxInt(editEmployeeDetailsModel.data.id);
-       user_id.value = (editEmployeeDetailsModel.data.userId);
+      if (response.statusCode == 200) {
+        var editEmployeeDetailsModel = employeeDetailsModelFromJson(
+          response.body,
+        );
+        print("Get Employee details model called");
+        documentsList.addAll(editEmployeeDetailsModel.data.documentType);
+        id = RxInt(editEmployeeDetailsModel.data.id);
+        user_id.value = (editEmployeeDetailsModel.data.userId);
         emailController.text = (editEmployeeDetailsModel.data.email);
-       nameController.text = (editEmployeeDetailsModel.data.name);
-       print("Name: ${nameController.text}");
-       phoneController.text = (editEmployeeDetailsModel.data.phone);
-      addressController.text = (editEmployeeDetailsModel.data.address);
-       
-      salaryController.text = editEmployeeDetailsModel.data.salary;
-       accountNumberController.text = editEmployeeDetailsModel.data.bankAccount;
-      bankNameController.text = editEmployeeDetailsModel.data.bankName;
-      ifscController.text = editEmployeeDetailsModel.data.ifscCode;
-        company_id = RxString(editEmployeeDetailsModel.data.companyId.toString());
+        nameController.text = (editEmployeeDetailsModel.data.name);
+        print("Name: ${nameController.text}");
+        phoneController.text = (editEmployeeDetailsModel.data.phone);
+        addressController.text = (editEmployeeDetailsModel.data.address);
+
+        salaryController.text = editEmployeeDetailsModel.data.salary;
+        accountNumberController.text =
+            editEmployeeDetailsModel.data.bankAccount;
+        bankNameController.text = editEmployeeDetailsModel.data.bankName;
+        ifscController.text = editEmployeeDetailsModel.data.ifscCode;
+        company_id = RxString(
+          editEmployeeDetailsModel.data.companyId.toString(),
+        );
         // Set department and designation
-      department.value = editEmployeeDetailsModel.data.departmentId.toString();
-      designation.value = editEmployeeDetailsModel.data.designationId.toString();
+        department.value =
+            editEmployeeDetailsModel.data.departmentId.toString();
+        designation.value =
+            editEmployeeDetailsModel.data.designationId.toString();
         profile_pic = RxString(editEmployeeDetailsModel.data.profilePic);
-        emergencyContactController.text = (editEmployeeDetailsModel.data.emergencyContact.toString());
-        roleController.text = (editEmployeeDetailsModel.data.role.code.toString());
-        joinController.text = (editEmployeeDetailsModel.data.joinDate.toString());
+        emergencyContactController.text =
+            (editEmployeeDetailsModel.data.emergencyContact.toString());
+        roleController.text =
+            (editEmployeeDetailsModel.data.role.code.toString());
+        joinController.text =
+            (editEmployeeDetailsModel.data.joinDate.toString());
 
-        panCard = RxString(editEmployeeDetailsModel.data.documentType[0].documentUrl.toString());
-        aadharCard = RxString(editEmployeeDetailsModel.data.documentType[1].documentUrl.toString());
-
-           // Parse and set shift times
-      if (editEmployeeDetailsModel.data.employeeShift.shiftStart != null) {
-        final startParts = editEmployeeDetailsModel.data.employeeShift.shiftStart.split(':');
-        shiftStart.value = TimeOfDay(
-          hour: int.parse(startParts[0]),
-          minute: int.parse(startParts[1]),
+        panCard = RxString(
+          editEmployeeDetailsModel.data.documentType[0].documentUrl.toString(),
         );
-      }
-      
-      if (editEmployeeDetailsModel.data.employeeShift.shiftEnd != null) {
-        final endParts = editEmployeeDetailsModel.data.employeeShift.shiftEnd.split(':');
-        shiftEnd.value = TimeOfDay(
-          hour: int.parse(endParts[0]),
-          minute: int.parse(endParts[1]),
+        aadharCard = RxString(
+          editEmployeeDetailsModel.data.documentType[1].documentUrl.toString(),
         );
-      }
 
+        // Parse and set shift times
+        if (editEmployeeDetailsModel.data.employeeShift.shiftStart != null) {
+          final startParts = editEmployeeDetailsModel
+              .data
+              .employeeShift
+              .shiftStart
+              .split(':');
+          shiftStart.value = TimeOfDay(
+            hour: int.parse(startParts[0]),
+            minute: int.parse(startParts[1]),
+          );
+        }
+
+        if (editEmployeeDetailsModel.data.employeeShift.shiftEnd != null) {
+          final endParts = editEmployeeDetailsModel.data.employeeShift.shiftEnd
+              .split(':');
+          shiftEnd.value = TimeOfDay(
+            hour: int.parse(endParts[0]),
+            minute: int.parse(endParts[1]),
+          );
+        }
 
         isLoading.value = false;
-
-    } else if (response.statusCode == 400) {
-      Get.snackbar('Error', 'Bad Request',
-          backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
-    } else if (response.statusCode == 401) {
-      Get.snackbar('Message', 'Login session expired',
-          backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
-    } else if (response.statusCode == 500 || response.statusCode == 404) {
+      } else if (response.statusCode == 400) {
         Get.snackbar(
           'Error',
-          'No More Data',
+          'Bad Request',
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+      } else if (response.statusCode == 401) {
+        Get.snackbar(
+          'Message',
+          'Login session expired',
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+      } else if (response.statusCode == 500) {
+        Get.snackbar(
+          'Message',
+          'Internal Server Error',
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+      } else if (response.statusCode == 404) {
+        Get.snackbar(
+          'Message',
+          'Not found 404',
           backgroundColor: CRMColors.error,
           colorText: CRMColors.textWhite,
         );
       } else {
-      Get.snackbar("Error", "Failed to Get Employee details",
-          backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
-    }
-
-    } catch(error){
+        Get.snackbar(
+          "Error",
+          "Failed to Get Employee details",
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+      }
+    } catch (error) {
       isLoading.value = false;
     }
   }
 
-      static Future<void> clearSharedPreferences() async {
+  static Future<void> clearSharedPreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.clear();
     Get.snackbar(
@@ -180,7 +219,7 @@ class GetEmployeeDetailsController extends GetxController{
     Get.offAll(LoginScreen());
   }
 
-    // Pick profile image with validation
+  // Pick profile image with validation
   Future<void> pickFileImage({ImageSource source = ImageSource.gallery}) async {
     print('pickFileImage called - source: $source');
     try {
@@ -221,7 +260,7 @@ class GetEmployeeDetailsController extends GetxController{
     }
   }
 
-    // Pick join date
+  // Pick join date
   Future<void> selectJoinDate() async {
     print('selectJoinDate called');
     final picked = await showDatePicker(
@@ -239,7 +278,7 @@ class GetEmployeeDetailsController extends GetxController{
     }
   }
 
-    Future<void> selectTime({required bool isStart}) async {
+  Future<void> selectTime({required bool isStart}) async {
     print('selectTime called - isStart: $isStart');
     final picked = await showTimePicker(
       context: Get.context!,
@@ -259,7 +298,7 @@ class GetEmployeeDetailsController extends GetxController{
     }
   }
 
-    // Pick documents with validation
+  // Pick documents with validation
   Future<void> pickFile(bool isPan) async {
     print('pickFile called - isPan: $isPan');
     try {
@@ -304,5 +343,4 @@ class GetEmployeeDetailsController extends GetxController{
       );
     }
   }
-
 }

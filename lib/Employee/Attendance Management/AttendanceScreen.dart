@@ -384,12 +384,10 @@ class _AttendancescreenState extends State<Attendancescreen> {
                           final isSunday = day.weekday == DateTime.sunday;
                           if (isSunday) {
                             return Center(
-                              child: Text(
-                                '${day.day}',
-                                style: const TextStyle(
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              child: CustomText(
+                                text: '${day.day}',
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
                               ),
                             );
                           }
@@ -424,11 +422,9 @@ class _AttendancescreenState extends State<Attendancescreen> {
                                     // pill shape
                                   ),
                                   child: Center(
-                                    child: Text(
-                                      '${day.day}',
-                                      style: const TextStyle(
-                                        color: Colors.black,
-                                      ),
+                                    child: CustomText(
+                                      text: '${day.day}',
+                                      color: Colors.black,
                                     ),
                                   ),
                                 ),
@@ -459,19 +455,6 @@ class _AttendancescreenState extends State<Attendancescreen> {
     );
   }
 
-  Color _getDotColor(String status) {
-    switch (status) {
-      case 'Present':
-        return CRMColors.succeed;
-      case 'Absent':
-        return CRMColors.error;
-      case 'Rejected':
-        return Colors.orange;
-      default:
-        return Colors.transparent;
-    }
-  }
-
   String formatUtcTime(String utcTimeString) {
     if (utcTimeString.isEmpty) return "";
     try {
@@ -486,9 +469,10 @@ class _AttendancescreenState extends State<Attendancescreen> {
   void calculateTotalHoursToday() {
     try {
       final checkInStr = checkClockInController.checkInTime.value;
+      final checkOutStr = checkClockInController.checkOutTime.value;
       final breakStartStr = checkClockInController.breackinTime.value;
       final breakEndStr = checkClockInController.breackOutTime.value;
-      final checkOutStr = checkClockInController.checkOutTime.value;
+      
 
       if (checkInStr.isEmpty) {
         totalHoursToday.value = "0h 00m";
@@ -774,7 +758,7 @@ class _AttendancescreenState extends State<Attendancescreen> {
         ),
       );
     } else {
-      return Visibility(visible: false, child: Text(""));
+      return Visibility(visible: false, child: CustomText(text: ""));
     }
   }
 
@@ -814,7 +798,7 @@ class _AttendancescreenState extends State<Attendancescreen> {
         ),
       );
     } else {
-      return Visibility(visible: true, child: Text(""));
+      return Visibility(visible: true, child: CustomText(text: ""));
     }
   }
 
@@ -853,7 +837,7 @@ class _AttendancescreenState extends State<Attendancescreen> {
         ),
       );
     } else {
-      return Visibility(visible: false, child: Text("0h 00 m"));
+      return Visibility(visible: false, child: CustomText(text: "0h 00 m"));
     }
   }
 
@@ -891,7 +875,7 @@ class _AttendancescreenState extends State<Attendancescreen> {
         ),
       );
     } else {
-      return Visibility(visible: false, child: Text("0h 00 m"));
+      return Visibility(visible: false, child: CustomText(text: "0h 00 m"));
     }
   }
 
@@ -1016,21 +1000,20 @@ class _AttendancescreenState extends State<Attendancescreen> {
                   const SizedBox(height: 20),
 
                   // Title
-                  const Text(
-                    "Logout?",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
+                  const CustomText(
+                    text: "Logout?",
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
                   ),
                   const SizedBox(height: 10),
 
                   // Subtitle
-                  const Text(
-                    "Are you sure you want to logout?",
+                  const CustomText(
+                    text: "Are you sure you want to logout?",
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: Colors.black54),
+                    fontSize: 16,
+                    color: Colors.black54,
                   ),
                   const SizedBox(height: 25),
 
@@ -1049,13 +1032,11 @@ class _AttendancescreenState extends State<Attendancescreen> {
                             ),
                           ),
                           onPressed: () => Get.back(),
-                          child: const Text(
-                            "Cancel",
-                            style: TextStyle(
-                              color: Colors.black87,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
+                          child: const CustomText(
+                            text: "Cancel",
+                            color: Colors.black87,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
@@ -1096,18 +1077,16 @@ class _AttendancescreenState extends State<Attendancescreen> {
                                   Get.snackbar(
                                     "Success",
                                     "Logout Successfully",
-                                    backgroundColor: CRMColors.error,
+                                    backgroundColor: CRMColors.success,
                                     colorText: CRMColors.textWhite,
                                   );
                                   Get.offAll(() => const LoginScreen());
                                 },
-                                child: const Text(
-                                  "Logout",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                                child: const CustomText(
+                                  text: "Logout",
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               );
                         }),

@@ -8,96 +8,126 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-class Leavehistorycontroller extends GetxController{
+class Leavehistorycontroller extends GetxController {
   var isLoading = false.obs;
   var leaveHistoryList = [].obs;
   var currentPage = 1.obs;
   var hasMoreData = true.obs;
   var searchQuery = ''.obs;
- 
-Future<void> leavehistorycontrollerFunction({String name = "", bool isNewSearch = false}) async {
-  try {
-     if (isNewSearch) {
-      leaveHistoryList.clear();
-      currentPage.value = 1;
-      hasMoreData.value = true;
-      searchQuery.value = name;
-    }
 
-    
-
-     if (!hasMoreData.value) return;
-     isLoading.value = true;
-    final prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('token');
-
-    if (token == null) {
-      isLoading.value = false;
-      clearSharedPreferences();
-      Get.snackbar("Error", "User is not authenticated. Login again!",
-          backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
-      return;
-    }
-
-   
-    // Construct the URL with query parameters
-    final url = Uri.parse(ApiConstants.leaveHistory).replace(queryParameters: {
-      '_page': currentPage.value.toString(),
-      '_limit': '10',
-      '_sort': '',
-      // '_order': 'asc',
-      'q': name, // Optional search query
-    });
-
-    print("Final leave history API URL: $url");
-
-    final response = await http.get(
-      url,
-      headers: {"Authorization": "Bearer $token"},
-    );
-
-    print("API Status Code in leave history: ${response.statusCode}");
-    print("Body Response of leave history: ${response.body}");
-
-    if (response.statusCode == 200) {
-      var leaveHistoryModel = leaveHistoryModelFromJson(response.body);
-      print("Leave history data fetched successfully");
-
-      if (leaveHistoryModel.data.leaves.isEmpty) {
-        hasMoreData.value = false;
-      } else {
-        leaveHistoryList.addAll(leaveHistoryModel.data.leaves);
-        currentPage.value++;
+  Future<void> leavehistorycontrollerFunction({
+    String name = "",
+    bool isNewSearch = false,
+  }) async {
+    try {
+      if (isNewSearch) {
+        leaveHistoryList.clear();
+        currentPage.value = 1;
+        hasMoreData.value = true;
+        searchQuery.value = name;
       }
 
-      update();
-      isLoading.value = false;
-    } else if (response.statusCode == 400) {
-      hasMoreData.value = false;
-      Get.snackbar('Error', 'Bad Request',
-          backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
-    } else if (response.statusCode == 401) {
-      hasMoreData.value = false;
-      Get.snackbar('Message', 'Login session expired',
-          backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
-    } else if (response.statusCode == 500 || response.statusCode == 404) {
-      hasMoreData.value = false;
-      Get.snackbar('Error', 'No More Data',
-          backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
-    } else {
-      hasMoreData.value = false;
-      Get.snackbar("Error", "Failed to fetch attendance history",
-          backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
-    }
-  } catch (error) {
-    isLoading.value = false;
-    print("Error fetching leave history: $error");
-  } finally {
-    isLoading.value = false;
-  }
-}
+      if (!hasMoreData.value) return;
+      isLoading.value = true;
+      final prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
 
-      static Future<void> clearSharedPreferences() async {
+      if (token == null) {
+        isLoading.value = false;
+        clearSharedPreferences();
+        Get.snackbar(
+          "Error",
+          "User is not authenticated. Login again!",
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+        return;
+      }
+
+      // Construct the URL with query parameters
+      final url = Uri.parse(ApiConstants.leaveHistory).replace(
+        queryParameters: {
+          '_page': currentPage.value.toString(),
+          '_limit': '10',
+          '_sort': '',
+          // '_order': 'asc',
+          'q': name, // Optional search query
+        },
+      );
+
+      print("Final leave history API URL: $url");
+
+      final response = await http.get(
+        url,
+        headers: {"Authorization": "Bearer $token"},
+      );
+
+      print("API Status Code in leave history: ${response.statusCode}");
+      print("Body Response of leave history: ${response.body}");
+
+      if (response.statusCode == 200) {
+        var leaveHistoryModel = leaveHistoryModelFromJson(response.body);
+        print("Leave history data fetched successfully");
+
+        if (leaveHistoryModel.data.leaves.isEmpty) {
+          hasMoreData.value = false;
+        } else {
+          leaveHistoryList.addAll(leaveHistoryModel.data.leaves);
+          currentPage.value++;
+        }
+
+        update();
+        isLoading.value = false;
+      } else if (response.statusCode == 400) {
+        hasMoreData.value = false;
+        Get.snackbar(
+          'Error',
+          'Bad Request',
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+      } else if (response.statusCode == 401) {
+        hasMoreData.value = false;
+        Get.snackbar(
+          'Message',
+          'Login session expired',
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+      } else if (response.statusCode == 500) {
+        hasMoreData.value = false;
+        Get.snackbar(
+          'Message',
+          'Internal server error',
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+      } else if (response.statusCode == 404) {
+        hasMoreData.value = false;
+        Get.snackbar(
+          'Message',
+          'Page not found',
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+      } else {
+        hasMoreData.value = false;
+        Get.snackbar(
+          "Error",
+          "Failed to fetch attendance history",
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+      }
+    } catch (error) {
+      isLoading.value = false;
+      print("Error fetching leave history: $error");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  static Future<void> clearSharedPreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.clear();
     Get.snackbar(

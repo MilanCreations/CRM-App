@@ -30,6 +30,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       Get.put(CompanyAdminDashboardController());
 
   String userRole = "";
+  String companyname = "";
   List<String> chartData = [];
 
   @override
@@ -44,6 +45,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   Future<void> getUserData() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     userRole = sharedPreferences.getString("role_code") ?? "";
+    companyname = sharedPreferences.getString("company_name") ?? "";
     String? permissionsJson = sharedPreferences.getString("permissions");
     if (permissionsJson != null) {
       chartData = List<String>.from(jsonDecode(permissionsJson));
@@ -93,7 +95,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: gradientColors.last.withOpacity(0.3),
+              color: gradientColors.last.withValues(alpha: 0.3),
               offset: const Offset(0, 6),
               blurRadius: 12,
             ),
@@ -109,7 +111,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 width: 60,
                 height: 60,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
+                  color: Colors.white.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(30),
                 ),
               ),
@@ -121,7 +123,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
+                  color: Colors.white.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(40),
                 ),
               ),
@@ -143,13 +145,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  CustomText(
+                    text: title,
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
                   ),
                 ],
               ),

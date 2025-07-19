@@ -17,7 +17,6 @@ import 'package:crm_milan_creations/HR%20App/Salary/SalaryScreen.dart';
 import 'package:crm_milan_creations/HR%20App/view%20personal%20employees%20details/viewEmployeePersonalDetailsScreen.dart';
 import 'package:crm_milan_creations/Inventory%20Management/Issue%20Inventory%20History/issueInventoryScreen.dart';
 import 'package:crm_milan_creations/Inventory%20Management/Issue%20Inventory/IssueInventoryScreen.dart';
-import 'package:crm_milan_creations/Lead%20Management/All%20Lead%20list/allLeadsScreen.dart';
 import 'package:crm_milan_creations/Lead%20Management/Create%20Leads/createLeadsScreen.dart';
 import 'package:crm_milan_creations/Lead%20Management/My%20Leads%20List/myLeadListScreen.dart';
 import 'package:crm_milan_creations/Task%20Management/TaskScreen.dart';
@@ -237,7 +236,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Get.snackbar(
                               "Success",
                               "Logout Successfully",
-                              backgroundColor: CRMColors.error,
+                              backgroundColor: CRMColors.success,
                               colorText: CRMColors.textWhite,
                             );
                             Get.offAll(() => const LoginScreen());

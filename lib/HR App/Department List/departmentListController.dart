@@ -11,10 +11,9 @@ import 'package:http/http.dart' as http;
 class DepartmentlistController extends GetxController {
   var isLoading = false.obs;
   var designmation = "".obs;
- RxList<Department> departmentList = <Department>[].obs;
+  RxList<Department> departmentList = <Department>[].obs;
 
- var selectedDepartment = Rx<Department?>(null);
-
+  var selectedDepartment = Rx<Department?>(null);
 
   Future<void> departmentListFunction() async {
     try {
@@ -54,12 +53,11 @@ class DepartmentlistController extends GetxController {
 
         for (var department in departmentList) {
           print("Department Name: ${department.name}");
-          if(department.name == designmation) {
+          if (department.name == designmation) {
             selectedDepartment.value = department;
             print("Selected Department: ${selectedDepartment.value?.name}");
           }
         }
-
 
         update();
       } else if (response.statusCode == 400) {
@@ -76,10 +74,17 @@ class DepartmentlistController extends GetxController {
           backgroundColor: CRMColors.error,
           colorText: CRMColors.textWhite,
         );
-      } else if (response.statusCode == 500 || response.statusCode == 404) {
+      } else if (response.statusCode == 500) {
         Get.snackbar(
-          'Error',
-          'No More Data',
+          'Message',
+          'Internal server error',
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+      } else if (response.statusCode == 404) {
+        Get.snackbar(
+          'Message',
+          'Not found 404',
           backgroundColor: CRMColors.error,
           colorText: CRMColors.textWhite,
         );

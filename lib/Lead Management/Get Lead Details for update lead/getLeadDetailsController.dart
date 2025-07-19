@@ -32,7 +32,7 @@ class GetLeadDetails extends GetxController {
       print("Token fetched in Get Lead details: $token");
       if (token == null) {
         isLoading.value = false;
-      clearSharedPreferences();
+        clearSharedPreferences();
         print("Token is null, cannot fetch lead details");
         return;
       }
@@ -40,12 +40,14 @@ class GetLeadDetails extends GetxController {
       final url = Uri.parse("${ApiConstants.getLeadDetails}/$leadId");
       print("URL for fetching lead details: $url");
 
-      final response = await http.get(url, headers: {"Authorization": "Bearer $token"});
+      final response = await http.get(
+        url,
+        headers: {"Authorization": "Bearer $token"},
+      );
       print("Response status code in lead details: ${response.statusCode}");
       print("Response body of get lead detaisl with ID: ${response.body}");
 
-      if(response.statusCode == 200) {
-        
+      if (response.statusCode == 200) {
         final data = getLeadDetailsModelFromJson(response.body);
         print("Data fetched successfully: $data");
 
@@ -70,24 +72,31 @@ class GetLeadDetails extends GetxController {
         print("Lead details updated successfully");
         isLoading.value = false;
       } else if (response.statusCode == 400) {
-      Get.snackbar('Error', 'Bad Request',
-          backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
-    } else if (response.statusCode == 401) {
-      Get.snackbar('Message', 'Login session expired',
-          backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
-    } else if (response.statusCode == 500 || response.statusCode == 404) {
         Get.snackbar(
           'Error',
-          'No More Data',
+          'Bad Request',
           backgroundColor: CRMColors.error,
           colorText: CRMColors.textWhite,
         );
+      } else if (response.statusCode == 401) {
+        Get.snackbar(
+          'Message',
+          'Login session expired',
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+      } else if (response.statusCode == 500) {
+        Get.snackbar(
+          'Message',
+          'Internal Server Error',
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+      } else {
+        print(
+          "Failed to fetch lead details, status code: ${response.statusCode}",
+        );
       }
-      
-      else {
-        print("Failed to fetch lead details, status code: ${response.statusCode}");
-      }
-
     } catch (e) {
       // Handle error
       print("catch Error fetching lead details: $e");
@@ -97,7 +106,7 @@ class GetLeadDetails extends GetxController {
     }
   }
 
-    static Future<void> clearSharedPreferences() async {
+  static Future<void> clearSharedPreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.clear();
     Get.snackbar(
@@ -108,5 +117,4 @@ class GetLeadDetails extends GetxController {
     );
     Get.offAll(LoginScreen());
   }
-
 }

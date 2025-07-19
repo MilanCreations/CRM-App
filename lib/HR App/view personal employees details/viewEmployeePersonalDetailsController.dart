@@ -76,8 +76,12 @@ class ViewEmployeecontroller extends GetxController {
         print("Email: ${employeeDetailsModel.data.email}");
         print("Profile Pic: ${employeeDetailsModel.data.profilePic}");
         // Debug print for documents
-        print("Total documents: ${employeeDetailsModel.data.documentType.length}");
-        print("Employee ID fo admin:- ${employeeDetailsModel.data.employeeNumber}");
+        print(
+          "Total documents: ${employeeDetailsModel.data.documentType.length}",
+        );
+        print(
+          "Employee ID fo admin:- ${employeeDetailsModel.data.employeeNumber}",
+        );
         for (var doc in employeeDetailsModel.data.documentType) {
           print("Document Type: ${doc.documentType}, URL: ${doc.documentUrl}");
         }
@@ -117,10 +121,17 @@ class ViewEmployeecontroller extends GetxController {
           backgroundColor: CRMColors.error,
           colorText: CRMColors.textWhite,
         );
-      } else if (response.statusCode == 500 || response.statusCode == 404) {
+      } else if (response.statusCode == 500) {
         Get.snackbar(
-          'Error',
-          'No More Data',
+          'Message',
+          'Internal Server Error',
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+      } else if (response.statusCode == 400) {
+        Get.snackbar(
+          'Message',
+          'Bas Request',
           backgroundColor: CRMColors.error,
           colorText: CRMColors.textWhite,
         );

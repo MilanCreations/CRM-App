@@ -19,37 +19,40 @@ class TodayAttendanceScreen extends StatefulWidget {
 }
 
 class _TodayAttendanceScreenState extends State<TodayAttendanceScreen> {
-  final TodayAttendanceHistoryController controller = Get.put(TodayAttendanceHistoryController());
+  final TodayAttendanceHistoryController controller = Get.put(
+    TodayAttendanceHistoryController(),
+  );
   late final ScrollController scrollController;
-    NointernetScreen noInternetScreen = const NointernetScreen();
+  NointernetScreen noInternetScreen = const NointernetScreen();
   final ConnectivityService _connectivityService = ConnectivityService();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
   @override
   void initState() {
     super.initState();
-    
-   _checkInitialConnection();
-   _setupConnectivityListener();
+
+    _checkInitialConnection();
+    _setupConnectivityListener();
     scrollController = ScrollController()..addListener(_onScroll);
   }
 
-      Future<void> _checkInitialConnection() async {
+  Future<void> _checkInitialConnection() async {
     if (!(await _connectivityService.isConnected())) {
       _connectivityService.showNoInternetScreen();
     }
   }
 
-    void _setupConnectivityListener() {
-    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
-      onConnected: () {
-        // Optional: You can automatically go back if connection is restored
-        // Get.back();
-      },
-      onDisconnected: () {
-        _connectivityService.showNoInternetScreen();
-      },
-    );
+  void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService
+        .listenToConnectivityChanges(
+          onConnected: () {
+            // Optional: You can automatically go back if connection is restored
+            // Get.back();
+          },
+          onDisconnected: () {
+            _connectivityService.showNoInternetScreen();
+          },
+        );
   }
 
   @override
@@ -88,7 +91,8 @@ class _TodayAttendanceScreenState extends State<TodayAttendanceScreen> {
         ),
       ),
       body: Obx(() {
-        if (controller.isLoading.value && controller.allEmployeeAttendanceHistoryList.isEmpty) {
+        if (controller.isLoading.value &&
+            controller.allEmployeeAttendanceHistoryList.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         }
 
@@ -102,91 +106,102 @@ class _TodayAttendanceScreenState extends State<TodayAttendanceScreen> {
           itemCount: controller.allEmployeeAttendanceHistoryList.length + 1,
           itemBuilder: (context, index) {
             if (index < controller.allEmployeeAttendanceHistoryList.length) {
-              final history = controller.allEmployeeAttendanceHistoryList[index];
+              final history =
+                  controller.allEmployeeAttendanceHistoryList[index];
               final status = history.status?.toLowerCase() ?? '';
-              final leftBarColor = status == 'rejected'
-                  ? CRMColors.error
-                  : status == 'pending'
+              final leftBarColor =
+                  status == 'rejected'
+                      ? CRMColors.error
+                      : status == 'pending'
                       ? CRMColors.pending
                       : CRMColors.succeed;
 
-           return Container(
-  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-  height: 110,
-  decoration: BoxDecoration(
-    color: Colors.transparent,
-    borderRadius: BorderRadius.circular(12),
-  ),
-  child: Stack(
-    children: [
-     
-      Row(
-        children: [
-          Container(
-            width: 6,
-            height: 110,
-            decoration: BoxDecoration(
-              color: leftBarColor,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12),
-                bottomLeft: Radius.circular(12),
-              ),
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomText(
-                    text: history.name ?? '',
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: CRMColors.black,
-                  ),
-                  const SizedBox(height: 4),
-                  CustomText(
-                    text: formatDateOnly(history.attendanceDate.toString()),
-                    fontSize: 13,
-                    color: CRMColors.black,
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: CustomText(
-                          text: "Clock In : ${formatDateTime(history.checkIn)}",
-                          fontSize: 12,
-                          color: CRMColors.black,
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                height: 110,
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Stack(
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 6,
+                          height: 110,
+                          decoration: BoxDecoration(
+                            color: leftBarColor,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(12),
+                              bottomLeft: Radius.circular(12),
+                            ),
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        child: CustomText(
-                          text: "Clock Out : ${formatDateTime(history.checkOut) ?? '--'}",
-                          fontSize: 12,
-                          textAlign: TextAlign.right,
-                          color: CRMColors.black,
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 16,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CustomText(
+                                  text: history.name ?? '',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: CRMColors.black,
+                                ),
+                                const SizedBox(height: 4),
+                                CustomText(
+                                  text: formatDateOnly(
+                                    history.attendanceDate.toString(),
+                                  ),
+                                  fontSize: 13,
+                                  color: CRMColors.black,
+                                ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: CustomText(
+                                        text:
+                                            "Clock In : ${formatDateTime(history.checkIn)}",
+                                        fontSize: 12,
+                                        color: CRMColors.black,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: CustomText(
+                                        text:
+                                            "Clock Out : ${formatDateTime(history.checkOut)}",
+                                        fontSize: 12,
+                                        textAlign: TextAlign.right,
+                                        color: CRMColors.black,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    ],
-  ),
-);
-
+                      ],
+                    ),
+                  ],
+                ),
+              );
             } else {
-              return Obx(() => controller.hasMoreData.value
-                  ? const Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Center(child: CircularProgressIndicator()))
-                  : const SizedBox());
+              return Obx(
+                () =>
+                    controller.hasMoreData.value
+                        ? const Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Center(child: CircularProgressIndicator()),
+                        )
+                        : const SizedBox(),
+              );
             }
           },
         );

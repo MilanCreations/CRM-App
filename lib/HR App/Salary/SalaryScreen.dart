@@ -23,7 +23,7 @@ class _SalaryscreenState extends State<Salaryscreen> {
   final SalaryController salarycontroller = Get.put(SalaryController());
   final TextEditingController searchController = TextEditingController();
   final ScrollController scrollController = ScrollController();
-    NointernetScreen noInternetScreen = const NointernetScreen();
+  NointernetScreen noInternetScreen = const NointernetScreen();
   final ConnectivityService _connectivityService = ConnectivityService();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
   Timer? _debounceTimer;
@@ -61,9 +61,10 @@ class _SalaryscreenState extends State<Salaryscreen> {
     super.initState();
     salarycontroller.salaryReportFunction();
     scrollController.addListener(_onScroll);
-     _checkInitialConnection();
-   _setupConnectivityListener();
+    _checkInitialConnection();
+    _setupConnectivityListener();
     getUserData();
+    searchController.addListener(() => setState(() {}));
 
     int currentYear = DateTime.now().year;
     years = List.generate(10, (index) => (currentYear - index).toString());
@@ -130,22 +131,29 @@ class _SalaryscreenState extends State<Salaryscreen> {
     super.dispose();
   }
 
-      Future<void> _checkInitialConnection() async {
+  Future<void> _checkInitialConnection() async {
     if (!(await _connectivityService.isConnected())) {
       _connectivityService.showNoInternetScreen();
     }
   }
 
-    void _setupConnectivityListener() {
-    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
-      onConnected: () {
-        // Optional: You can automatically go back if connection is restored
-        // Get.back();
-      },
-      onDisconnected: () {
-        _connectivityService.showNoInternetScreen();
-      },
-    );
+  void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService
+        .listenToConnectivityChanges(
+          onConnected: () {
+            // Optional: You can automatically go back if connection is restored
+            // Get.back();
+          },
+          onDisconnected: () {
+            _connectivityService.showNoInternetScreen();
+          },
+        );
+  }
+
+  bool get _isFilterActive {
+    return searchController.text.trim().isNotEmpty ||
+        selectedMonth.isNotEmpty ||
+        selectedYear.isNotEmpty;
   }
 
   @override
@@ -169,7 +177,7 @@ class _SalaryscreenState extends State<Salaryscreen> {
       ),
       body: Column(
         children: [
-          if (userRole != "EMPLOYEE")
+          if (userRole != "EMPLOYEE" && userRole == "HR_MANAGER")
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -179,22 +187,25 @@ class _SalaryscreenState extends State<Salaryscreen> {
                     decoration: InputDecoration(
                       hintText: "Search by name...",
                       prefixIcon: const Icon(Icons.search),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          searchController.clear();
-                          setState(() {
-                            selectedMonth = '';
-                            selectedYear = '';
-                          });
-                          salarycontroller.salaryReportFunction(
-                            name: '',
-                            isNewSearch: true,
-                            month: null,
-                            year: null,
-                          );
-                        },
-                      ),
+                      suffixIcon:
+                          _isFilterActive
+                              ? IconButton(
+                                icon: const Icon(Icons.clear),
+                                onPressed: () {
+                                  searchController.clear();
+                                  setState(() {
+                                    selectedMonth = '';
+                                    selectedYear = '';
+                                  });
+                                  salarycontroller.salaryReportFunction(
+                                    name: '',
+                                    isNewSearch: true,
+                                    month: null,
+                                    year: null,
+                                  );
+                                },
+                              )
+                              : null,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
@@ -218,13 +229,15 @@ class _SalaryscreenState extends State<Salaryscreen> {
                             filled: true,
                             fillColor: Colors.grey.shade100,
                           ),
-                          items: months.map((month) {
-                            String label = month.isEmpty ? 'All Months' : month;
-                            return DropdownMenuItem(
-                              value: month,
-                              child: Text(label),
-                            );
-                          }).toList(),
+                          items:
+                              months.map((month) {
+                                String label =
+                                    month.isEmpty ? 'All Months' : month;
+                                return DropdownMenuItem(
+                                  value: month,
+                                  child: CustomText(text: label),
+                                );
+                              }).toList(),
                           onChanged: _onMonthChanged,
                         ),
                       ),
@@ -240,13 +253,15 @@ class _SalaryscreenState extends State<Salaryscreen> {
                             filled: true,
                             fillColor: Colors.grey.shade100,
                           ),
-                          items: years.map((year) {
-                            String label = year.isEmpty ? 'All Years' : year;
-                            return DropdownMenuItem(
-                              value: year,
-                              child: Text(label),
-                            );
-                          }).toList(),
+                          items:
+                              years.map((year) {
+                                String label =
+                                    year.isEmpty ? 'All Years' : year;
+                                return DropdownMenuItem(
+                                  value: year,
+                                  child: CustomText(text: label),
+                                );
+                              }).toList(),
                           onChanged: _onYearChanged,
                         ),
                       ),
@@ -255,22 +270,26 @@ class _SalaryscreenState extends State<Salaryscreen> {
                 ],
               ),
             ),
+
           Expanded(
             child: Obx(() {
-              if (salarycontroller.isLoading.value && 
+              if (salarycontroller.isLoading.value &&
                   salarycontroller.salaryList.isEmpty) {
                 return const Center(child: CircularProgressIndicator());
               }
-              
+
               if (salarycontroller.salaryList.isEmpty) {
-                return const Center(child: Text("No salary data found"));
+                return const Center(
+                  child: CustomText(text: "No salary data found"),
+                );
               }
-              
+
               return ListView.separated(
                 controller: scrollController,
                 padding: const EdgeInsets.all(12),
-                itemCount: salarycontroller.salaryList.length + 
-                         (salarycontroller.hasMoreData.value ? 1 : 0),
+                itemCount:
+                    salarycontroller.salaryList.length +
+                    (salarycontroller.hasMoreData.value ? 1 : 0),
                 separatorBuilder: (_, __) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
                   if (index < salarycontroller.salaryList.length) {
@@ -280,9 +299,10 @@ class _SalaryscreenState extends State<Salaryscreen> {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       child: Center(
-                        child: salarycontroller.isLoading.value
-                            ? const CircularProgressIndicator()
-                            : Container(),
+                        child:
+                            salarycontroller.isLoading.value
+                                ? const CircularProgressIndicator()
+                                : Container(),
                       ),
                     );
                   }
@@ -293,127 +313,211 @@ class _SalaryscreenState extends State<Salaryscreen> {
         ],
       ),
     );
-    }
+  }
 
-Widget _buildSalaryItem(dynamic item) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-    child: Container(
-      decoration: BoxDecoration(
-        color: CRMColors.whiteColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: CRMColors.crmMainCOlor.withOpacity(0.05),
-            blurRadius: 8,
-            spreadRadius: 1,
-            offset: const Offset(2, 4),
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header: Avatar + Name
-          Row(
-            children: [
-              CircleAvatar(
-                backgroundColor: CRMColors.crmMainCOlor,
-                radius: 20,
-                child: Text(
-                  item.name.substring(0, 1).toUpperCase(),
-                  style: TextStyle(
+  Widget _buildSalaryItem(dynamic item) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: Container(
+        decoration: BoxDecoration(
+          color: CRMColors.whiteColor,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: CRMColors.crmMainCOlor.withOpacity(0.05),
+              blurRadius: 8,
+              spreadRadius: 1,
+              offset: const Offset(2, 4),
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header: Avatar + Name
+            Row(
+              children: [
+                CircleAvatar(
+                  backgroundColor: CRMColors.crmMainCOlor,
+                  radius: 20,
+                  child: CustomText(
+                    text: item.name.substring(0, 1).toUpperCase(),
                     color: CRMColors.whiteColor,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  item.name,
-                  style: TextStyle(
+                const SizedBox(width: 10),
+                Expanded(
+                  child: CustomText(
+                    text: item.name,
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
                     color: CRMColors.textPrimary,
                   ),
                 ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          // Row 1: Present Days, Leaves, Working Days
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _statBox("Present Days", "${item.noOfDaysPaid}", Icons.check_circle, CRMColors.blue),
-              _statBox("Leaves", "${item.noOfLeavesLeavePaidOrUnpaid}", Icons.cancel, CRMColors.red),
-              _statBox("Working Days", "${item.workingDays}", Icons.work_outline, CRMColors.orange),
-            ],
-          ),
-
-          const SizedBox(height: 12),
-
-          // Row 2: Salary, Paid, Deducted
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _statBox("Salary", "₹${item.salary}", Icons.account_balance_wallet, CRMColors.succeed),
-              _statBox("Paid", "₹${item.amountPaid}", Icons.attach_money, CRMColors.teal),
-              _statBox("Deducted", "₹${item.amountDeducted}", Icons.money_off, CRMColors.red),
-            ],
-          ),
-
-          const SizedBox(height: 12),
-
-          // Total Payable
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0, left: 5.0),
-            child: CustomText(
-              text: 'Total Payable',
-              fontWeight: FontWeight.bold,
+              ],
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 5.0),
-            child: CustomText(
-              text: "₹${item.amountPaid}/-",
-              fontWeight: FontWeight.bold,
-              color: CRMColors.greenDark,
-              fontSize: 20,
-            ),
-          ),
 
-          // Optional: Reason for Deduction
-          if (item.reasonForDeduction.trim().isNotEmpty)
+            const SizedBox(height: 16),
+
+            // Row 1: Present Days, Leaves, Working Days
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _statBox(
+                  "Present Days",
+                  "${item.noOfDaysPaid}",
+                  Icons.check_circle,
+                  CRMColors.blue,
+                ),
+                _statBox(
+                  "Leaves",
+                  "${item.noOfLeavesLeavePaidOrUnpaid}",
+                  Icons.cancel,
+                  CRMColors.red,
+                ),
+                _statBox(
+                  "Working Days",
+                  "${item.workingDays}",
+                  Icons.work_outline,
+                  CRMColors.orange,
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 12),
+
+            // Row 2: Salary, Paid, Deducted
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _statBox(
+                  "Salary",
+                  "₹${item.salary}",
+                  Icons.account_balance_wallet,
+                  CRMColors.succeed,
+                ),
+                _statBox(
+                  "Paid",
+                  "₹${item.amountPaid}",
+                  Icons.attach_money,
+                  CRMColors.teal,
+                ),
+                _statBox(
+                  "Deducted",
+                  "₹${item.amountDeducted}",
+                  Icons.money_off,
+                  CRMColors.red,
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 12),
+
+            // Total Payable
             Padding(
-              padding: const EdgeInsets.only(top: 10.0, left: 5.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              padding: const EdgeInsets.only(top: 8.0, left: 5.0),
+              child: Row(
                 children: [
                   CustomText(
-                    text: 'Reason for Deduction:',
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: CRMColors.textPrimary,
+                    text: 'Total Payable',
+                    fontWeight: FontWeight.bold,
                   ),
-                  const SizedBox(height: 4),
+                  Spacer(),
                   CustomText(
-                    text: item.reasonForDeduction,
-                    fontSize: 13,
-                    color: Colors.black87,
+                    text: "₹${item.amountPaid}/-",
+                    fontWeight: FontWeight.bold,
+                    color: CRMColors.greenDark,
+                    fontSize: 20,
                   ),
                 ],
               ),
             ),
-        ],
+            userRole == "HR_MANAGER"
+                ? Container(
+                  width: Get.width * 0.8,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      minimumSize: const Size(200, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onPressed: () {
+                      // leaveRequestcontroller.submitLeaveRequest();
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 14,
+                      ),
+                      child: CustomText(
+                        text: "Pay Salary",
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                )
+                : SizedBox(),
+
+            // Padding(
+            //   padding: const EdgeInsets.only(left: 5.0),
+            //   child: CustomText(
+            //     text: "₹${item.amountPaid}/-",
+            //     fontWeight: FontWeight.bold,
+            //     color: CRMColors.greenDark,
+            //     fontSize: 20,
+            //   ),
+            // ),
+
+            // Optional: Reason for Deduction
+            if (item.reasonForDeduction.trim().isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 10.0, left: 5.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomText(
+                      text: 'Reason for Deduction:',
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: CRMColors.textPrimary,
+                    ),
+                    const SizedBox(height: 4),
+                    CustomText(
+                      text: item.reasonForDeduction,
+                      fontSize: 13,
+                      color: Colors.black87,
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _statBox(String label, String value, IconData icon, Color color) {
     return Expanded(
@@ -428,19 +532,14 @@ Widget _buildSalaryItem(dynamic item) {
           children: [
             Icon(icon, color: color, size: 20),
             const SizedBox(height: 6),
-            Text(
-              value,
-              style: TextStyle(
-                color: color,
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
+            CustomText(
+              text: value,
+              color: color,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
             ),
             const SizedBox(height: 2),
-            Text(
-              label,
-              style: const TextStyle(fontSize: 12, color: Colors.black87),
-            ),
+            CustomText(text: label, fontSize: 12, color: Colors.black87),
           ],
         ),
       ),

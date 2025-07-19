@@ -1,3 +1,4 @@
+// ignore: library_prefixes
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class SocketService {
@@ -7,12 +8,12 @@ class SocketService {
 
   IO.Socket? _socket;
   bool _isConnected = false;
-  String? _userId; 
+  String? _userId;
 
   void connect({
     required String userId,
     required Function(String title, String message) onNotification,
-    required Function(String log) onLog,   
+    required Function(String log) onLog,
   }) {
     _userId = userId;
 
@@ -32,14 +33,11 @@ class SocketService {
 
     onLog("👤 User ID set: $_userId");
 
-    _socket = IO.io(
-      'http://192.168.1.17:3000',
-      <String, dynamic>{
-        'transports': ['websocket'],
-        'autoConnect': true,
-        'forceNew': false,
-      },
-    );
+    _socket = IO.io('http://192.168.1.17:3000', <String, dynamic>{
+      'transports': ['websocket'],
+      'autoConnect': true,
+      'forceNew': false,
+    });
 
     _registerListeners(onNotification, onLog);
     _socket!.connect();

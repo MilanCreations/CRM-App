@@ -174,7 +174,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
                         child: SvgPicture.asset(
                           widget.prefixIconSvg!,
                           fit: BoxFit.contain,
-                          colorFilter: ColorFilter.mode(widget.iconColor!, BlendMode.srcIn),
+                          color: widget.iconColor,
                         ),
                       )
                     : widget.prefixIcon != null

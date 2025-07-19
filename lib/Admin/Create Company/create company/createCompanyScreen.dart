@@ -97,8 +97,8 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
         );
       }
     } else {
-      // ❌ User canceled picker
-      print("⚠️ File picking cancelled.");
+      // User canceled picker
+      print("File picking cancelled.");
     }
   }
 
@@ -106,8 +106,6 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
   void initState() {
     companyTypesController.getCompanyTypesfunctions();
     getAllCountriesController.allCountriesfunctions();
-    // getAllStatesController.getStatesByCountryId();
-    // getAllCitiesListController.allCitiesListfunctions();
     super.initState();
   }
 
@@ -461,7 +459,7 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
                             SizedBox(height: 10),
                             CustomText(
                               text: 'Tap to select an image',
-                              color: Colors.grey,
+                              color: CRMColors.grey,
                             ),
                           ],
                         ),
@@ -490,7 +488,7 @@ class _CreateCompanyScreenState extends State<CreateCompanyScreen> {
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.6),
+                              color: Colors.black.withValues(alpha: 0.6),
                               shape: BoxShape.circle,
                             ),
                             padding: const EdgeInsets.all(5),

@@ -69,22 +69,22 @@ class _CreateLeadsScreenState extends State<CreateLeadsScreen> {
   final ConnectivityService _connectivityService = ConnectivityService();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
-  Future<void> _selectDate() async {
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    );
+  // Future<void> _selectDate() async {
+  //   DateTime? picked = await showDatePicker(
+  //     context: context,
+  //     initialDate: DateTime.now(),
+  //     firstDate: DateTime(2000),
+  //     lastDate: DateTime(2101),
+  //   );
 
-    if (picked != null) {
-      setState(() {
-        createLeadcontroller.datetimeController.text = DateFormat(
-          'yyyy-MM-dd',
-        ).format(picked);
-      });
-    }
-  }
+  //   if (picked != null) {
+  //     setState(() {
+  //       createLeadcontroller.datetimeController.text = DateFormat(
+  //         'yyyy-MM-dd',
+  //       ).format(picked);
+  //     });
+  //   }
+  // }
 
   Future<void> _selectDateTime() async {
     DateTime? pickedDate = await showDatePicker(

@@ -32,7 +32,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
   void initState() {
     super.initState();
     getUserData();
-    objChatUserListController.ChatUserListfunctions(isRefresh: true);
+    objChatUserListController.chatUserListfunctions(isRefresh: true);
     // Initialize message activity listener
     WidgetsBinding.instance.addPostFrameCallback((_) {
       chatController.handleMessageActivity();
@@ -56,7 +56,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
     objChatUserListController.hasMoreData.value = true;
     objChatUserListController.currentPage.value = 1;
     searchController.clear();
-    objChatUserListController.ChatUserListfunctions(searchQuery: "");
+    objChatUserListController.chatUserListfunctions(searchQuery: "");
   }
 
 
@@ -174,7 +174,7 @@ void _onSearchChanged() {
                         );
                         if (result == true) {
                           print("✅ User sent a message. Refreshing list...");
-                          objChatUserListController.ChatUserListfunctions(
+                          objChatUserListController.chatUserListfunctions(
                             isRefresh: true,
                           );
                         } else {

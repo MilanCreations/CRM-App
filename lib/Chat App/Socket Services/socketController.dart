@@ -1,3 +1,5 @@
+// ignore_for_file: library_prefixes
+
 import 'package:crm_milan_creations/API%20Services/BaseURL_&_EndPoints.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:get/get.dart';
