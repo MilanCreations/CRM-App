@@ -11,8 +11,8 @@ class ConnectivityService {
 
   Future<bool> isConnected() async {
     final result = await _connectivity.checkConnectivity();
-    return result.contains(ConnectivityResult.mobile) || 
-           result.contains(ConnectivityResult.wifi);
+    return result.contains(ConnectivityResult.mobile) ||
+        result.contains(ConnectivityResult.wifi);
   }
 
   void showNoInternetScreen() {
@@ -24,8 +24,8 @@ class ConnectivityService {
     required VoidCallback onDisconnected,
   }) {
     return _connectivity.onConnectivityChanged.listen((result) {
-      if (result.contains(ConnectivityResult.mobile) || 
-         result.contains(ConnectivityResult.wifi)) {
+      if (result.contains(ConnectivityResult.mobile) ||
+          result.contains(ConnectivityResult.wifi)) {
         onConnected();
       } else {
         onDisconnected();

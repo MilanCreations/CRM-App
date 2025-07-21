@@ -463,7 +463,7 @@ class _SalaryscreenState extends State<Salaryscreen> {
                       ),
                     ),
                     onPressed: () {
-                      // leaveRequestcontroller.submitLeaveRequest();
+                      // implement the salary payment logic here
                     },
                     child: const Padding(
                       padding: EdgeInsets.symmetric(
@@ -480,16 +480,6 @@ class _SalaryscreenState extends State<Salaryscreen> {
                   ),
                 )
                 : SizedBox(),
-
-            // Padding(
-            //   padding: const EdgeInsets.only(left: 5.0),
-            //   child: CustomText(
-            //     text: "₹${item.amountPaid}/-",
-            //     fontWeight: FontWeight.bold,
-            //     color: CRMColors.greenDark,
-            //     fontSize: 20,
-            //   ),
-            // ),
 
             // Optional: Reason for Deduction
             if (item.reasonForDeduction.trim().isNotEmpty)

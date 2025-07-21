@@ -67,7 +67,6 @@ dependencies:
   flutter_chat_ui:
   local_auth:
   dropdown_search:
-  razorpay_flutter:
 
 
   # The following adds the Cupertino Icons font to your application.

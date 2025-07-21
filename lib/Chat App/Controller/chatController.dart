@@ -63,7 +63,7 @@ class ChatController extends GetxController {
     if (socket != null) {
       socket.off('privateMessage');
       socket.off('messageActivity');
-
+      
       // Incoming private message
       socket.on('privateMessage', (data) {
         print('📥 Received socket message: $data');
@@ -111,7 +111,7 @@ class ChatController extends GetxController {
     if (socket == null) return;
     socket.off('messageActivity');
     socket.on('messageActivity', (data) {
-      print('🔔 Message activity detected - refreshing user list');
+      print('Message activity detected - refreshing user list');
 
       chatuserlistcontroller.chatUserListfunctions(isRefresh: true).then((_) {
         chatuserlistcontroller.chatUsers.refresh();
@@ -162,7 +162,7 @@ class ChatController extends GetxController {
 
     socket.emit('privateMessage', newMessagePayload);
 
-    // ✅ Emit messageActivity to trigger chat list update
+    //Emit messageActivity to trigger chat list update
     socket.emit('messageActivity', {
       'sender_id': fromId,
       'receiver_id': toId,

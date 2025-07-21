@@ -187,6 +187,17 @@ class _HistoryScreenState extends State<HistoryScreen> {
           fontWeight: FontWeight.bold,
           color: CRMColors.whiteColor,
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: CRMColors.whiteColor,
+            ),
+            onPressed: () {
+              Get.back();
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [

@@ -48,7 +48,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
     if (userId != null && userId.isNotEmpty) {
       socketController.initSocket(userId, username);
     } else {
-      print("⚠️ userId is null or empty");
+      print("userId is null or empty");
     }
   }
 
@@ -59,14 +59,10 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
     objChatUserListController.chatUserListfunctions(searchQuery: "");
   }
 
-
-
-
-void _onSearchChanged() {
-  final query = searchController.text.trim();
-  objChatUserListController.searchUserLocally(query);
-}
-
+  void _onSearchChanged() {
+    final query = searchController.text.trim();
+    objChatUserListController.searchUserLocally(query);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +102,7 @@ void _onSearchChanged() {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: Colors.grey.shade100,
+              color: CRMColors.white,
               borderRadius: BorderRadius.circular(12),
               boxShadow: const [
                 BoxShadow(
@@ -116,7 +112,8 @@ void _onSearchChanged() {
                 ),
               ],
             ),
-            margin: const EdgeInsets.all(12),
+            margin: const EdgeInsets.all(6),
+            padding: const EdgeInsets.all(6),
             child: TextField(
               controller: searchController,
               onChanged: (_) => _onSearchChanged(),
@@ -183,7 +180,8 @@ void _onSearchChanged() {
                       }
                     },
                     child: Card(
-                      elevation: 4,
+                      elevation: 2,
+                      color: CRMColors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
@@ -236,7 +234,7 @@ void _onSearchChanged() {
                                         child: Icon(Icons.person),
                                       ),
                             ),
-            
+
                             const SizedBox(width: 12),
                             Expanded(
                               child: Column(
@@ -249,7 +247,7 @@ void _onSearchChanged() {
                                   ),
                                   const SizedBox(height: 4),
                                   CustomText(
-                                    text: 'This is a sample message preview...',
+                                    text: 'This is a message...',
                                     fontSize: 13,
                                     color: Colors.grey,
                                   ),
@@ -266,20 +264,23 @@ void _onSearchChanged() {
                                     fontSize: 12,
                                   ),
                                 ),
-                                // const SizedBox(height: 6),
-                                // Container(
-                                //   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                //   decoration: BoxDecoration(
-                                //     color: CRMColors.crmMainCOlor,
-                                //     borderRadius: BorderRadius.circular(12),
-                                //   ),
-                                //   child: const CustomText(
-                                //     text: '2',
-                                //     color: Colors.white,
-                                //     fontSize: 10,
-                                //     fontWeight: FontWeight.bold,
-                                //   ),
-                                // )
+                                const SizedBox(height: 6),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: CRMColors.crmMainCOlor,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: CustomText(
+                                    text: users[index].unreadCount,
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ],
                             ),
                           ],
