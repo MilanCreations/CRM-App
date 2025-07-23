@@ -46,6 +46,9 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
     getUserData();
     _scrollController.addListener(_onScroll);
     employeeListcontroller.employeeListFunction();
+    print(
+      'Initial employee list length: ${employeeListcontroller.employeeList.length}',
+    );
     _checkInitialConnection();
     _setupConnectivityListener();
   }

@@ -1,5 +1,6 @@
 import 'package:crm_milan_creations/Auth/SplashScreen.dart';
 import 'package:crm_milan_creations/Chat%20App/Socket%20Services/socketController.dart';
+import 'package:crm_milan_creations/Razorpay%20Services/razorpay_services.dart';
 import 'package:crm_milan_creations/widgets/notficationsServices.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -34,7 +35,7 @@ Future<void> main() async {
   Get.put(Socketcontroller(), permanent: true);
   FirebaseMessaging.onBackgroundMessage(firebaseBackgroundHandler);
   
-
+  // RazorpayService.init();
   runApp(MyApp());
 }
 

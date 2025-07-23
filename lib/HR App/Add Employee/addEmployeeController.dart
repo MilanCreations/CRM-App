@@ -236,16 +236,17 @@ class AddEmployeeController extends GetxController {
       print('URI created in  add employee api controller:- $uri');
 
       // Format the joining date properly
-   String formattedJoinDate = "";
-    if (joinDate.value != null) {
-      formattedJoinDate = DateFormat('yyyy-MM-dd').format(joinDate.value!);
-      print('Formatted joining date: $formattedJoinDate');
-    } else {
-      print('No join date selected - this should not happen as validation requires it');
-      showErrorMessage("Please select a joining date");
-      return;
-    }
-
+      String formattedJoinDate = "";
+      if (joinDate.value != null) {
+        formattedJoinDate = DateFormat('yyyy-MM-dd').format(joinDate.value!);
+        print('Formatted joining date: $formattedJoinDate');
+      } else {
+        print(
+          'No join date selected - this should not happen as validation requires it',
+        );
+        showErrorMessage("Please select a joining date");
+        return;
+      }
 
       final request = http.MultipartRequest('POST', uri);
       print('joinDate set to1: ${joinDate.value.toString()}');
@@ -277,14 +278,14 @@ class AddEmployeeController extends GetxController {
       request.fields['role_id'] = '4';
 
       request.fields['joining_date'] = formattedJoinDate;
-      
-      request.fields['shift_start'] = shiftStart.value != null 
-          ? shiftStart.value!.format(Get.context!) 
-          : "";
 
-      request.fields['shift_end'] = shiftEnd.value != null 
-          ? shiftEnd.value!.format(Get.context!) 
-          : "";
+      request.fields['shift_start'] =
+          shiftStart.value != null
+              ? shiftStart.value!.format(Get.context!)
+              : "";
+
+      request.fields['shift_end'] =
+          shiftEnd.value != null ? shiftEnd.value!.format(Get.context!) : "";
 
       // Add profile image only if provided
       if (profileImage.value != null) {
@@ -491,7 +492,7 @@ class AddEmployeeController extends GetxController {
       message,
       backgroundColor: Colors.green,
       colorText: CRMColors.textWhite,
-      snackPosition: SnackPosition.BOTTOM,
+      snackPosition: SnackPosition.TOP,
       duration: Duration(seconds: 3),
     );
   }
@@ -504,7 +505,7 @@ class AddEmployeeController extends GetxController {
       message,
       backgroundColor: CRMColors.error,
       colorText: CRMColors.textWhite,
-      snackPosition: SnackPosition.BOTTOM,
+      snackPosition: SnackPosition.TOP,
       duration: Duration(seconds: 3),
     );
   }

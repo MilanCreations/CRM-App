@@ -8,7 +8,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-class EmployeeListcontroller extends GetxController{
+class EmployeeListcontroller extends GetxController {
   var isLoading = false.obs;
   var employeeList = [].obs;
   var currentPage = 1.obs;
@@ -16,19 +16,23 @@ class EmployeeListcontroller extends GetxController{
   var searchQuery = "".obs;
 
   Future<void> employeeListFunction({bool isRefresh = false}) async {
-     if (isLoading.value || !hasMoreData.value) return;
-    try{
+    if (isLoading.value || !hasMoreData.value) return;
+    try {
       isLoading.value = true;
-        final prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('token');
+      final prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
 
-    if (token == null) {
-      isLoading.value = false;
-      clearSharedPreferences();
-      Get.snackbar("Error", "User is not authenticated. Login again!",
-          backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
-      return;
-    }
+      if (token == null) {
+        isLoading.value = false;
+        clearSharedPreferences();
+        Get.snackbar(
+          "Error",
+          "User is not authenticated. Login again!",
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+        return;
+      }
 
       if (isRefresh) {
         currentPage.value = 1;
@@ -36,41 +40,48 @@ class EmployeeListcontroller extends GetxController{
         employeeList.clear();
       }
 
-final url = Uri.parse(
-  "${ApiConstants.employeeList}?_page=${currentPage.value}&_limit=10&_sort=name&_order=asc&q=${searchQuery.value.trim()}");
+      final url = Uri.parse(
+        "${ApiConstants.employeeList}?_page=${currentPage.value}&_limit=10&_sort=name&_order=asc&q=${searchQuery.value.trim()}",
+      );
 
-    // print("Final employee List API URL: $url");
-    final response = await http.get(url,
-    headers: {"Authorization": "Bearer $token"},
-    );
-    
-  
+      //  print("Final employee List API URL: $url");
+      final response = await http.get(
+        url,
+        headers: {"Authorization": "Bearer $token"},
+      );
 
-    // print("API Status Code in Employee List: ${response.statusCode}");
-    // print("Body Response in Employee List: ${response.body}");
+      // print("API Status Code in Employee List: ${response.statusCode}");
+      print("Body Response in Employee List: ${response.body}");
 
-        if (response.statusCode == 200) {
-      var employeeModel = employeeListFromJson(response.body);
-      //  print("Employee List model called");
-      if (employeeModel.result.isEmpty) {
+      if (response.statusCode == 200) {
+        var employeeModel = employeeListFromJson(response.body);
+        //  print("Employee List model called");
+        if (employeeModel.result.isEmpty) {
           hasMoreData.value = false;
         } else {
           // ✅ Append new data only
           employeeList.addAll(employeeModel.result);
+          print("✅ Employee List Length after addAll: ${employeeList.length}");
           currentPage.value++;
         }
-       
-        
+
         // print("Got the Employee List from api:- $employeeList");
         isLoading.value = false;
-
-    } else if (response.statusCode == 400) {
-      Get.snackbar('Error', 'Bad Request',
-          backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
-    } else if (response.statusCode == 401) {
-      Get.snackbar('Message', 'Login session expired',
-          backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
-    } else if (response.statusCode == 500 || response.statusCode == 404) {
+      } else if (response.statusCode == 400) {
+        Get.snackbar(
+          'Error',
+          'Bad Request',
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+      } else if (response.statusCode == 401) {
+        Get.snackbar(
+          'Message',
+          'Login session expired',
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+      } else if (response.statusCode == 500 || response.statusCode == 404) {
         hasMoreData.value = false;
         Get.snackbar(
           'Error',
@@ -79,16 +90,19 @@ final url = Uri.parse(
           colorText: CRMColors.textWhite,
         );
       } else {
-      Get.snackbar("Error", "Failed to fetch attendance history",
-          backgroundColor: CRMColors.error, colorText: CRMColors.textWhite);
-    }
-
-    } catch(error){
+        Get.snackbar(
+          "Error",
+          "Failed to fetch attendance history",
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+      }
+    } catch (error) {
       isLoading.value = false;
     }
   }
 
-      static Future<void> clearSharedPreferences() async {
+  static Future<void> clearSharedPreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.clear();
     Get.snackbar(
@@ -107,7 +121,7 @@ final url = Uri.parse(
     await employeeListFunction();
   }
 
-    void setSearchQuery(String query) {
+  void setSearchQuery(String query) {
     searchQuery.value = query;
     refreshList();
   }
