@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:crm_milan_creations/Auth/Forgot%20Password/ForgotPasswordController.dart';
 import 'package:crm_milan_creations/Auth/Login/loginScreen.dart';
 import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
@@ -18,53 +19,55 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  TextEditingController emailController = TextEditingController();
-    NointernetScreen noInternetScreen = const NointernetScreen();
+  final Forgotpasswordcontroller forgotPasswordController = Get.put(
+    Forgotpasswordcontroller(),
+  );
+  NointernetScreen noInternetScreen = const NointernetScreen();
   final ConnectivityService _connectivityService = ConnectivityService();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
-      @override
+  @override
   void initState() {
     super.initState();
 
-   _checkInitialConnection();
-   _setupConnectivityListener();
+    _checkInitialConnection();
+    _setupConnectivityListener();
   }
 
-    @override
+  @override
   void dispose() {
-   _connectivitySubscription.cancel();
+    _connectivitySubscription.cancel();
     super.dispose();
   }
 
-    Future<void> _checkInitialConnection() async {
+  Future<void> _checkInitialConnection() async {
     if (!(await _connectivityService.isConnected())) {
       _connectivityService.showNoInternetScreen();
     }
   }
 
-    void _setupConnectivityListener() {
-    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
-      onConnected: () {
-        // Optional: You can automatically go back if connection is restored
-        // Get.back();
-      },
-      onDisconnected: () {
-        _connectivityService.showNoInternetScreen();
-      },
-    );
+  void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService
+        .listenToConnectivityChanges(
+          onConnected: () {
+            // Optional: You can automatically go back if connection is restored
+            // Get.back();
+          },
+          onDisconnected: () {
+            _connectivityService.showNoInternetScreen();
+          },
+        );
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: Container(
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
+            colors: [Color(0xFF00154F), Color(0xFF001B7D)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -80,7 +83,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 24.0, vertical: 36.0),
+                    horizontal: 24.0,
+                    vertical: 36.0,
+                  ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -129,7 +134,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       CustomTextFormField(
                         label: 'Enter email',
                         showLabel: false,
-                        controller: emailController,
+                        controller: forgotPasswordController.emailController,
                         prefixIcon: const Icon(Icons.email),
                         borderColor: Colors.transparent,
                         width: double.infinity,
@@ -140,7 +145,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             return 'Please enter your email';
                           }
                           final emailRegex = RegExp(
-                              r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+                            r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
+                          );
                           if (!emailRegex.hasMatch(value)) {
                             return 'Enter a valid email address';
                           }
@@ -151,59 +157,40 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       const SizedBox(height: 30),
 
                       // Reset Button
-                      CustomButton(
-                        text: 'Reset Password',
-                        onPressed: () {
-                          String email = emailController.text;
+                      Obx(() {
+                        return CustomButton(
+                          text:
+                              forgotPasswordController.isLoading.value
+                                  ? 'wait...'
+                                  : 'Reset Password',
+                          onPressed: () {
+                            
 
-                          if (email.isEmpty) {
-                            Get.snackbar(
-                              "Message",
-                              "Please enter your email",
-                              backgroundColor: CRMColors.error,
-                              colorText: CRMColors.whiteColor,
-                            );
-                          } else {
-                            final emailRegex = RegExp(
-                                r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
-                            if (!emailRegex.hasMatch(email)) {
-                              Get.snackbar(
-                                "Invalid Email",
-                                "Please enter a valid email address",
-                                backgroundColor: CRMColors.error,
-                                colorText: CRMColors.whiteColor,
-                              );
-                            } else {
-                              // API call placeholder
-                              Get.snackbar(
-                                "Success",
-                                "Password reset link sent to your email.",
-                                backgroundColor: CRMColors.success,
-                                colorText: CRMColors.whiteColor,
-                              );
-                              Get.off(() => const LoginScreen());
-                            }
-                          }
-                        },
-                        textStyle: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          letterSpacing: 1.2,
-                        ),
-                        borderRadius: 12.0,
-                        height: 50,
-                        width: double.infinity,
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF00154F), Color(0xFF001B7D)],
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                        ),
-                        elevation: 4,
-                        fullWidth: true,
-                        borderColor: Colors.transparent,
-                        borderWidth: 0,
-                      ),
+                            forgotPasswordController.isLoading.value
+                                ? null
+                                : forgotPasswordController
+                                    .sendResetLinkFunction();
+                          },
+                          textStyle: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            letterSpacing: 1.2,
+                          ),
+                          borderRadius: 12.0,
+                          height: 50,
+                          width: double.infinity,
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          elevation: 4,
+                          fullWidth: true,
+                          borderColor: Colors.transparent,
+                          borderWidth: 0,
+                        );
+                      }),
                     ],
                   ),
                 ),

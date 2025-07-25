@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:crm_milan_creations/Admin/Create%20Company/create%20company/createCompanyScreen.dart';
+import 'package:crm_milan_creations/Auth/Forgot%20Password/ForgotPasswordScreen.dart';
 import 'package:crm_milan_creations/Auth/Login/loginController.dart';
 import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
@@ -161,7 +162,19 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
 
-                          const SizedBox(height: 30),
+                          const SizedBox(height: 20),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: CustomText(
+                              text: "Forgot Password?",
+                              fontSize: 16,
+                              color: Colors.white70,
+                              onTap: () {
+                                Get.to(ForgotPasswordScreen());
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 25),
 
                           // 🚪 Sign In Button
                           CustomButton(

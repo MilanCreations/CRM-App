@@ -1,9 +1,10 @@
 // ignore_for_file: constant_identifier_names
 
 class ApiConstants {
-  // static const String baseUrls = "http://192.168.1.16:3000"; // Replace with your base URL
   static const String baseUrls =
-      "https://crm.venusstudies.com/api"; // Replace with your base URL
+      "http://192.168.1.20:3000"; // Replace with your base URL
+  // static const String baseUrls =
+  //     "https://crm.venusstudies.com/api"; // Replace with your base URL
   // static const String baseUrls = "https://haazirjanaab.in/api"; // Replace with your base URL
 
   // static const socketUrl = "http://192.168.1.16:3000";
@@ -14,6 +15,9 @@ class ApiConstants {
 
   // Logout end-point
   static const String logout = "$baseUrls/auth/logout";
+
+  // Forgot Password end-point
+  static const String forgotPassword = "$baseUrls/auth/forgot-password";
 
   // Clock-In
   static const String checkIn = "$baseUrls/payroll/attendance/check-in";
@@ -158,4 +162,8 @@ class ApiConstants {
   // Admin Dashboard
   static const String companyAdminDashboard =
       "$baseUrls/payroll/dashboard/companyAdmin";
+
+  ////////////////////////////// Subscription ////////////////////////////////////
+  static const String checkEmployeeLengthForSubscription =
+      "$baseUrls/payroll/subscription";
 }

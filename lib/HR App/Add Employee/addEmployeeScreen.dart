@@ -144,7 +144,7 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                         () => Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text("Joining Date"),
+                            const CustomText(text: "Joining Date"),
                             const SizedBox(height: 8),
                             TextField(
                               readOnly: true,
@@ -193,16 +193,16 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                   } else if (departmentlistController.departmentList.isEmpty) {
                     return Container(
                       padding: EdgeInsets.all(16),
-                      child: Text(
-                        "No departments available",
-                        style: TextStyle(color: Colors.grey),
+                      child: CustomText(
+                        text: "No departments available",
+                        color: Colors.grey,
                       ),
                     );
                   } else {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Department", style: TextStyle(fontSize: 16)),
+                        CustomText(text: "Department", fontSize: 16),
                         SizedBox(height: 8),
                         Container(
                           height: Get.height * 0.067,
@@ -223,9 +223,9 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                                         (Department item) =>
                                             DropdownMenuItem<Department>(
                                               value: item,
-                                              child: Text(
-                                                item.name,
-                                                style: TextStyle(fontSize: 16),
+                                              child: CustomText(
+                                                text: item.name,
+                                                fontSize: 16,
                                               ),
                                             ),
                                       )
@@ -267,16 +267,16 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                       .isEmpty) {
                     return Container(
                       padding: EdgeInsets.all(16),
-                      child: Text(
-                        "No Designation available",
-                        style: TextStyle(color: Colors.grey),
+                      child: CustomText(
+                        text: "No Designation available",
+                        color: Colors.grey,
                       ),
                     );
                   } else {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Designation", style: TextStyle(fontSize: 16)),
+                        CustomText(text: "Designation", fontSize: 16),
                         SizedBox(height: 8),
                         Container(
                           height: Get.height * 0.067,
@@ -287,9 +287,9 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton2<Designation>(
                               isExpanded: true,
-                              hint: Text(
-                                'Select Department',
-                                style: TextStyle(color: Colors.grey),
+                              hint: CustomText(
+                                text: 'Select Department',
+                                color: Colors.grey,
                               ),
                               items:
                                   designationListController.designationList
@@ -297,9 +297,9 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                                         (Designation item) =>
                                             DropdownMenuItem<Designation>(
                                               value: item,
-                                              child: Text(
-                                                item.name,
-                                                style: TextStyle(fontSize: 16),
+                                              child: CustomText(
+                                                text: item.name,
+                                                fontSize: 16,
                                               ),
                                             ),
                                       )
@@ -422,13 +422,11 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                 ),
 
                 SizedBox(height: 16),
-                Text(
-                  "Pan card",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey.shade800,
-                  ),
+                CustomText(
+                  text: "Pan card",
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey.shade800,
                 ),
                 SizedBox(height: 8),
                 GestureDetector(
@@ -451,31 +449,29 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                             ),
                           ),
                           padding: EdgeInsets.only(right: 16),
-                          child: Text(
-                            "Choose file",
-                            style: TextStyle(
-                              color: Colors.grey.shade900,
-                              fontWeight: FontWeight.w500,
-                            ),
+                          child: CustomText(
+                            text: "Choose file",
+                            color: Colors.grey.shade900,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                         SizedBox(width: 16),
                         Expanded(
                           child: Obx(
-                            () => Text(
-                              employeeFormController.panCardFile.value == null
-                                  ? "No file chosen"
-                                  : employeeFormController
-                                      .panCardFile
-                                      .value!
-                                      .path
-                                      .split('/')
-                                      .last,
+                            () => CustomText(
+                              text:
+                                  employeeFormController.panCardFile.value ==
+                                          null
+                                      ? "No file chosen"
+                                      : employeeFormController
+                                          .panCardFile
+                                          .value!
+                                          .path
+                                          .split('/')
+                                          .last,
 
-                              style: TextStyle(
-                                color: Colors.grey.shade600,
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                              color: Colors.grey.shade600,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ),
@@ -512,35 +508,34 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                             ),
                           ),
                           padding: EdgeInsets.only(right: 16),
-                          child: Text(
-                            "Choose file",
-                            style: TextStyle(
-                              color: Colors.grey.shade900,
-                              fontWeight: FontWeight.w500,
-                            ),
+                          child: CustomText(
+                            text: "Choose file",
+                            color: Colors.grey.shade900,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                         SizedBox(width: 16),
                         Expanded(
                           child: Obx(
-                            () => Text(
+                            () => CustomText(
                               // employeeFormController.aadhaarCardFile.value.isEmpty
                               //     ? "No file chosen"
                               //     : employeeFormController.aadhaarCardFile.value,
-                              employeeFormController.aadhaarCardFile.value ==
-                                      null
-                                  ? "No file chosen"
-                                  : employeeFormController
-                                      .aadhaarCardFile
-                                      .value!
-                                      .path
-                                      .split('/')
-                                      .last,
+                              text:
+                                  employeeFormController
+                                              .aadhaarCardFile
+                                              .value ==
+                                          null
+                                      ? "No file chosen"
+                                      : employeeFormController
+                                          .aadhaarCardFile
+                                          .value!
+                                          .path
+                                          .split('/')
+                                          .last,
 
-                              style: TextStyle(
-                                color: Colors.grey.shade600,
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                              color: Colors.grey.shade600,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ),
@@ -615,7 +610,7 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label),
+        CustomText(text: label),
         const SizedBox(height: 8),
         TextField(
           controller: controller,
@@ -639,7 +634,7 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label),
+        CustomText(text: label),
         const SizedBox(height: 8),
         Obx(
           () => DropdownButtonFormField<String>(
