@@ -201,7 +201,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           GestureDetector(
                             onTap: () => Get.to(CreateCompanyScreen()),
                             child: Text(
-                              "Create Employeer Account",
+                              "Employeer Signup",
                               style: TextStyle(
                                 color: CRMColors.white,
                                 fontSize: 15,

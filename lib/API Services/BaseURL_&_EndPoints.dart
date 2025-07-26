@@ -1,11 +1,12 @@
 // ignore_for_file: constant_identifier_names
 
 class ApiConstants {
-  static const String baseUrls =
-      "http://192.168.1.20:3000"; // Replace with your base URL
+  // static const String baseUrls =
+  //     "http://192.168.1.20:3000"; // Replace with your base URL
   // static const String baseUrls =
   //     "https://crm.venusstudies.com/api"; // Replace with your base URL
-  // static const String baseUrls = "https://haazirjanaab.in/api"; // Replace with your base URL
+  static const String baseUrls =
+      "https://haazirjanaab.in/api"; // Replace with your base URL
 
   // static const socketUrl = "http://192.168.1.16:3000";
   static const socketUrl = "https://crm.venusstudies.com";
