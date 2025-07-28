@@ -20,6 +20,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddemployeeScreen extends StatefulWidget {
   const AddemployeeScreen({super.key});
@@ -45,6 +46,7 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
   NointernetScreen noInternetScreen = const NointernetScreen();
   final ConnectivityService _connectivityService = ConnectivityService();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+  String totalEmployeesStroedInLocal = "0";
 
   @override
   void initState() {
@@ -52,6 +54,7 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
     designationListController.designationListFunction();
     _checkInitialConnection();
     _setupConnectivityListener();
+    getUserData();
     super.initState();
   }
 
@@ -79,6 +82,14 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
             _connectivityService.showNoInternetScreen();
           },
         );
+  }
+
+  Future<void> getUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    totalEmployeesStroedInLocal = prefs.getString('totalEmployees') ?? "0";
+    print(
+      'Total Employees stored in local in add employee screen:- $totalEmployeesStroedInLocal',
+    );
   }
 
   @override
@@ -563,14 +574,33 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                       backgroundColor: CRMColors.crmMainCOlor,
                       text: 'Send Invite',
                       onPressed: () {
-                        employeeFormController.inviteemployeeFunction();
-                        // RazorpayService.makePayment(
-                        //   amount: 100,
-                        //   name: 'gaurav',
-                        //   email: 'email',
-                        //   contact: 'contact',
-                        //   description: "Employee Onboarding Fee",
-                        // );
+                        if (int.tryParse(
+                              totalEmployeesStroedInLocal.toString(),
+                            )! >=
+                            5) {
+                          print(
+                            'you have to upgrade your plan to add more employees',
+                          );
+                          Get.snackbar(
+                            "Message",
+                            "You have to upgrade your plan to add more employees",
+                            backgroundColor: CRMColors.error,
+                            colorText: CRMColors.textWhite,
+                          );
+                          RazorpayService.makePayment(
+                            amount: 100,
+                            name: 'gaurav',
+                            email: 'email',
+                            contact: 'contact',
+                            description: "Employee Onboarding Fee",
+                          );
+                        } else if (int.tryParse(
+                              totalEmployeesStroedInLocal.toString(),
+                            )! <
+                            5) {
+                          print('you can add more employees');
+                          employeeFormController.inviteemployeeFunction();
+                        }
                       },
                     ),
                   ],

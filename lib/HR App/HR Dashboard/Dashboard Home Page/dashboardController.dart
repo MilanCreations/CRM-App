@@ -20,7 +20,11 @@ class Dashboardcontroller extends GetxController {
       isLoading.value = true;
       final prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
+
       print("token in HR Dashboard:- $token");
+      print(
+        "Total Employees in HR Dashboard stored in Local:- ${totalEmployees.value}",
+      );
 
       if (token == null) {
         isLoading.value = false;
@@ -47,6 +51,10 @@ class Dashboardcontroller extends GetxController {
         pendingLeaves.value = hrDashboardModel.data.pendingLeaves.toString();
         approvedLeaves.value = hrDashboardModel.data.approvedLeaves.toString();
         totalEmployees.value = hrDashboardModel.data.totalEmployees.toString();
+        prefs.setString(
+          'totalEmployees',
+          hrDashboardModel.data.totalEmployees.toString(),
+        );
         print('My Leads:- ${myLeads.value}');
         print('Today Attendance Count:- ${todayAttendanceCount.value}');
         print('Leads:- ${pendingLeaves.value}');
