@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:crm_milan_creations/Auth/Forgot%20Password/ForgotPasswordController.dart';
-import 'package:crm_milan_creations/Auth/Login/loginScreen.dart';
 import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
+import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/button.dart';
 import 'package:crm_milan_creations/widgets/connectivity_service.dart';
 import 'package:crm_milan_creations/widgets/textfiled.dart';
@@ -109,13 +109,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       const SizedBox(height: 20),
 
                       // Title
-                      const Text(
-                        "Forgot Password?",
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
-                          color: CRMColors.black,
-                        ),
+                      const CustomText(
+                        text: "Forgot Password?",
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        color: CRMColors.black,
                       ),
                       const SizedBox(height: 10),
 
@@ -164,8 +162,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                   ? 'wait...'
                                   : 'Reset Password',
                           onPressed: () {
-                            
-
                             forgotPasswordController.isLoading.value
                                 ? null
                                 : forgotPasswordController

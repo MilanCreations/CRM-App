@@ -53,7 +53,7 @@ class _IssueInventoryScreenState extends State<IssueInventoryScreen> {
   final TextEditingController ssdController = TextEditingController();
   final TextEditingController ramController = TextEditingController();
   final TextEditingController processorController = TextEditingController();
-    NointernetScreen noInternetScreen = const NointernetScreen();
+  NointernetScreen noInternetScreen = const NointernetScreen();
   final ConnectivityService _connectivityService = ConnectivityService();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
   // List to store accessories
@@ -69,34 +69,34 @@ class _IssueInventoryScreenState extends State<IssueInventoryScreen> {
   void initState() {
     super.initState();
     getallemployeelistcontroller.getAllEmployeeListFunction();
-       _checkInitialConnection();
-   _setupConnectivityListener();
+    _checkInitialConnection();
+    _setupConnectivityListener();
   }
 
-   @override
+  @override
   void dispose() {
-   _connectivitySubscription.cancel();
+    _connectivitySubscription.cancel();
     super.dispose();
   }
 
-    Future<void> _checkInitialConnection() async {
+  Future<void> _checkInitialConnection() async {
     if (!(await _connectivityService.isConnected())) {
       _connectivityService.showNoInternetScreen();
     }
   }
 
-    void _setupConnectivityListener() {
-    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
-      onConnected: () {
-        // Optional: You can automatically go back if connection is restored
-        // Get.back();
-      },
-      onDisconnected: () {
-        _connectivityService.showNoInternetScreen();
-      },
-    );
+  void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService
+        .listenToConnectivityChanges(
+          onConnected: () {
+            // Optional: You can automatically go back if connection is restored
+            // Get.back();
+          },
+          onDisconnected: () {
+            _connectivityService.showNoInternetScreen();
+          },
+        );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -117,213 +117,214 @@ class _IssueInventoryScreenState extends State<IssueInventoryScreen> {
         ),
         backgroundColor: CRMColors.crmMainCOlor,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CustomText(
-              text: 'Select Date',
-              color: CRMColors.darkGrey,
-              fontSize: 15,
-            ),
-            GestureDetector(
-              onTap: _selectDateTime,
-              child: AbsorbPointer(
-                child: CustomTextFormField(
-                  borderColor: CRMColors.grey,
-                  showLabel: false,
-                  backgroundColor: CRMColors.whiteColor,
-                  label: 'Date',
-                  controller: dateTimeController,
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            CustomText(
-              text: 'Select Employee',
-              color: CRMColors.darkGrey,
-              fontSize: 15,
-            ),
 
-            /// Employee Dropdown
-            Obx(() {
-              if (getallemployeelistcontroller.isLoading.value) {
-                return Column(
-                  children: List.generate(1, (index) {
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      height: 55,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: CRMColors.grey),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 14,
-                        ),
-                        child: Row(
-                          children: [
-                            FadeShimmer(
-                              height: 15,
-                              width: 150,
-                              radius: 4,
-                              millisecondsDelay: 300,
-                              fadeTheme: FadeTheme.light,
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }),
-                );
-              }
+      // body: SingleChildScrollView(
+      //   padding: const EdgeInsets.all(16),
+      //   child: Column(
+      //     crossAxisAlignment: CrossAxisAlignment.start,
+      //     children: [
+      //       CustomText(
+      //         text: 'Select Date',
+      //         color: CRMColors.darkGrey,
+      //         fontSize: 15,
+      //       ),
+      //       GestureDetector(
+      //         onTap: _selectDateTime,
+      //         child: AbsorbPointer(
+      //           child: CustomTextFormField(
+      //             borderColor: CRMColors.grey,
+      //             showLabel: false,
+      //             backgroundColor: CRMColors.whiteColor,
+      //             label: 'Date',
+      //             controller: dateTimeController,
+      //           ),
+      //         ),
+      //       ),
+      //       const SizedBox(height: 12),
+      //       CustomText(
+      //         text: 'Select Employee',
+      //         color: CRMColors.darkGrey,
+      //         fontSize: 15,
+      //       ),
 
-              if (getallemployeelistcontroller.employeeList.isEmpty) {
-                return const Center(
-                  child: CustomText(text: 'No employee found'),
-                );
-              }
+      //       /// Employee Dropdown
+      //       Obx(() {
+      //         if (getallemployeelistcontroller.isLoading.value) {
+      //           return Column(
+      //             children: List.generate(1, (index) {
+      //               return Container(
+      //                 margin: const EdgeInsets.only(bottom: 12),
+      //                 height: 55,
+      //                 width: double.infinity,
+      //                 decoration: BoxDecoration(
+      //                   color: Colors.white,
+      //                   borderRadius: BorderRadius.circular(10),
+      //                   border: Border.all(color: CRMColors.grey),
+      //                 ),
+      //                 child: Padding(
+      //                   padding: const EdgeInsets.symmetric(
+      //                     horizontal: 12,
+      //                     vertical: 14,
+      //                   ),
+      //                   child: Row(
+      //                     children: [
+      //                       FadeShimmer(
+      //                         height: 15,
+      //                         width: 150,
+      //                         radius: 4,
+      //                         millisecondsDelay: 300,
+      //                         fadeTheme: FadeTheme.light,
+      //                       ),
+      //                     ],
+      //                   ),
+      //                 ),
+      //               );
+      //             }),
+      //           );
+      //         }
 
-              return Container(
-                height: 55,
-                padding: const EdgeInsets.symmetric(horizontal: 0),
-                decoration: BoxDecoration(
-                  color: CRMColors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: CRMColors.grey),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton2<Resultemp>(
-                    isExpanded: true,
-                    hint: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: const [
-                        Padding(
-                          padding: EdgeInsets.only(left: 0.0),
-                          child: Text(
-                            'Employee',
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        ),
-                      ],
-                    ),
+      //         if (getallemployeelistcontroller.employeeList.isEmpty) {
+      //           return const Center(
+      //             child: CustomText(text: 'No employee found'),
+      //           );
+      //         }
 
-                    items:
-                        getallemployeelistcontroller.employeeList
-                            .map<DropdownMenuItem<Resultemp>>((Resultemp emp) {
-                              return DropdownMenuItem<Resultemp>(
-                                value: emp,
-                                child: Text(
-                                  emp.name,
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                              );
-                            })
-                            .toList(),
-                    value: getallemployeelistcontroller.selectedEmployee.value,
-                    onChanged: (Resultemp? newValue) {
-                      if (newValue != null) {
-                        getallemployeelistcontroller.selectedEmployee.value =
-                            newValue;
-                      }
-                    },
-                    buttonStyleData: const ButtonStyleData(height: 50),
-                    dropdownStyleData: const DropdownStyleData(maxHeight: 200),
-                  ),
-                ),
-              );
-            }),
+      //         return Container(
+      //           height: 55,
+      //           padding: const EdgeInsets.symmetric(horizontal: 0),
+      //           decoration: BoxDecoration(
+      //             color: CRMColors.white,
+      //             borderRadius: BorderRadius.circular(10),
+      //             border: Border.all(color: CRMColors.grey),
+      //           ),
+      //           child: DropdownButtonHideUnderline(
+      //             child: DropdownButton2<Resultemp>(
+      //               isExpanded: true,
+      //               hint: Row(
+      //                 mainAxisAlignment: MainAxisAlignment.start,
+      //                 children: const [
+      //                   Padding(
+      //                     padding: EdgeInsets.only(left: 0.0),
+      //                     child: Text(
+      //                       'Employee',
+      //                       style: TextStyle(color: Colors.grey),
+      //                     ),
+      //                   ),
+      //                 ],
+      //               ),
 
-            const SizedBox(height: 12),
-            CustomText(
-              text: 'Issued By',
-              color: CRMColors.darkGrey,
-              fontSize: 15,
-            ),
+      //               items:
+      //                   getallemployeelistcontroller.employeeList
+      //                       .map<DropdownMenuItem<Resultemp>>((Resultemp emp) {
+      //                         return DropdownMenuItem<Resultemp>(
+      //                           value: emp,
+      //                           child: Text(
+      //                             emp.name,
+      //                             style: const TextStyle(fontSize: 16),
+      //                           ),
+      //                         );
+      //                       })
+      //                       .toList(),
+      //               value: getallemployeelistcontroller.selectedEmployee.value,
+      //               onChanged: (Resultemp? newValue) {
+      //                 if (newValue != null) {
+      //                   getallemployeelistcontroller.selectedEmployee.value =
+      //                       newValue;
+      //                 }
+      //               },
+      //               buttonStyleData: const ButtonStyleData(height: 50),
+      //               dropdownStyleData: const DropdownStyleData(maxHeight: 200),
+      //             ),
+      //           ),
+      //         );
+      //       }),
 
-            /// Issued By
-            CustomTextFormField(
-              borderColor: CRMColors.grey,
-              showLabel: false,
-              backgroundColor: CRMColors.whiteColor,
-              label: 'Enter Name',
-              controller: issuedByController,
-            ),
-            const SizedBox(height: 12),
+      //       const SizedBox(height: 12),
+      //       CustomText(
+      //         text: 'Issued By',
+      //         color: CRMColors.darkGrey,
+      //         fontSize: 15,
+      //       ),
 
-            /// Image Picker
-            GestureDetector(
-              onTap: pickImageFromGallery,
-              child: Container(
-                height: 150,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: CRMColors.whiteColor,
-                  border: Border.all(color: CRMColors.grey),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child:
-                    _selectedImage != null
-                        ? ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.file(
-                            _selectedImage!,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                          ),
-                        )
-                        : const Center(
-                          child: Text(
-                            'Tap to select image',
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        ),
-              ),
-            ),
-            const SizedBox(height: 20),
+      //       /// Issued By
+      //       CustomTextFormField(
+      //         borderColor: CRMColors.grey,
+      //         showLabel: false,
+      //         backgroundColor: CRMColors.whiteColor,
+      //         label: 'Enter Name',
+      //         controller: issuedByController,
+      //       ),
+      //       const SizedBox(height: 12),
 
-            // Add item button
-            CustomButton(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              text: 'Add Item',
-              onPressed: () {
-                setState(() {
-                  inventoryItems.add(InventoryItem());
-                });
-              },
-            ),
-            const SizedBox(height: 20),
+      //       /// Image Picker
+      //       GestureDetector(
+      //         onTap: pickImageFromGallery,
+      //         child: Container(
+      //           height: 150,
+      //           width: double.infinity,
+      //           decoration: BoxDecoration(
+      //             color: CRMColors.whiteColor,
+      //             border: Border.all(color: CRMColors.grey),
+      //             borderRadius: BorderRadius.circular(10),
+      //           ),
+      //           child:
+      //               _selectedImage != null
+      //                   ? ClipRRect(
+      //                     borderRadius: BorderRadius.circular(10),
+      //                     child: Image.file(
+      //                       _selectedImage!,
+      //                       fit: BoxFit.cover,
+      //                       width: double.infinity,
+      //                     ),
+      //                   )
+      //                   : const Center(
+      //                     child: Text(
+      //                       'Tap to select image',
+      //                       style: TextStyle(color: Colors.grey),
+      //                     ),
+      //                   ),
+      //         ),
+      //       ),
+      //       const SizedBox(height: 20),
 
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: inventoryItems.length,
-              itemBuilder: (context, index) {
-                return _buildItemForm(index);
-              },
-            ),
+      //       // Add item button
+      //       CustomButton(
+      //         gradient: const LinearGradient(
+      //           colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
+      //           begin: Alignment.topLeft,
+      //           end: Alignment.bottomRight,
+      //         ),
+      //         text: 'Add Item',
+      //         onPressed: () {
+      //           setState(() {
+      //             inventoryItems.add(InventoryItem());
+      //           });
+      //         },
+      //       ),
+      //       const SizedBox(height: 20),
 
-            if (inventoryItems.isNotEmpty)
-              CustomButton(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                onPressed: _submitInventory,
-                text: 'Submit Inventory',
-              ),
-          ],
-        ),
-      ),
+      //       ListView.builder(
+      //         shrinkWrap: true,
+      //         physics: const NeverScrollableScrollPhysics(),
+      //         itemCount: inventoryItems.length,
+      //         itemBuilder: (context, index) {
+      //           return _buildItemForm(index);
+      //         },
+      //       ),
+
+      //       if (inventoryItems.isNotEmpty)
+      //         CustomButton(
+      //           gradient: const LinearGradient(
+      //             colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
+      //             begin: Alignment.topLeft,
+      //             end: Alignment.bottomRight,
+      //           ),
+      //           onPressed: _submitInventory,
+      //           text: 'Submit Inventory',
+      //         ),
+      //     ],
+      //   ),
+      // ),
     );
   }
 

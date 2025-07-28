@@ -20,7 +20,7 @@ class TaskScreen extends StatefulWidget {
 class _TaskScreenState extends State<TaskScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-    NointernetScreen noInternetScreen = const NointernetScreen();
+  NointernetScreen noInternetScreen = const NointernetScreen();
   final ConnectivityService _connectivityService = ConnectivityService();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
@@ -29,8 +29,8 @@ class _TaskScreenState extends State<TaskScreen>
   @override
   void initState() {
     super.initState();
-       _checkInitialConnection();
-   _setupConnectivityListener();
+    _checkInitialConnection();
+    _setupConnectivityListener();
     _tabController = TabController(length: tabs.length, vsync: this);
   }
 
@@ -41,25 +41,24 @@ class _TaskScreenState extends State<TaskScreen>
     super.dispose();
   }
 
-
-    Future<void> _checkInitialConnection() async {
+  Future<void> _checkInitialConnection() async {
     if (!(await _connectivityService.isConnected())) {
       _connectivityService.showNoInternetScreen();
     }
   }
 
-    void _setupConnectivityListener() {
-    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
-      onConnected: () {
-        // Optional: You can automatically go back if connection is restored
-        // Get.back();
-      },
-      onDisconnected: () {
-        _connectivityService.showNoInternetScreen();
-      },
-    );
+  void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService
+        .listenToConnectivityChanges(
+          onConnected: () {
+            // Optional: You can automatically go back if connection is restored
+            // Get.back();
+          },
+          onDisconnected: () {
+            _connectivityService.showNoInternetScreen();
+          },
+        );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -86,10 +85,10 @@ class _TaskScreenState extends State<TaskScreen>
           tabs: tabs.map((title) => Tab(text: title)).toList(),
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [showTodayTask(), showPendingTasks(), showCompletedTasks()],
-      ),
+      // body: TabBarView(
+      //   controller: _tabController,
+      //   children: [showTodayTask(), showPendingTasks(), showCompletedTasks()],
+      // ),
     );
   }
 

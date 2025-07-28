@@ -200,13 +200,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           GestureDetector(
                             onTap: () => Get.to(CreateCompanyScreen()),
-                            child: Text(
-                              "Employeer Signup",
-                              style: TextStyle(
-                                color: CRMColors.white,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                              ),
+                            child: CustomText(
+                              text: "Employeer Signup",
+                              color: CRMColors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ],
@@ -277,10 +275,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 15),
 
                   // Message
-                  const Text(
-                    "Please contact your administrator for further assistance.",
+                  const CustomText(
+                    text:
+                        "Please contact your administrator for further assistance.",
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: Colors.black54),
+                    fontSize: 16,
+                    color: Colors.black54,
                   ),
 
                   const SizedBox(height: 25),
@@ -298,13 +298,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         elevation: 0,
                       ),
                       onPressed: () => Get.back(),
-                      child: const Text(
-                        "OK",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
+                      child: const CustomText(
+                        text: "OK",
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
