@@ -574,7 +574,120 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                       backgroundColor: CRMColors.crmMainCOlor,
                       text: 'Send Invite',
                       onPressed: () {
-                        if (int.tryParse(
+                        if (employeeFormController.joinDate.value == null) {
+                          Get.snackbar(
+                            "Message",
+                            "Select Joining Date",
+                            backgroundColor: CRMColors.error,
+                            colorText: CRMColors.textWhite,
+                          );
+                        } else if (employeeFormController
+                            .nameController
+                            .text
+                            .isEmpty) {
+                          Get.snackbar(
+                            "Message",
+                            "Enter employee name",
+                            backgroundColor: CRMColors.error,
+                            colorText: CRMColors.textWhite,
+                          );
+                          return;
+                        } else if (employeeFormController
+                            .emailController
+                            .text
+                            .isEmpty) {
+                          Get.snackbar(
+                            "Message",
+                            "Enter email",
+                            backgroundColor: CRMColors.error,
+                            colorText: CRMColors.textWhite,
+                          );
+                          return;
+                        } else if (departmentlistController
+                                .selectedDepartment
+                                .value ==
+                            null) {
+                          Get.snackbar(
+                            "Message",
+                            "Select Department",
+                            backgroundColor: CRMColors.error,
+                            colorText: CRMColors.textWhite,
+                          );
+                          return;
+                        } else if (designationListController
+                                .selectedDesignation
+                                .value ==
+                            null) {
+                          Get.snackbar(
+                            "Message",
+                            "Select Designation",
+                            backgroundColor: CRMColors.error,
+                            colorText: CRMColors.textWhite,
+                          );
+                          return;
+                        } else if (employeeFormController
+                            .emergencyContactController
+                            .text
+                            .isEmpty) {
+                          Get.snackbar(
+                            "Message",
+                            "Enter Contact number",
+                            backgroundColor: CRMColors.error,
+                            colorText: CRMColors.textWhite,
+                          );
+                          return;
+                        } else if (employeeFormController
+                            .addressController
+                            .text
+                            .isEmpty) {
+                          Get.snackbar(
+                            "Message",
+                            "Enter Address",
+                            backgroundColor: CRMColors.error,
+                            colorText: CRMColors.textWhite,
+                          );
+                          return;
+                        } else if (employeeFormController
+                            .salaryController
+                            .text
+                            .isEmpty) {
+                          Get.snackbar(
+                            "Message",
+                            "Enter Salary",
+                            backgroundColor: CRMColors.error,
+                            colorText: CRMColors.textWhite,
+                          );
+                          return;
+                        } else if (employeeFormController
+                            .phoneController
+                            .text
+                            .isEmpty) {
+                          Get.snackbar(
+                            "Message",
+                            "Enter Phone Number",
+                            backgroundColor: CRMColors.error,
+                            colorText: CRMColors.textWhite,
+                          );
+                          return;
+                        } else if (employeeFormController.shiftStart.value ==
+                            null) {
+                          Get.snackbar(
+                            "Message",
+                            "Enter Shift Start Time",
+                            backgroundColor: CRMColors.error,
+                            colorText: CRMColors.textWhite,
+                          );
+                          return;
+                        } else if (employeeFormController.shiftEnd.value ==
+                            null) {
+                          Get.snackbar(
+                            "Message",
+                            "Enter Shift End Time",
+                            backgroundColor: CRMColors.error,
+                            colorText: CRMColors.textWhite,
+                          );
+                          return;
+                        } else if (int.tryParse(
                               totalEmployeesStroedInLocal.toString(),
                             )! >=
                             5) {
@@ -589,7 +702,7 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                           );
                           RazorpayService.makePayment(
                             amount: 100,
-                            name: 'gaurav',
+                            name: 'Test Razorpay',
                             email: 'email',
                             contact: 'contact',
                             description: "Employee Onboarding Fee",

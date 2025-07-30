@@ -25,17 +25,20 @@ import 'package:device_info_plus/device_info_plus.dart';
 class ViewEmployeePersonalDetailsScreen extends StatefulWidget {
   final String employeeId;
 
-
-  const ViewEmployeePersonalDetailsScreen({super.key, required this.employeeId});
+  const ViewEmployeePersonalDetailsScreen({
+    super.key,
+    required this.employeeId,
+  });
 
   @override
   State<ViewEmployeePersonalDetailsScreen> createState() =>
       _ViewEmployeePersonalDetailsScreenState();
 }
 
-class _ViewEmployeePersonalDetailsScreenState extends State<ViewEmployeePersonalDetailsScreen> {
+class _ViewEmployeePersonalDetailsScreenState
+    extends State<ViewEmployeePersonalDetailsScreen> {
   late final ViewEmployeecontroller controller;
-    NointernetScreen noInternetScreen = const NointernetScreen();
+  NointernetScreen noInternetScreen = const NointernetScreen();
   final ConnectivityService _connectivityService = ConnectivityService();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
   String userRole = "";
@@ -47,32 +50,33 @@ class _ViewEmployeePersonalDetailsScreenState extends State<ViewEmployeePersonal
     getUserData();
     controller = Get.put(ViewEmployeecontroller());
     controller.employeeDetailsFunction(widget.employeeId);
-       _checkInitialConnection();
-   _setupConnectivityListener();
+    _checkInitialConnection();
+    _setupConnectivityListener();
   }
 
-    @override
+  @override
   void dispose() {
-   _connectivitySubscription.cancel();
+    _connectivitySubscription.cancel();
     super.dispose();
   }
 
-      Future<void> _checkInitialConnection() async {
+  Future<void> _checkInitialConnection() async {
     if (!(await _connectivityService.isConnected())) {
       _connectivityService.showNoInternetScreen();
     }
   }
 
-    void _setupConnectivityListener() {
-    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
-      onConnected: () {
-        // Optional: You can automatically go back if connection is restored
-        // Get.back();
-      },
-      onDisconnected: () {
-        _connectivityService.showNoInternetScreen();
-      },
-    );
+  void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService
+        .listenToConnectivityChanges(
+          onConnected: () {
+            // Optional: You can automatically go back if connection is restored
+            // Get.back();
+          },
+          onDisconnected: () {
+            _connectivityService.showNoInternetScreen();
+          },
+        );
   }
 
   Future<void> getUserData() async {
@@ -197,7 +201,9 @@ class _ViewEmployeePersonalDetailsScreenState extends State<ViewEmployeePersonal
           fontWeight: FontWeight.bold,
         ),
         actions: [
-          userRole != "EMPLOYEE" && userRole != "COMPANY_ADMIN"
+          userRole != "EMPLOYEE" &&
+                  userRole != "COMPANY_ADMIN" &&
+                  userRole != "HR_MANAGER"
               ? TextButton(
                 onPressed: () {
                   Get.to(AddemployeeScreen());
@@ -313,7 +319,7 @@ class _ViewEmployeePersonalDetailsScreenState extends State<ViewEmployeePersonal
                     ]);
                   case 2:
                     return _sectionCard("Bank Details", [
-                       _contactRow(
+                      _contactRow(
                         Icons.confirmation_number,
                         "Account No",
                         controller.bankAccount.value,
@@ -323,12 +329,11 @@ class _ViewEmployeePersonalDetailsScreenState extends State<ViewEmployeePersonal
                         "Bank Name",
                         controller.bankName.value,
                       ),
-                       _contactRow(
+                      _contactRow(
                         Icons.confirmation_number,
                         "IFSC Code",
-                        controller.ifscCode.value ,
+                        controller.ifscCode.value,
                       ),
-                     
                     ]);
                   case 3:
                     return Obx(
@@ -375,200 +380,201 @@ class _ViewEmployeePersonalDetailsScreenState extends State<ViewEmployeePersonal
   }
 
   // Add this new widget method for document rows
-Widget _documentRow(String label, String imageUrl) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 12),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black87,
+  Widget _documentRow(String label, String imageUrl) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black87,
+                  ),
                 ),
               ),
-            ),
-            if (imageUrl.isNotEmpty) ...[
-              IconButton(
-                icon: const Icon(Icons.remove_red_eye, color: Colors.blue),
-                onPressed: () => _showFullDocumentImage(imageUrl),
-              ),
-              IconButton(
-                icon: const Icon(Icons.download, color: Colors.green),
-                onPressed: () => _downloadDocument(imageUrl, label),
-              ),
+              if (imageUrl.isNotEmpty) ...[
+                IconButton(
+                  icon: const Icon(Icons.remove_red_eye, color: Colors.blue),
+                  onPressed: () => _showFullDocumentImage(imageUrl),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.download, color: Colors.green),
+                  onPressed: () => _downloadDocument(imageUrl, label),
+                ),
+              ],
             ],
-          ],
-        ),
-      ],
-    ),
-  );
-}
+          ),
+        ],
+      ),
+    );
+  }
 
-Future<void> _downloadDocument(String url, String fileName) async {
-  try {
-    // Clean up the filename
-    fileName = fileName.replaceAll(RegExp(r'[^\w\s-]'), '').trim();
-    
-    // Request permissions based on platform and Android version
-    if (Platform.isAndroid) {
-      final androidInfo = await DeviceInfoPlugin().androidInfo;
-      if (androidInfo.version.sdkInt <= 28) {
-        // Android 9 and below
-        var status = await Permission.storage.request();
-        if (!status.isGranted) {
-          await openAppSettings();
-          throw Exception('Storage permission not granted');
-        }
-      } else {
-        // Android 10 and above
-        if (!await Permission.manageExternalStorage.isGranted) {
-          final status = await Permission.manageExternalStorage.request();
+  Future<void> _downloadDocument(String url, String fileName) async {
+    try {
+      // Clean up the filename
+      fileName = fileName.replaceAll(RegExp(r'[^\w\s-]'), '').trim();
+
+      // Request permissions based on platform and Android version
+      if (Platform.isAndroid) {
+        final androidInfo = await DeviceInfoPlugin().androidInfo;
+        if (androidInfo.version.sdkInt <= 28) {
+          // Android 9 and below
+          var status = await Permission.storage.request();
           if (!status.isGranted) {
-            throw Exception('Manage external storage permission not granted');
+            await openAppSettings();
+            throw Exception('Storage permission not granted');
+          }
+        } else {
+          // Android 10 and above
+          if (!await Permission.manageExternalStorage.isGranted) {
+            final status = await Permission.manageExternalStorage.request();
+            if (!status.isGranted) {
+              throw Exception('Manage external storage permission not granted');
+            }
           }
         }
+      } else if (Platform.isIOS) {
+        // iOS permission handling if needed
       }
-    } else if (Platform.isIOS) {
-      // iOS permission handling if needed
-    }
 
-    // Get download directory
-    Directory? directory;
-    try {
-      if (Platform.isAndroid) {
-        directory = Directory('/storage/emulated/0/Download');
-        if (!await directory.exists()) {
-          directory = await getExternalStorageDirectory();
+      // Get download directory
+      Directory? directory;
+      try {
+        if (Platform.isAndroid) {
+          directory = Directory('/storage/emulated/0/Download');
+          if (!await directory.exists()) {
+            directory = await getExternalStorageDirectory();
+          }
+        } else {
+          directory = await getApplicationDocumentsDirectory();
         }
-      } else {
-        directory = await getApplicationDocumentsDirectory();
+      } catch (e) {
+        directory = await getApplicationDownloadsDirectory();
       }
+
+      if (directory == null) {
+        throw Exception('Could not access download directory');
+      }
+
+      // Ensure directory exists
+      if (!await directory.exists()) {
+        await directory.create(recursive: true);
+      }
+
+      // Get file extension
+      final extension = _getFileExtension(url);
+      final safeFileName =
+          '$fileName${DateTime.now().millisecondsSinceEpoch}$extension';
+      final savePath = '${directory.path}/$safeFileName';
+
+      // Show download starting message
+      Get.snackbar(
+        "Downloading",
+        "Starting download of $fileName",
+        backgroundColor: Colors.blue,
+        colorText: CRMColors.textWhite,
+      );
+
+      // Start download
+      final taskId = await FlutterDownloader.enqueue(
+        url: url,
+        savedDir: directory.path,
+        fileName: safeFileName,
+        showNotification: true,
+        openFileFromNotification: true,
+      );
+
+      if (taskId == null) {
+        throw Exception('Failed to start download');
+      }
+
+      // Listen for download progress
+      FlutterDownloader.registerCallback((id, status, progress) {
+        if (id == taskId) {
+          if (status == DownloadTaskStatus.running) {
+            // You could update a progress indicator here
+            print('Download progress: $progress%');
+          } else if (status == DownloadTaskStatus.complete) {
+            Get.snackbar(
+              "Download Complete",
+              "File saved to Downloads folder",
+              backgroundColor: Colors.green,
+              colorText: CRMColors.textWhite,
+              duration: Duration(seconds: 3),
+            );
+          } else if (status == DownloadTaskStatus.failed) {
+            Get.snackbar(
+              "Download Failed",
+              "Please try again",
+              backgroundColor: CRMColors.error,
+              colorText: CRMColors.textWhite,
+            );
+          }
+        }
+      });
     } catch (e) {
-      directory = await getApplicationDownloadsDirectory();
+      print('Download error: $e');
+      Get.snackbar(
+        "Download Error",
+        e.toString(),
+        backgroundColor: CRMColors.error,
+        colorText: CRMColors.textWhite,
+      );
     }
-
-    if (directory == null) {
-      throw Exception('Could not access download directory');
-    }
-
-    // Ensure directory exists
-    if (!await directory.exists()) {
-      await directory.create(recursive: true);
-    }
-
-    // Get file extension
-    final extension = _getFileExtension(url);
-    final safeFileName = '$fileName${DateTime.now().millisecondsSinceEpoch}$extension';
-    final savePath = '${directory.path}/$safeFileName';
-
-    // Show download starting message
-    Get.snackbar(
-      "Downloading",
-      "Starting download of $fileName",
-      backgroundColor: Colors.blue,
-      colorText: CRMColors.textWhite,
-    );
-
-    // Start download
-    final taskId = await FlutterDownloader.enqueue(
-      url: url,
-      savedDir: directory.path,
-      fileName: safeFileName,
-      showNotification: true,
-      openFileFromNotification: true,
-    );
-
-    if (taskId == null) {
-      throw Exception('Failed to start download');
-    }
-
-    // Listen for download progress
-    FlutterDownloader.registerCallback((id, status, progress) {
-      if (id == taskId) {
-        if (status == DownloadTaskStatus.running) {
-          // You could update a progress indicator here
-          print('Download progress: $progress%');
-        } else if (status == DownloadTaskStatus.complete) {
-          Get.snackbar(
-            "Download Complete",
-            "File saved to Downloads folder",
-            backgroundColor: Colors.green,
-            colorText: CRMColors.textWhite,
-            duration: Duration(seconds: 3),
-          );
-        } else if (status == DownloadTaskStatus.failed) {
-          Get.snackbar(
-            "Download Failed",
-            "Please try again",
-            backgroundColor: CRMColors.error,
-            colorText: CRMColors.textWhite,
-          );
-        }
-      }
-    });
-  } catch (e) {
-    print('Download error: $e');
-    Get.snackbar(
-      "Download Error",
-      e.toString(),
-      backgroundColor: CRMColors.error,
-      colorText: CRMColors.textWhite,
-    );
   }
-}
 
   // Helper function to get downloads directory
-Future<Directory?> getApplicationDownloadsDirectory() async {
-  if (Platform.isAndroid) {
-    return Directory('/storage/emulated/0/Download');
-  } else if (Platform.isIOS) {
-    return await getApplicationDocumentsDirectory();
+  Future<Directory?> getApplicationDownloadsDirectory() async {
+    if (Platform.isAndroid) {
+      return Directory('/storage/emulated/0/Download');
+    } else if (Platform.isIOS) {
+      return await getApplicationDocumentsDirectory();
+    }
+    return null;
   }
-  return null;
-}
 
+  // Improved file extension detection
+  String _getFileExtension(String url) {
+    try {
+      final uri = Uri.parse(url);
+      final path = uri.path.toLowerCase();
 
+      // Check common image extensions
+      if (path.endsWith('.jpg') || path.endsWith('.jpeg')) return '.jpg';
+      if (path.endsWith('.png')) return '.png';
+      if (path.endsWith('.gif')) return '.gif';
+      if (path.endsWith('.webp')) return '.webp';
 
-// Improved file extension detection
-String _getFileExtension(String url) {
-  try {
-    final uri = Uri.parse(url);
-    final path = uri.path.toLowerCase();
-    
-    // Check common image extensions
-    if (path.endsWith('.jpg') || path.endsWith('.jpeg')) return '.jpg';
-    if (path.endsWith('.png')) return '.png';
-    if (path.endsWith('.gif')) return '.gif';
-    if (path.endsWith('.webp')) return '.webp';
-    
-    // Check document extensions
-    if (path.endsWith('.pdf')) return '.pdf';
-    if (path.endsWith('.doc')) return '.doc';
-    if (path.endsWith('.docx')) return '.docx';
-    if (path.endsWith('.xls')) return '.xls';
-    if (path.endsWith('.xlsx')) return '.xlsx';
-    if (path.endsWith('.ppt')) return '.ppt';
-    if (path.endsWith('.pptx')) return '.pptx';
-    if (path.endsWith('.txt')) return '.txt';
-    
-    // Check content type if available in URL parameters
-    final contentType = uri.queryParameters['contentType']?.toLowerCase() ?? '';
-    if (contentType.contains('jpeg') || contentType.contains('jpg')) return '.jpg';
-    if (contentType.contains('png')) return '.png';
-    if (contentType.contains('pdf')) return '.pdf';
-    
-    // Default to .jpg if we can't determine (common for images served without extension)
-    return '.jpg';
-  } catch (e) {
-    return '.jpg';
+      // Check document extensions
+      if (path.endsWith('.pdf')) return '.pdf';
+      if (path.endsWith('.doc')) return '.doc';
+      if (path.endsWith('.docx')) return '.docx';
+      if (path.endsWith('.xls')) return '.xls';
+      if (path.endsWith('.xlsx')) return '.xlsx';
+      if (path.endsWith('.ppt')) return '.ppt';
+      if (path.endsWith('.pptx')) return '.pptx';
+      if (path.endsWith('.txt')) return '.txt';
+
+      // Check content type if available in URL parameters
+      final contentType =
+          uri.queryParameters['contentType']?.toLowerCase() ?? '';
+      if (contentType.contains('jpeg') || contentType.contains('jpg'))
+        return '.jpg';
+      if (contentType.contains('png')) return '.png';
+      if (contentType.contains('pdf')) return '.pdf';
+
+      // Default to .jpg if we can't determine (common for images served without extension)
+      return '.jpg';
+    } catch (e) {
+      return '.jpg';
+    }
   }
-}
 
   Widget _getDocumentImageWidget(String imageUrl, {bool isFullScreen = false}) {
     try {
@@ -586,7 +592,7 @@ String _getFileExtension(String url) {
                         ? loadingProgress.cumulativeBytesLoaded /
                             loadingProgress.expectedTotalBytes!
                         : null,
-                        color: CRMColors.white,
+                color: CRMColors.white,
               ),
             );
           },
@@ -636,59 +642,62 @@ String _getFileExtension(String url) {
     );
   }
 
-void _showFullDocumentImage(String imageUrl) {
-  if (imageUrl.isEmpty) return;
+  void _showFullDocumentImage(String imageUrl) {
+    if (imageUrl.isEmpty) return;
 
-  Get.dialog(
-    Dialog(
-      backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.all(10),
-      child: Stack(
-        children: [
-          Center(
-            child: InteractiveViewer(
-              panEnabled: true,
-              minScale: 0.5,
-              maxScale: 3.0,
-              child: Container(
-                constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.8,
-                  maxWidth: MediaQuery.of(context).size.width * 0.9,
+    Get.dialog(
+      Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(10),
+        child: Stack(
+          children: [
+            Center(
+              child: InteractiveViewer(
+                panEnabled: true,
+                minScale: 0.5,
+                maxScale: 3.0,
+                child: Container(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height * 0.8,
+                    maxWidth: MediaQuery.of(context).size.width * 0.9,
+                  ),
+                  child: _getDocumentImageWidget(imageUrl, isFullScreen: true),
                 ),
-                child: _getDocumentImageWidget(imageUrl, isFullScreen: true),
               ),
             ),
-          ),
-          Positioned(
-            top: 10,
-            right: 10,
-            child: Row(
-              children: [
-                 FloatingActionButton(
-                mini: true,
-                backgroundColor: Colors.green,
-                child: const Icon(Icons.download, color: Colors.white),
-                onPressed: () {
-                  Get.back();
-                  _downloadDocument(imageUrl, 'document_${DateTime.now().millisecondsSinceEpoch}');
-                },
+            Positioned(
+              top: 10,
+              right: 10,
+              child: Row(
+                children: [
+                  FloatingActionButton(
+                    mini: true,
+                    backgroundColor: Colors.green,
+                    child: const Icon(Icons.download, color: Colors.white),
+                    onPressed: () {
+                      Get.back();
+                      _downloadDocument(
+                        imageUrl,
+                        'document_${DateTime.now().millisecondsSinceEpoch}',
+                      );
+                    },
+                  ),
+                  const SizedBox(width: 10),
+                  FloatingActionButton(
+                    mini: true,
+                    backgroundColor: Colors.red,
+                    child: const Icon(Icons.close, color: Colors.white),
+                    onPressed: () => Get.back(),
+                  ),
+                ],
               ),
-              const SizedBox(width: 10),
-              FloatingActionButton(
-                mini: true,
-                backgroundColor: Colors.red,
-                child: const Icon(Icons.close, color: Colors.white),
-                onPressed: () => Get.back(),
-              ),
-              ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
- 
+    );
+  }
+
   Widget _infoBox(IconData icon, String label, String value) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),

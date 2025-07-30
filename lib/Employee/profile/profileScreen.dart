@@ -492,6 +492,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         }, // Navigate to profile detail screen if needed
                       )
                       : const SizedBox(),
+                     
 
                   userRole != "EMPLOYEE"
                       ? buildMenuItem(

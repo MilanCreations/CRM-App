@@ -55,12 +55,13 @@ class _DashboardscreenState extends State<Dashboardscreen> {
   }
 
   void _setupConnectivityListener() {
-    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
-      onConnected: () {},
-      onDisconnected: () {
-        _connectivityService.showNoInternetScreen();
-      },
-    );
+    _connectivitySubscription = _connectivityService
+        .listenToConnectivityChanges(
+          onConnected: () {},
+          onDisconnected: () {
+            _connectivityService.showNoInternetScreen();
+          },
+        );
   }
 
   Future<void> getUserData() async {
@@ -68,9 +69,9 @@ class _DashboardscreenState extends State<Dashboardscreen> {
     companyName = sharedPreferences.getString("company_name") ?? "";
     userRole = sharedPreferences.getString("user_role") ?? "";
     String? permissionsJson = sharedPreferences.getString("permissions");
-if (permissionsJson != null) {
-  chartData = List<String>.from(jsonDecode(permissionsJson));
-}
+    if (permissionsJson != null) {
+      chartData = List<String>.from(jsonDecode(permissionsJson));
+    }
 
     print('Company name: $companyName');
     print('User role: $userRole');
@@ -149,10 +150,7 @@ if (permissionsJson != null) {
                     const SizedBox(height: 8),
                     Text(
                       title,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -203,7 +201,8 @@ if (permissionsJson != null) {
                   crossAxisSpacing: 20,
                   childAspectRatio: 0.9,
                   children: [
-                    if (chartData.contains("view-leads") || userRole == "HR_MANAGER")
+                    if (chartData.contains("view-leads") ||
+                        userRole == "HR_MANAGER")
                       buildDashboardTile(
                         "My Leads",
                         controller.myLeads,
@@ -237,7 +236,11 @@ if (permissionsJson != null) {
                       Icons.pending_actions,
                       [Color(0xFFED213A), Color(0xFF93291E)],
                       onTap: () {
-                        Get.to(() => const HrLeaveRequestScreen(statusFilter: "pending"));
+                        Get.to(
+                          () => const HrLeaveRequestScreen(
+                            statusFilter: "pending",
+                          ),
+                        );
                       },
                     ),
                     buildDashboardTile(
@@ -246,18 +249,22 @@ if (permissionsJson != null) {
                       Icons.verified,
                       [Color(0xFF56AB2F), Color(0xFFA8E063)],
                       onTap: () {
-                        Get.to(() => const HrLeaveRequestScreen(statusFilter: "approved"));
+                        Get.to(
+                          () => const HrLeaveRequestScreen(
+                            statusFilter: "approved",
+                          ),
+                        );
                       },
                     ),
 
                     buildDashboardTile(
-                        "Total Employees",
-                        controller.totalEmployees,
-                        Icons.groups,
-                        	[Color(0xFF00B4DB), Color(0xFF0083B0)],
-                        onTap: () {
-                          Get.to(() => const EmployeeListScreen());
-                        },
+                      "Total Employees",
+                      controller.totalEmployees,
+                      Icons.groups,
+                      [Color(0xFF00B4DB), Color(0xFF0083B0)],
+                      onTap: () {
+                        Get.to(() => const EmployeeListScreen());
+                      },
                     ),
                   ],
                 ),
@@ -266,7 +273,6 @@ if (permissionsJson != null) {
           ),
         ),
       ),
-   
     );
   }
 }
