@@ -134,7 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           const SizedBox(height: 16),
 
-                          // 🔐 Password
+                         
                           CustomTextFormField(
                             label: 'Password',
                             showLabel: false,
@@ -351,11 +351,11 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    // Check internet connection
+   /*  // Check internet connection
     if (!(await _connectivityService.isConnected())) {
       _connectivityService.showNoInternetScreen();
       return;
-    }
+    } */
 
     // All good - proceed with login
     objLoginController.loginAPI();

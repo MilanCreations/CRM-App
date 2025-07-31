@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+9
+version: 1.0.1+12
 
 environment:
   sdk: ^3.7.0
@@ -45,7 +45,7 @@ dependencies:
   url_launcher:
   rename_app:
   lottie:
-  google_maps_flutter:
+  google_maps_flutter: ^2.12.3
   file_picker:
   modal_progress_hud_nsn:
   table_calendar:
@@ -58,7 +58,7 @@ dependencies:
   fade_shimmer:
   upgrader:
   app_settings:
-  firebase_core:
+  firebase_core: ^3.15.1
   firebase_messaging:
   flutter_local_notifications:
   android_intent_plus:
@@ -66,7 +66,8 @@ dependencies:
   flutter_chat_ui:
   local_auth:
   dropdown_search:
-  razorpay_flutter:
+  flutter_native_splash: ^2.4.6
+  razorpay_flutter: ^1.4.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -100,6 +101,12 @@ flutter:
     - assets/
     - assets/emptyfile.json
   #   - images/a_dot_ham.jpeg
+
+flutter_native_splash:
+  color: "#121212"
+  image: assets/mainlogo.png
+  android: true
+  ios: true
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
