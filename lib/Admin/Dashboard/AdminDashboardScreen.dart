@@ -170,7 +170,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           end: Alignment.bottomRight,
         ),
         title: CustomText(
-          text: 'Welcome $userRole',
+          text: 'Welcome $companyname',
           color: CRMColors.whiteColor,
           fontSize: 20,
           fontWeight: FontWeight.bold,
@@ -218,6 +218,27 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     //   },
                     // ),
                     buildDashboardTile(
+                      "Total Employees",
+                      companyAdminDashboardController.totalEmployees.isEmpty
+                          ? RxString("0")
+                          : companyAdminDashboardController.totalEmployees,
+                      Icons.groups,
+                      [Color(0xFF00B4DB), Color(0xFF0083B0)],
+                      onTap: () => Get.to(() => const EmployeeListScreen()),
+                    ),
+
+                    buildDashboardTile(
+                      "Today Leaves",
+                      companyAdminDashboardController.todayLeaves.isEmpty
+                          ? RxString("0")
+                          : companyAdminDashboardController.todayLeaves,
+                      Icons.today,
+                      [Color(0xFFFF8008), Color(0xFFFE642E)],
+                      onTap: () {
+                        Get.to(() => const HrLeaveRequestScreen(isToday: true));
+                      },
+                    ),
+                    buildDashboardTile(
                       "Today Attendance",
                       // controller.todayAttendanceCount,
                       RxString("0"),
@@ -228,19 +249,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       },
                     ),
                     buildDashboardTile(
-                      "Today Leaves",
-                      // controller.todayLeaves,
-                      RxString("0"),
-                      Icons.today,
-                      [Color(0xFFFF8008), Color(0xFFFE642E)],
-                      onTap: () {
-                        Get.to(() => const HrLeaveRequestScreen(isToday: true));
-                      },
-                    ),
-                    buildDashboardTile(
                       "Pending Leaves",
-                      // controller.pendingLeaves,
-                      RxString("0"),
+                      companyAdminDashboardController.pendingLeaves.isEmpty
+                          ? RxString("0")
+                          : companyAdminDashboardController.pendingLeaves,
                       Icons.pending_actions,
                       [Color(0xFFED213A), Color(0xFF93291E)],
                       onTap: () {
@@ -253,8 +265,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     ),
                     buildDashboardTile(
                       "Approved Leaves",
-                      // controller.approvedLeaves,
-                      RxString("0"),
+                      companyAdminDashboardController.approvedLeaves.isEmpty
+                          ? RxString("0")
+                          : companyAdminDashboardController.approvedLeaves,
+
                       Icons.verified,
                       [Color(0xFF56AB2F), Color(0xFFA8E063)],
                       onTap: () {
@@ -264,14 +278,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                           ),
                         );
                       },
-                    ),
-
-                    buildDashboardTile(
-                      "Total Employees",
-                      companyAdminDashboardController.totalEmployees,
-                      Icons.groups,
-                      [Color(0xFF00B4DB), Color(0xFF0083B0)],
-                      onTap: () => Get.to(() => const EmployeeListScreen()),
                     ),
                   ],
                 ),

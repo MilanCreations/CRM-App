@@ -492,7 +492,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         }, // Navigate to profile detail screen if needed
                       )
                       : const SizedBox(),
-                     
 
                   userRole != "EMPLOYEE"
                       ? buildMenuItem(
@@ -625,9 +624,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 text: 'Manage Leads',
                 onTap: () => Get.to(() => Salaryscreen()),
               );
-            } else {
-              return Text("No Permission");
             }
+            // else {
+            //   return Text("No Permission");
+            // }
+            return const SizedBox.shrink();
           }).toList(),
     );
   }

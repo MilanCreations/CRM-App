@@ -195,7 +195,7 @@ class _ViewEmployeePersonalDetailsScreenState
           end: Alignment.bottomRight,
         ),
         title: const CustomText(
-          text: "Employee Details",
+          text: "Your Details",
           color: CRMColors.whiteColor,
           fontSize: 20,
           fontWeight: FontWeight.bold,
@@ -209,9 +209,10 @@ class _ViewEmployeePersonalDetailsScreenState
                   Get.to(AddemployeeScreen());
                 },
                 child: CustomText(
-                  text: 'Edit Employee',
-                  color: Colors.white,
-                  fontSize: 16,
+                  text: 'Edit Details',
+                  color: CRMColors.whiteColor,
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
                   onTap: () {
                     Get.to(
                       EditEmployeeScreen(

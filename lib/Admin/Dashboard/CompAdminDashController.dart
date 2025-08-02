@@ -57,14 +57,15 @@ class CompanyAdminDashboardController extends GetxController {
           colorText: CRMColors.textWhite,
         );
         clearSharedPreferences();
-      } else {
-        Get.snackbar(
-          "Error",
-          "Failed to fetch dashboard data",
-          backgroundColor: CRMColors.error,
-          colorText: CRMColors.textWhite,
-        );
       }
+      // } else {
+      //   Get.snackbar(
+      //     "Error",
+      //     "Failed to fetch dashboard data",
+      //     backgroundColor: CRMColors.error,
+      //     colorText: CRMColors.textWhite,
+      //   );
+      // }
     } catch (error) {
       print("Dashboard error: $error");
     } finally {

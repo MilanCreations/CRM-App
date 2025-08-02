@@ -28,7 +28,7 @@ class _LeavehistoryScreenState extends State<LeavehistoryScreen> {
   );
   late ScrollController _scrollController;
   final TextEditingController searchController = TextEditingController();
-    NointernetScreen noInternetScreen = const NointernetScreen();
+  NointernetScreen noInternetScreen = const NointernetScreen();
   final ConnectivityService _connectivityService = ConnectivityService();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
   Timer? _debounceTimer;
@@ -37,30 +37,31 @@ class _LeavehistoryScreenState extends State<LeavehistoryScreen> {
   @override
   void initState() {
     super.initState();
-       _checkInitialConnection();
-   _setupConnectivityListener();
+    _checkInitialConnection();
+    _setupConnectivityListener();
     getUserRole();
     _scrollController = ScrollController()..addListener(_onScroll);
     leavehistorycontroller.leavehistorycontrollerFunction();
     searchController.addListener(_onSearchChanged);
   }
 
-    Future<void> _checkInitialConnection() async {
+  Future<void> _checkInitialConnection() async {
     if (!(await _connectivityService.isConnected())) {
       _connectivityService.showNoInternetScreen();
     }
   }
 
-    void _setupConnectivityListener() {
-    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
-      onConnected: () {
-        // Optional: You can automatically go back if connection is restored
-        // Get.back();
-      },
-      onDisconnected: () {
-        _connectivityService.showNoInternetScreen();
-      },
-    );
+  void _setupConnectivityListener() {
+    _connectivitySubscription = _connectivityService
+        .listenToConnectivityChanges(
+          onConnected: () {
+            // Optional: You can automatically go back if connection is restored
+            // Get.back();
+          },
+          onDisconnected: () {
+            _connectivityService.showNoInternetScreen();
+          },
+        );
   }
 
   Future<void> getUserRole() async {
@@ -181,11 +182,6 @@ class _LeavehistoryScreenState extends State<LeavehistoryScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(
-                        height: 200,
-                        width: 200,
-                        child: Lottie.asset('assets/images/emptyfile.json'),
-                      ),
                       CustomText(
                         text:
                             searchController.text.isEmpty
