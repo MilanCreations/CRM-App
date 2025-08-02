@@ -20,7 +20,7 @@ class NointernetScreen extends StatefulWidget {
 class _NointernetScreenState extends State<NointernetScreen> {
   final Connectivity _connectivity = Connectivity();
   List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
-  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+  StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
 
   @override
   void initState() {
@@ -30,7 +30,7 @@ class _NointernetScreenState extends State<NointernetScreen> {
 
     @override
   void dispose() {
-   _connectivitySubscription.cancel();
+   _connectivitySubscription!.cancel();
     super.dispose();
   }
 

@@ -12,3 +12,6 @@ GeneratedPluginRegistrant.java
 key.properties
 **/*.keystore
 **/*.jks
+android/app/build.gradle.kts
+android/app/src/main/AndroidManifest.xml
+android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java

@@ -1,5 +1,5 @@
-// connectivity_service.dart
 import 'dart:async';
+import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
@@ -9,10 +9,17 @@ import 'package:get/get.dart';
 class ConnectivityService {
   final Connectivity _connectivity = Connectivity();
 
+  /// REAL Internet check
   Future<bool> isConnected() async {
     final result = await _connectivity.checkConnectivity();
-    return result.contains(ConnectivityResult.mobile) ||
-        result.contains(ConnectivityResult.wifi);
+    if (result == ConnectivityResult.none) return false;
+
+    try {
+      final lookup = await InternetAddress.lookup('google.com');
+      return lookup.isNotEmpty && lookup[0].rawAddress.isNotEmpty;
+    } on SocketException {
+      return false;
+    }
   }
 
   void showNoInternetScreen() {
@@ -23,9 +30,9 @@ class ConnectivityService {
     required VoidCallback onConnected,
     required VoidCallback onDisconnected,
   }) {
-    return _connectivity.onConnectivityChanged.listen((result) {
-      if (result.contains(ConnectivityResult.mobile) ||
-          result.contains(ConnectivityResult.wifi)) {
+    return _connectivity.onConnectivityChanged.listen((result) async {
+      bool internet = await isConnected();
+      if (internet) {
         onConnected();
       } else {
         onDisconnected();
@@ -33,3 +40,4 @@ class ConnectivityService {
     });
   }
 }
+
