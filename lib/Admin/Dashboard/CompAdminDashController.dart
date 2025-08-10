@@ -21,6 +21,8 @@ class CompanyAdminDashboardController extends GetxController {
   }
 
   Future<void> companyAdminDashboardFunction() async {
+    print('Fetching company admin dashboard data...');
+    if (isLoading.value) return;
     try {
       isLoading.value = true;
       final prefs = await SharedPreferences.getInstance();

@@ -8,6 +8,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Add%20Employee/addEmployeeScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Edit%20Employee%20Details/GetEmployeeDetailsScreen.dart';
+import 'package:crm_milan_creations/HR%20App/Employee%20List/EmployeeListScreen.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/connectivity_service.dart';
 import 'package:flutter/material.dart';
@@ -189,13 +190,14 @@ class _ViewEmployeePersonalDetailsScreenState
       appBar: CustomAppBar(
         showBackArrow: true,
         leadingIcon: Icons.arrow_back_ios_new_sharp,
+
         gradient: const LinearGradient(
           colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         title: const CustomText(
-          text: "Your Details",
+          text: "Details",
           color: CRMColors.whiteColor,
           fontSize: 20,
           fontWeight: FontWeight.bold,
@@ -565,8 +567,9 @@ class _ViewEmployeePersonalDetailsScreenState
       // Check content type if available in URL parameters
       final contentType =
           uri.queryParameters['contentType']?.toLowerCase() ?? '';
-      if (contentType.contains('jpeg') || contentType.contains('jpg'))
+      if (contentType.contains('jpeg') || contentType.contains('jpg')) {
         return '.jpg';
+      }
       if (contentType.contains('png')) return '.png';
       if (contentType.contains('pdf')) return '.pdf';
 

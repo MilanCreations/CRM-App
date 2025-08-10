@@ -53,9 +53,9 @@ class EmployeeListcontroller extends GetxController {
         if (employeeModel.result.isEmpty) {
           hasMoreData.value = false;
         } else {
-          // ✅ Append new data only
+          // Append new data only
           employeeList.addAll(employeeModel.result);
-          print("✅ Employee List Length after addAll: ${employeeList.length}");
+          print("Employee List Length after addAll: ${employeeList.length}");
           currentPage.value++;
         }
 
@@ -86,7 +86,7 @@ class EmployeeListcontroller extends GetxController {
       } else {
         Get.snackbar(
           "Error",
-          "Failed to fetch attendance history",
+          "Failed to fetch employee list",
           backgroundColor: CRMColors.error,
           colorText: CRMColors.textWhite,
         );

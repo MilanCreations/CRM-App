@@ -5,20 +5,16 @@ import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
-import 'package:crm_milan_creations/widgets/button.dart';
 import 'package:crm_milan_creations/widgets/connectivity_service.dart';
-import 'package:fade_shimmer/fade_shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:crm_milan_creations/Employee/Get%20All%20Employees%20List/getAllEmployeeeListController.dart';
-import 'package:crm_milan_creations/Employee/Get%20All%20Employees%20List/getAllEmployeeeListModel.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
 import 'package:crm_milan_creations/widgets/textfiled.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 
 class Accessory {
   TextEditingController nameController = TextEditingController();

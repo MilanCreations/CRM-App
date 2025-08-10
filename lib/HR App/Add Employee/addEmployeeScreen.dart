@@ -11,11 +11,14 @@ import 'package:crm_milan_creations/HR%20App/Employee%20Designation/empDesignati
 import 'package:crm_milan_creations/HR%20App/Employee%20Designation/empDesignationModel.dart';
 import 'package:crm_milan_creations/HR%20App/Employee%20List/EmployeeListController.dart';
 import 'package:crm_milan_creations/Razorpay%20Services/razorpay_services.dart';
+import 'package:crm_milan_creations/Subscription/Check%20Subscripion/checkSubscriptionController.dart';
+import 'package:crm_milan_creations/Subscription/Create%20Order/createOrderController.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
 import 'package:crm_milan_creations/widgets/button.dart';
 import 'package:crm_milan_creations/widgets/connectivity_service.dart';
+import 'package:crm_milan_creations/widgets/textfiled.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -41,11 +44,22 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
     DesignationListController(),
   );
 
+  final CheckEmployeesLengthcontroller checkEmployeesLengthcontroller = Get.put(
+    CheckEmployeesLengthcontroller(),
+  );
+
+  final Createordercontroller createOrderController = Get.put(
+    Createordercontroller(),
+  );
+
   final RazorpayService razorpayService = RazorpayService();
 
   NointernetScreen noInternetScreen = const NointernetScreen();
   final ConnectivityService _connectivityService = ConnectivityService();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+  final EmployeeListcontroller employeeListcontroller = Get.put(
+    EmployeeListcontroller(),
+  );
   String totalEmployeesStroedInLocal = "0";
 
   @override
@@ -54,7 +68,9 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
     designationListController.designationListFunction();
     _checkInitialConnection();
     _setupConnectivityListener();
-    getUserData();
+    // getUserData();
+    employeeListcontroller.employeeListFunction(isRefresh: true);
+    checkEmployeesLengthcontroller.checkEmployeesLengthFunction();
     super.initState();
   }
 
@@ -88,8 +104,10 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     totalEmployeesStroedInLocal = prefs.getString('totalEmployees') ?? "0";
     print(
-      'Total Employees stored in local in add employee screen:- $totalEmployeesStroedInLocal',
+      'Total Employees from SharedPreferences: $totalEmployeesStroedInLocal',
     );
+    print('Type of value: ${totalEmployeesStroedInLocal.runtimeType}');
+    print('Parsed value: ${int.tryParse(totalEmployeesStroedInLocal)}');
   }
 
   @override
@@ -370,6 +388,8 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                         "Salary",
                         controller: employeeFormController.salaryController,
                         hint: "Enter Salary...",
+                        keyboardType: TextInputType.number,
+                        maxLength: 10,
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -379,6 +399,7 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                         controller: employeeFormController.phoneController,
                         hint: "Enter Phone...",
                         keyboardType: TextInputType.phone,
+                        maxLength: 10,
                       ),
                     ),
                   ],
@@ -687,26 +708,31 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                             colorText: CRMColors.textWhite,
                           );
                           return;
-                        } else if (int.tryParse(
-                              totalEmployeesStroedInLocal.toString(),
-                            )! >=
+                        }
+                        // else if (int.tryParse(
+                        //       totalEmployeesStroedInLocal.toString(),
+                        //     )! >=
+                        //     5) {
+                        //   print(
+                        //     'you have to upgrade your plan to add more employees',
+                        //   );
+                        //   Get.snackbar(
+                        //     "Message",
+                        //     "You have to upgrade your plan to add more employees",
+                        //     backgroundColor: CRMColors.error,
+                        //     colorText: CRMColors.textWhite,
+                        //   );
+                        //   RazorpayService.makePayment(
+                        //     amount: 100,
+                        //     name: 'Test Razorpay',
+                        //     email: 'email',
+                        //     contact: 'contact',
+                        //     description: "Employee Onboarding Fee",
+                        //   );
+                        // }
+                        else if (employeeListcontroller.employeeList.length >=
                             5) {
-                          print(
-                            'you have to upgrade your plan to add more employees',
-                          );
-                          Get.snackbar(
-                            "Message",
-                            "You have to upgrade your plan to add more employees",
-                            backgroundColor: CRMColors.error,
-                            colorText: CRMColors.textWhite,
-                          );
-                          RazorpayService.makePayment(
-                            amount: 100,
-                            name: 'Test Razorpay',
-                            email: 'email',
-                            contact: 'contact',
-                            description: "Employee Onboarding Fee",
-                          );
+                          _showUpgradeDialog();
                         } else if (int.tryParse(
                               totalEmployeesStroedInLocal.toString(),
                             )! <
@@ -821,6 +847,302 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  void _showUpgradeDialog() {
+    Get.dialog(
+      Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 12,
+                offset: Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.upgrade_rounded,
+                size: 48,
+                color: Colors.blueAccent,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                "Upgrade Plan",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                "You’ve reached the maximum number of employees. Upgrade your plan to continue adding more.",
+                style: TextStyle(fontSize: 16, color: Colors.black54),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Get.back(),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: Text(
+                        "Cancel",
+                        style: TextStyle(color: Colors.grey[700], fontSize: 16),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Get.back(); // Close the dialog
+                          _openUpgradeBottomSheet();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text(
+                          "Upgrade Now",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: false,
+    );
+  }
+
+  void _openUpgradeBottomSheet() {
+    final createOrderController = Get.find<Createordercontroller>();
+
+    Get.bottomSheet(
+      SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 8),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Add Employees',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              CustomTextFormField(
+                label: 'Number of employees (1–9)',
+                keyboardType: TextInputType.number,
+                backgroundColor: CRMColors.background,
+                controller: createOrderController.employeeCountController,
+              ),
+
+              // Real-time amount calculation display
+              Obx(() {
+                final count =
+                    int.tryParse(createOrderController.employeeCount.value) ??
+                    0;
+                if (count > 0 && count <= 9) {
+                  final totalAmount = (count * 118).round();
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Text(
+                      'Total Amount: ₹${(totalAmount / 100).toStringAsFixed(2)} '
+                      '(₹$count + 18% GST)',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  );
+                }
+                return const SizedBox();
+              }),
+
+              const SizedBox(height: 24),
+
+              Row(
+                children: [
+                  // Cancel button
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Get.back(),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: Text(
+                        "Cancel",
+                        style: TextStyle(color: Colors.grey[700], fontSize: 16),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(width: 16),
+
+                  // Submit button
+                  Expanded(
+                    child: Obx(() {
+                      final isLoading = createOrderController.isLoading.value;
+
+                      return Container(
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFEC32B1), Color(0xFF0C46CC)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: ElevatedButton(
+                          onPressed:
+                              isLoading
+                                  ? null
+                                  : () async {
+                                    final text =
+                                        createOrderController
+                                            .employeeCountController
+                                            .text
+                                            .trim();
+                                    final count = int.tryParse(text) ?? 0;
+
+                                    if (count < 1 || count > 9) {
+                                      Get.snackbar(
+                                        "Error",
+                                        "Please enter a number between 1 and 9",
+                                        backgroundColor: CRMColors.error,
+                                        colorText: CRMColors.textWhite,
+                                      );
+                                      return;
+                                    }
+
+                                    try {
+                                      await createOrderController
+                                          .createOrderFunction();
+
+                                      if (createOrderController
+                                          .orderId
+                                          .value
+                                          .isNotEmpty) {
+                                        Get.back();
+                                        RazorpayService.makePayment(
+                                          amount:
+                                              (count * 118)
+                                                  .round(), // Same calculation as order creation
+                                          name: 'Employee Upgrade',
+                                          email: 'user@example.com',
+                                          contact: '9999999999',
+                                          description:
+                                              "Adding $count employees",
+                                        );
+                                        employeeFormController.resetForm();
+                                      }
+                                    } catch (e) {
+                                      Get.snackbar(
+                                        "Error",
+                                        "Failed to process payment: ${e.toString()}",
+                                        backgroundColor: CRMColors.error,
+                                        colorText: CRMColors.textWhite,
+                                      );
+                                    }
+                                  },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.transparent,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child:
+                              isLoading
+                                  ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white,
+                                      ),
+                                    ),
+                                  )
+                                  : const Text(
+                                    "Add Employees",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                        ),
+                      );
+                    }),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        ),
+      ),
+      isDismissible: true,
+      enableDrag: true,
     );
   }
 }

@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Salary/salaryController.dart';
+import 'package:crm_milan_creations/Razorpay%20Services/razorpay_services.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
@@ -464,6 +465,13 @@ class _SalaryscreenState extends State<Salaryscreen> {
                     ),
                     onPressed: () {
                       // implement the salary payment logic here
+                      RazorpayService.makePayment(
+                        amount: 100,
+                        name: 'Test Razorpay',
+                        email: 'email',
+                        contact: 'contact',
+                        description: "Employee Onboarding Fee",
+                      );
                     },
                     child: const Padding(
                       padding: EdgeInsets.symmetric(

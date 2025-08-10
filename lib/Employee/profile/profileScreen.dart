@@ -530,7 +530,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       )
                       : const SizedBox(),
                   buildMenuItem(
-                    icon: Icons.currency_rupee_sharp,
+                    icon: Icons.money,
                     text: 'Salary',
                     onTap: () => Get.to(() => Salaryscreen()),
                   ),

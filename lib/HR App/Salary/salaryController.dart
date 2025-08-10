@@ -72,6 +72,7 @@ class SalaryController extends GetxController {
       if (response.statusCode == 200) {
         var salaryModel = salaryReportModelFromJson(response.body);
         print("Salary list data fetched successfully");
+        print("Salary list data: ${salaryModel.result}");
 
         if (salaryModel.result.isEmpty) {
           hasMoreData.value = false;

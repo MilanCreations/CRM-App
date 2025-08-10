@@ -231,7 +231,7 @@ class AddEmployeeController extends GetxController {
         return;
       }
 
-      print("role_id: 4");
+      // print("role_id: 4");
       final uri = Uri.parse(ApiConstants.inviteEmployee);
       print('URI created in  add employee api controller:- $uri');
 
@@ -360,6 +360,12 @@ class AddEmployeeController extends GetxController {
 
         if (jsonResponse['success'] == true) {
           print('API returned success: true');
+          int currentCount =
+              int.tryParse(prefs.getString('totalEmployees') ?? '0') ?? 0;
+          prefs.setString('totalEmployees', (currentCount + 1).toString());
+          print(
+            'Total employees count updated in SharedPreferences:- ${prefs.getString('totalEmployees')}',
+          );
           showSuccessMessage(
             jsonResponse['message'] ?? "Employee added successfully",
           );
@@ -387,42 +393,42 @@ class AddEmployeeController extends GetxController {
   void resetForm() {
     print('resetForm called');
     nameController.clear();
-    print('nameController cleared');
+    // print('nameController cleared');
     emailController.clear();
-    print('emailController cleared');
+    // print('emailController cleared');
     phoneController.clear();
-    print('phoneController cleared');
+    // print('phoneController cleared');
     salaryController.clear();
-    print('salaryController cleared');
+    // print('salaryController cleared');
     emergencyContactController.clear();
-    print('emergencyContactController cleared');
+    // print('emergencyContactController cleared');
     addressController.clear();
-    print('addressController cleared');
+    // print('addressController cleared');
     bankNameController.clear();
-    print('bankNameController cleared');
+    // print('bankNameController cleared');
     accountNumberController.clear();
-    print('accountNumberController cleared');
+    // print('accountNumberController cleared');
     ifscController.clear();
-    print('ifscController cleared');
+    // print('ifscController cleared');
 
     department.value = '';
-    print('department reset');
+    // print('department reset');
     designation.value = '';
-    print('designation reset');
+    // print('designation reset');
 
     shiftStart.value = null;
-    print('shiftStart reset');
+    // print('shiftStart reset');
     shiftEnd.value = null;
-    print('shiftEnd reset');
+    // print('shiftEnd reset');
     joinDate.value = null;
-    print('joinDate reset');
+    // print('joinDate reset');
 
     profileImage.value = null;
-    print('profileImage reset');
+    // print('profileImage reset');
     panCardFile.value = null;
-    print('panCardFile reset');
+    // print('panCardFile reset');
     aadhaarCardFile.value = null;
-    print('aadhaarCardFile reset');
+    // print('aadhaarCardFile reset');
   }
 
   // Validation before submission
