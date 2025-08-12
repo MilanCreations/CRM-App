@@ -746,6 +746,12 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                             )! <
                             5) {
                           print('you can add more employees');
+                          print(
+                            'Controller Name value: ${employeeFormController.nameController.text}',
+                          );
+                          print(
+                            'Controller Email value: ${employeeFormController.emailController.text}',
+                          );
                           employeeFormController.inviteemployeeFunction();
                         }
                       },
@@ -778,10 +784,10 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
 
   Widget _buildTextField(
     String label, {
-    TextEditingController? controller,
+    required TextEditingController controller, // Make controller required
     String? hint,
     IconData? suffixIcon,
-    TextInputType? keyboardType, // <-- added here
+    TextInputType? keyboardType,
     int? maxLength,
   }) {
     return Column(
@@ -790,8 +796,12 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
         CustomText(text: label),
         const SizedBox(height: 8),
         TextField(
-          controller: controller,
-          keyboardType: keyboardType, // <-- and used here
+          controller: controller, // This binds the controller
+          onChanged: (value) {
+            // Add this to verify the controller is updating
+            print('$label field updated: $value');
+          },
+          keyboardType: keyboardType,
           maxLength: maxLength,
           decoration: InputDecoration(
             hintText: hint,

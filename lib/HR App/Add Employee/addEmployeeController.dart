@@ -286,6 +286,25 @@ class AddEmployeeController extends GetxController {
 
       request.fields['shift_end'] =
           shiftEnd.value != null ? shiftEnd.value!.format(Get.context!) : "";
+      print("===== Employee Add Request Data =====");
+      print("Joining Date: ${joinDate.value}");
+      print("Name: ${nameController.text}");
+      print("Email: ${emailController.text}");
+      print("Department ID: ${department.value}");
+      print("Designation ID: ${designation.value}");
+      print("Salary: ${salaryController.text}");
+      print("Phone: ${phoneController.text}");
+      print("Emergency Contact: ${emergencyContactController.text}");
+      print("Address: ${addressController.text}");
+      print("Shift Start: ${shiftStart.value}");
+      print("Shift End: ${shiftEnd.value}");
+      print("Bank Name: ${bankNameController.text}");
+      print("Account Number: ${accountNumberController.text}");
+      print("IFSC Code: ${ifscController.text}");
+      print("Profile Image: ${profileImage.value?.path}");
+      print("PAN Card: ${panCardFile.value?.path}");
+      print("Aadhaar Card: ${aadhaarCardFile.value?.path}");
+      print("================================");
 
       // Add profile image only if provided
       if (profileImage.value != null) {
