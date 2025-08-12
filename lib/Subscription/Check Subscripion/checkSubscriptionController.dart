@@ -23,7 +23,7 @@ class CheckEmployeesLengthcontroller extends GetxController {
         return;
       }
 
-      final url = Uri.parse(ApiConstants.checkEmployeeLengthForSubscription);
+      final url = Uri.parse(ApiConstants.checkSubscription);
       print("Check Employees Length API URL: $url");
 
       final response = await http.get(
@@ -69,12 +69,12 @@ class CheckEmployeesLengthcontroller extends GetxController {
         );
       } else if (response.statusCode == 403) {
         print("Access forbidden in checkEmployeesLengthFunction");
-        Get.snackbar(
-          'Message',
-          'Access forbidden',
-          backgroundColor: CRMColors.error,
-          colorText: CRMColors.textWhite,
-        );
+        // Get.snackbar(
+        //   'Message',
+        //   'Access forbidden',
+        //   backgroundColor: CRMColors.error,
+        //   colorText: CRMColors.textWhite,
+        // );
       } else if (response.statusCode == 400) {
         print("Bad request in checkEmployeesLengthFunction");
         Get.snackbar(

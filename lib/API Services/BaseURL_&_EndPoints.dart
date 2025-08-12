@@ -165,7 +165,8 @@ class ApiConstants {
       "$baseUrls/payroll/dashboard/companyAdmin";
 
   ////////////////////////////// Subscription ////////////////////////////////////
-  static const String checkEmployeeLengthForSubscription =
-      "$baseUrls/payroll/subscription";
+  static const String checkSubscription = "$baseUrls/payroll/subscription";
   static const String createOrder = "$baseUrls/payroll/payment/create-order";
+  static const String verifyPayment = "$baseUrls/payroll/payment/verify";
+  static const String upgrade = "$baseUrls/payroll/subscription/upgrade";
 }

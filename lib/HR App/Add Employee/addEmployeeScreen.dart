@@ -13,6 +13,8 @@ import 'package:crm_milan_creations/HR%20App/Employee%20List/EmployeeListControl
 import 'package:crm_milan_creations/Razorpay%20Services/razorpay_services.dart';
 import 'package:crm_milan_creations/Subscription/Check%20Subscripion/checkSubscriptionController.dart';
 import 'package:crm_milan_creations/Subscription/Create%20Order/createOrderController.dart';
+import 'package:crm_milan_creations/Subscription/Upgrade/upgradeController.dart';
+import 'package:crm_milan_creations/Subscription/Verify%20Payment/verify-payment-Controller.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
 import 'package:crm_milan_creations/utils/font-styles.dart';
 import 'package:crm_milan_creations/widgets/appBar.dart';
@@ -51,6 +53,12 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
   final Createordercontroller createOrderController = Get.put(
     Createordercontroller(),
   );
+
+  final VerifyPaymentController verifyPaymentController = Get.put(
+    VerifyPaymentController(),
+  );
+
+  final UpgradeController upgradeController = Get.put(UpgradeController());
 
   final RazorpayService razorpayService = RazorpayService();
 
@@ -957,6 +965,11 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
 
   void _openUpgradeBottomSheet() {
     final createOrderController = Get.find<Createordercontroller>();
+    final verifyPaymentController =
+        Get.find<VerifyPaymentController>(); // ✅ changed
+    final upgradeController = Get.find<UpgradeController>(); // ✅ changed
+    final employeeFormController =
+        Get.find<AddEmployeeController>(); // ✅ changed
 
     Get.bottomSheet(
       SingleChildScrollView(
@@ -984,11 +997,15 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
+
               CustomTextFormField(
                 label: 'Number of employees (1–9)',
                 keyboardType: TextInputType.number,
                 backgroundColor: CRMColors.background,
                 controller: createOrderController.employeeCountController,
+                onChanged: (val) {
+                  createOrderController.employeeCount.value = val;
+                },
               ),
 
               // Real-time amount calculation display
@@ -997,12 +1014,13 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                     int.tryParse(createOrderController.employeeCount.value) ??
                     0;
                 if (count > 0 && count <= 9) {
-                  final totalAmount = (count * 118).round();
+                  final base = count * 100;
+                  final total = (base * 1.18).round(); // ✅ Unified GST calc
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Text(
-                      'Total Amount: ₹${(totalAmount / 100).toStringAsFixed(2)} '
-                      '(₹$count + 18% GST)',
+                      'Total Amount: ₹${total.toStringAsFixed(2)} '
+                      '(₹$base + 18% GST)',
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -1039,7 +1057,10 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                   // Submit button
                   Expanded(
                     child: Obx(() {
-                      final isLoading = createOrderController.isLoading.value;
+                      final isLoading =
+                          createOrderController.isLoading.value ||
+                          verifyPaymentController.isLoading.value ||
+                          upgradeController.isLoading.value;
 
                       return Container(
                         decoration: BoxDecoration(
@@ -1054,54 +1075,12 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                           onPressed:
                               isLoading
                                   ? null
-                                  : () async {
-                                    final text =
-                                        createOrderController
-                                            .employeeCountController
-                                            .text
-                                            .trim();
-                                    final count = int.tryParse(text) ?? 0;
-
-                                    if (count < 1 || count > 9) {
-                                      Get.snackbar(
-                                        "Error",
-                                        "Please enter a number between 1 and 9",
-                                        backgroundColor: CRMColors.error,
-                                        colorText: CRMColors.textWhite,
-                                      );
-                                      return;
-                                    }
-
-                                    try {
-                                      await createOrderController
-                                          .createOrderFunction();
-
-                                      if (createOrderController
-                                          .orderId
-                                          .value
-                                          .isNotEmpty) {
-                                        Get.back();
-                                        RazorpayService.makePayment(
-                                          amount:
-                                              (count * 118)
-                                                  .round(), // Same calculation as order creation
-                                          name: 'Employee Upgrade',
-                                          email: 'user@example.com',
-                                          contact: '9999999999',
-                                          description:
-                                              "Adding $count employees",
-                                        );
-                                        employeeFormController.resetForm();
-                                      }
-                                    } catch (e) {
-                                      Get.snackbar(
-                                        "Error",
-                                        "Failed to process payment: ${e.toString()}",
-                                        backgroundColor: CRMColors.error,
-                                        colorText: CRMColors.textWhite,
-                                      );
-                                    }
-                                  },
+                                  : () => _handleUpgradePayment(
+                                    createOrderController,
+                                    verifyPaymentController,
+                                    upgradeController,
+                                    employeeFormController,
+                                  ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
                             shadowColor: Colors.transparent,
@@ -1144,5 +1123,101 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
       isDismissible: true,
       enableDrag: true,
     );
+  }
+
+  Future<void> _handleUpgradePayment(
+    Createordercontroller createOrderController,
+    VerifyPaymentController verifyPaymentController,
+    UpgradeController upgradeController,
+    AddEmployeeController employeeFormController,
+  ) async {
+    try {
+      final count =
+          int.tryParse(
+            createOrderController.employeeCountController.text.trim(),
+          ) ??
+          0;
+
+      if (count < 1 || count > 9) {
+        Get.snackbar(
+          "Error",
+          "Please enter a number between 1 and 9",
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+        return;
+      }
+
+      // 1️⃣ Upgrade to get usageId
+      final upgradeSuccess = await upgradeController.upgradeFunction(count);
+      if (!upgradeSuccess ||
+          upgradeController.upgradeModel.value?.data?.usageId?.id == null) {
+        throw Exception('Failed to upgrade or get usage ID');
+      }
+      final usageId = upgradeController.upgradeModel.value!.data!.usageId!.id;
+
+      // 2️⃣ Create Razorpay order
+      await createOrderController.createOrderFunction();
+      if (createOrderController.orderId.value.isEmpty) {
+        throw Exception('Failed to create order');
+      }
+
+      // ✅ Reset bottom sheet fields
+      createOrderController.employeeCountController.clear();
+      employeeFormController.emailController.clear();
+      employeeFormController.nameController.clear();
+      Get.back();
+
+      // 3️⃣ Calculate total amount (base + GST)
+      final total = (count * 100 * 1.18).round();
+
+      // Close bottom sheet before payment
+      Get.back();
+
+      // 4️⃣ Start Razorpay Payment
+      RazorpayService.makePayment(
+        amount: total,
+        name: 'Employee Upgrade',
+        email: 'test@gmail.com', // from profile
+        contact: '9898989898', // from profile
+        description: "Adding $count employees",
+        orderId: createOrderController.orderId.value,
+        onSuccess: (res) async {
+          // 5️⃣ Verify payment with backend
+          final verifySuccess = await verifyPaymentController.verifyPayment(
+            razorpayOrderId: res.orderId ?? '',
+            razorpayPaymentId: res.paymentId ?? '',
+            razorpaySignature: res.signature ?? '',
+            usageId: usageId,
+          );
+
+          if (verifySuccess) {
+            // 6️⃣ Add employee
+            await employeeFormController.inviteemployeeFunction();
+            Get.snackbar(
+              "Success",
+              "Employee added successfully!",
+              backgroundColor: Colors.green,
+              colorText: CRMColors.textWhite,
+            );
+          }
+        },
+        onError: (err) {
+          Get.snackbar(
+            "Payment Failed",
+            err.message ?? "Payment failed",
+            backgroundColor: CRMColors.error,
+            colorText: CRMColors.textWhite,
+          );
+        },
+      );
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        e.toString(),
+        backgroundColor: CRMColors.error,
+        colorText: CRMColors.textWhite,
+      );
+    }
   }
 }
