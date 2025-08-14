@@ -1,7 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
 import 'dart:async';
-
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:crm_milan_creations/Auth/noInternetScreen.dart';
 import 'package:crm_milan_creations/HR%20App/Add%20Employee/addEmployeeController.dart';
@@ -35,39 +34,19 @@ class AddemployeeScreen extends StatefulWidget {
 }
 
 class _AddemployeeScreenState extends State<AddemployeeScreen> {
-  final AddEmployeeController employeeFormController = Get.put(
-    AddEmployeeController(),
-  );
-  final DepartmentlistController departmentlistController = Get.put(
-    DepartmentlistController(),
-  );
-
-  final DesignationListController designationListController = Get.put(
-    DesignationListController(),
-  );
-
-  final CheckEmployeesLengthcontroller checkEmployeesLengthcontroller = Get.put(
-    CheckEmployeesLengthcontroller(),
-  );
-
-  final Createordercontroller createOrderController = Get.put(
-    Createordercontroller(),
-  );
-
-  final VerifyPaymentController verifyPaymentController = Get.put(
-    VerifyPaymentController(),
-  );
-
+  final AddEmployeeController employeeFormController = Get.put(AddEmployeeController());
+  final DepartmentlistController departmentlistController = Get.put(DepartmentlistController());
+  final DesignationListController designationListController = Get.put(DesignationListController());
+  final CheckEmployeesLengthcontroller checkEmployeesLengthcontroller = Get.put(CheckEmployeesLengthcontroller());
+  final Createordercontroller createOrderController = Get.put(Createordercontroller());
+  final VerifyPaymentController verifyPaymentController = Get.put(VerifyPaymentController());
   final UpgradeController upgradeController = Get.put(UpgradeController());
-
   final RazorpayService razorpayService = RazorpayService();
+  final EmployeeListcontroller employeeListcontroller = Get.put(EmployeeListcontroller());
 
   NointernetScreen noInternetScreen = const NointernetScreen();
   final ConnectivityService _connectivityService = ConnectivityService();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
-  final EmployeeListcontroller employeeListcontroller = Get.put(
-    EmployeeListcontroller(),
-  );
   String totalEmployeesStroedInLocal = "0";
 
   @override
@@ -76,7 +55,6 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
     designationListController.designationListFunction();
     _checkInitialConnection();
     _setupConnectivityListener();
-    // getUserData();
     employeeListcontroller.employeeListFunction(isRefresh: true);
     checkEmployeesLengthcontroller.checkEmployeesLengthFunction();
     super.initState();
@@ -96,26 +74,12 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
   }
 
   void _setupConnectivityListener() {
-    _connectivitySubscription = _connectivityService
-        .listenToConnectivityChanges(
-          onConnected: () {
-            // Optional: You can automatically go back if connection is restored
-            // Get.back();
-          },
-          onDisconnected: () {
-            _connectivityService.showNoInternetScreen();
-          },
-        );
-  }
-
-  Future<void> getUserData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    totalEmployeesStroedInLocal = prefs.getString('totalEmployees') ?? "0";
-    print(
-      'Total Employees from SharedPreferences: $totalEmployeesStroedInLocal',
+    _connectivitySubscription = _connectivityService.listenToConnectivityChanges(
+      onConnected: () {},
+      onDisconnected: () {
+        _connectivityService.showNoInternetScreen();
+      },
     );
-    print('Type of value: ${totalEmployeesStroedInLocal.runtimeType}');
-    print('Parsed value: ${int.tryParse(totalEmployeesStroedInLocal)}');
   }
 
   @override
@@ -157,18 +121,17 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                   child: GestureDetector(
                     onTap: () => employeeFormController.pickFileImage(),
                     child: Obx(
-                      () =>
-                          employeeFormController.profileImage.value != null
-                              ? CircleAvatar(
-                                radius: 50,
-                                backgroundImage: FileImage(
-                                  employeeFormController.profileImage.value!,
-                                ),
-                              )
-                              : const CircleAvatar(
-                                radius: 50,
-                                child: Icon(Icons.camera_alt),
+                      () => employeeFormController.profileImage.value != null
+                          ? CircleAvatar(
+                              radius: 50,
+                              backgroundImage: FileImage(
+                                employeeFormController.profileImage.value!,
                               ),
+                            )
+                          : const CircleAvatar(
+                              radius: 50,
+                              child: Icon(Icons.camera_alt),
+                            ),
                     ),
                   ),
                 ),
@@ -187,15 +150,10 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                               readOnly: true,
                               onTap: employeeFormController.selectJoinDate,
                               decoration: InputDecoration(
-                                hintText:
-                                    employeeFormController.joinDate.value !=
-                                            null
-                                        ? DateFormat('MM/dd/yyyy').format(
-                                          employeeFormController
-                                              .joinDate
-                                              .value!,
-                                        )
-                                        : "MM/DD/YYYY",
+                                hintText: employeeFormController.joinDate.value != null
+                                    ? DateFormat('MM/dd/yyyy').format(
+                                        employeeFormController.joinDate.value!)
+                                    : "MM/DD/YYYY",
                                 suffixIcon: const Icon(Icons.calendar_today),
                                 border: const OutlineInputBorder(),
                               ),
@@ -254,30 +212,22 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                                 'Select Department',
                                 style: TextStyle(color: Colors.grey),
                               ),
-                              items:
-                                  departmentlistController.departmentList
-                                      .map(
-                                        (Department item) =>
-                                            DropdownMenuItem<Department>(
-                                              value: item,
-                                              child: CustomText(
-                                                text: item.name,
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                      )
-                                      .toList(),
-                              value:
-                                  departmentlistController
-                                      .selectedDepartment
-                                      .value,
+                              items: departmentlistController.departmentList
+                                  .map(
+                                    (Department item) => DropdownMenuItem<Department>(
+                                      value: item,
+                                      child: CustomText(
+                                        text: item.name,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                              value: departmentlistController.selectedDepartment.value,
                               onChanged: (Department? value) {
-                                departmentlistController
-                                    .selectedDepartment
-                                    .value = value;
+                                departmentlistController.selectedDepartment.value = value;
                                 if (value != null) {
-                                  employeeFormController.department.value =
-                                      value.id.toString();
+                                  employeeFormController.department.value = value.id.toString();
                                 }
                               },
                               buttonStyleData: ButtonStyleData(
@@ -299,9 +249,7 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                 Obx(() {
                   if (designationListController.isLoading.value) {
                     return Center(child: CircularProgressIndicator());
-                  } else if (designationListController
-                      .designationList
-                      .isEmpty) {
+                  } else if (designationListController.designationList.isEmpty) {
                     return Container(
                       padding: EdgeInsets.all(16),
                       child: CustomText(
@@ -328,30 +276,22 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                                 text: 'Select Department',
                                 color: Colors.grey,
                               ),
-                              items:
-                                  designationListController.designationList
-                                      .map(
-                                        (Designation item) =>
-                                            DropdownMenuItem<Designation>(
-                                              value: item,
-                                              child: CustomText(
-                                                text: item.name,
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                      )
-                                      .toList(),
-                              value:
-                                  designationListController
-                                      .selectedDesignation
-                                      .value,
+                              items: designationListController.designationList
+                                  .map(
+                                    (Designation item) => DropdownMenuItem<Designation>(
+                                      value: item,
+                                      child: CustomText(
+                                        text: item.name,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                              value: designationListController.selectedDesignation.value,
                               onChanged: (Designation? value) {
-                                designationListController
-                                    .selectedDesignation
-                                    .value = value;
+                                designationListController.selectedDesignation.value = value;
                                 if (value != null) {
-                                  employeeFormController.designation.value =
-                                      value.id.toString();
+                                  employeeFormController.designation.value = value.id.toString();
                                 }
                               },
                               buttonStyleData: ButtonStyleData(
@@ -397,7 +337,6 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                         controller: employeeFormController.salaryController,
                         hint: "Enter Salary...",
                         keyboardType: TextInputType.number,
-                        maxLength: 10,
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -499,17 +438,9 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                         Expanded(
                           child: Obx(
                             () => CustomText(
-                              text:
-                                  employeeFormController.panCardFile.value ==
-                                          null
-                                      ? "No file chosen"
-                                      : employeeFormController
-                                          .panCardFile
-                                          .value!
-                                          .path
-                                          .split('/')
-                                          .last,
-
+                              text: employeeFormController.panCardFile.value == null
+                                  ? "No file chosen"
+                                  : employeeFormController.panCardFile.value!.path.split('/').last,
                               color: Colors.grey.shade600,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -558,22 +489,9 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                         Expanded(
                           child: Obx(
                             () => CustomText(
-                              // employeeFormController.aadhaarCardFile.value.isEmpty
-                              //     ? "No file chosen"
-                              //     : employeeFormController.aadhaarCardFile.value,
-                              text:
-                                  employeeFormController
-                                              .aadhaarCardFile
-                                              .value ==
-                                          null
-                                      ? "No file chosen"
-                                      : employeeFormController
-                                          .aadhaarCardFile
-                                          .value!
-                                          .path
-                                          .split('/')
-                                          .last,
-
+                              text: employeeFormController.aadhaarCardFile.value == null
+                                  ? "No file chosen"
+                                  : employeeFormController.aadhaarCardFile.value!.path.split('/').last,
                               color: Colors.grey.shade600,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -591,10 +509,7 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                       width: Get.width * 0.4,
                       text: 'Cancel',
                       onPressed: () {
-                        // employeeFormController.addEmployeeFunction(
-                        //   departmentlistController.selectedDepartment.value?.id ?? "",
-                        //   designationListController.selectedDesignation.value?.id ?? "",
-                        // );
+                        Get.back();
                       },
                     ),
                     SizedBox(width: 10),
@@ -603,157 +518,7 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                       backgroundColor: CRMColors.crmMainCOlor,
                       text: 'Send Invite',
                       onPressed: () {
-                        if (employeeFormController.joinDate.value == null) {
-                          Get.snackbar(
-                            "Message",
-                            "Select Joining Date",
-                            backgroundColor: CRMColors.error,
-                            colorText: CRMColors.textWhite,
-                          );
-                        } else if (employeeFormController
-                            .nameController
-                            .text
-                            .isEmpty) {
-                          Get.snackbar(
-                            "Message",
-                            "Enter employee name",
-                            backgroundColor: CRMColors.error,
-                            colorText: CRMColors.textWhite,
-                          );
-                          return;
-                        } else if (employeeFormController
-                            .emailController
-                            .text
-                            .isEmpty) {
-                          Get.snackbar(
-                            "Message",
-                            "Enter email",
-                            backgroundColor: CRMColors.error,
-                            colorText: CRMColors.textWhite,
-                          );
-                          return;
-                        } else if (departmentlistController
-                                .selectedDepartment
-                                .value ==
-                            null) {
-                          Get.snackbar(
-                            "Message",
-                            "Select Department",
-                            backgroundColor: CRMColors.error,
-                            colorText: CRMColors.textWhite,
-                          );
-                          return;
-                        } else if (designationListController
-                                .selectedDesignation
-                                .value ==
-                            null) {
-                          Get.snackbar(
-                            "Message",
-                            "Select Designation",
-                            backgroundColor: CRMColors.error,
-                            colorText: CRMColors.textWhite,
-                          );
-                          return;
-                        } else if (employeeFormController
-                            .emergencyContactController
-                            .text
-                            .isEmpty) {
-                          Get.snackbar(
-                            "Message",
-                            "Enter Contact number",
-                            backgroundColor: CRMColors.error,
-                            colorText: CRMColors.textWhite,
-                          );
-                          return;
-                        } else if (employeeFormController
-                            .addressController
-                            .text
-                            .isEmpty) {
-                          Get.snackbar(
-                            "Message",
-                            "Enter Address",
-                            backgroundColor: CRMColors.error,
-                            colorText: CRMColors.textWhite,
-                          );
-                          return;
-                        } else if (employeeFormController
-                            .salaryController
-                            .text
-                            .isEmpty) {
-                          Get.snackbar(
-                            "Message",
-                            "Enter Salary",
-                            backgroundColor: CRMColors.error,
-                            colorText: CRMColors.textWhite,
-                          );
-                          return;
-                        } else if (employeeFormController
-                            .phoneController
-                            .text
-                            .isEmpty) {
-                          Get.snackbar(
-                            "Message",
-                            "Enter Phone Number",
-                            backgroundColor: CRMColors.error,
-                            colorText: CRMColors.textWhite,
-                          );
-                          return;
-                        } else if (employeeFormController.shiftStart.value ==
-                            null) {
-                          Get.snackbar(
-                            "Message",
-                            "Enter Shift Start Time",
-                            backgroundColor: CRMColors.error,
-                            colorText: CRMColors.textWhite,
-                          );
-                          return;
-                        } else if (employeeFormController.shiftEnd.value ==
-                            null) {
-                          Get.snackbar(
-                            "Message",
-                            "Enter Shift End Time",
-                            backgroundColor: CRMColors.error,
-                            colorText: CRMColors.textWhite,
-                          );
-                          return;
-                        }
-                        // else if (int.tryParse(
-                        //       totalEmployeesStroedInLocal.toString(),
-                        //     )! >=
-                        //     5) {
-                        //   print(
-                        //     'you have to upgrade your plan to add more employees',
-                        //   );
-                        //   Get.snackbar(
-                        //     "Message",
-                        //     "You have to upgrade your plan to add more employees",
-                        //     backgroundColor: CRMColors.error,
-                        //     colorText: CRMColors.textWhite,
-                        //   );
-                        //   RazorpayService.makePayment(
-                        //     amount: 100,
-                        //     name: 'Test Razorpay',
-                        //     email: 'email',
-                        //     contact: 'contact',
-                        //     description: "Employee Onboarding Fee",
-                        //   );
-                        // }
-                        else if (employeeListcontroller.employeeList.length >=
-                            5) {
-                          _showUpgradeDialog();
-                        } else if (int.tryParse(
-                              totalEmployeesStroedInLocal.toString(),
-                            )! <
-                            5) {
-                          print('you can add more employees');
-                          print(
-                            'Controller Name value: ${employeeFormController.nameController.text}',
-                          );
-                          print(
-                            'Controller Email value: ${employeeFormController.emailController.text}',
-                          );
-                          employeeFormController.inviteemployeeFunction();
-                        }
+                        _validateAndSubmit();
                       },
                     ),
                   ],
@@ -761,30 +526,113 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
               ],
             ),
           ),
-          // Loading overlay
           Obx(
-            () =>
-                employeeFormController.isLoading.value
-                    ? Container(
-                      color: Colors.black.withOpacity(0.5),
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            CRMColors.crmMainCOlor,
-                          ),
+            () => employeeFormController.isLoading.value
+                ? Container(
+                    color: Colors.black.withOpacity(0.5),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          CRMColors.crmMainCOlor,
                         ),
                       ),
-                    )
-                    : const SizedBox.shrink(),
+                    ),
+                  )
+                : const SizedBox.shrink(),
           ),
         ],
       ),
     );
   }
 
+  void _validateAndSubmit() {
+    if (employeeFormController.joinDate.value == null) {
+      Get.snackbar(
+        "Message",
+        "Select Joining Date",
+        backgroundColor: CRMColors.error,
+        colorText: CRMColors.textWhite,
+      );
+    } else if (employeeFormController.nameController.text.isEmpty) {
+      Get.snackbar(
+        "Message",
+        "Enter employee name",
+        backgroundColor: CRMColors.error,
+        colorText: CRMColors.textWhite,
+      );
+    } else if (employeeFormController.emailController.text.isEmpty) {
+      Get.snackbar(
+        "Message",
+        "Enter email",
+        backgroundColor: CRMColors.error,
+        colorText: CRMColors.textWhite,
+      );
+    } else if (departmentlistController.selectedDepartment.value == null) {
+      Get.snackbar(
+        "Message",
+        "Select Department",
+        backgroundColor: CRMColors.error,
+        colorText: CRMColors.textWhite,
+      );
+    } else if (designationListController.selectedDesignation.value == null) {
+      Get.snackbar(
+        "Message",
+        "Select Designation",
+        backgroundColor: CRMColors.error,
+        colorText: CRMColors.textWhite,
+      );
+    } else if (employeeFormController.emergencyContactController.text.isEmpty) {
+      Get.snackbar(
+        "Message",
+        "Enter Contact number",
+        backgroundColor: CRMColors.error,
+        colorText: CRMColors.textWhite,
+      );
+    } else if (employeeFormController.addressController.text.isEmpty) {
+      Get.snackbar(
+        "Message",
+        "Enter Address",
+        backgroundColor: CRMColors.error,
+        colorText: CRMColors.textWhite,
+      );
+    } else if (employeeFormController.salaryController.text.isEmpty) {
+      Get.snackbar(
+        "Message",
+        "Enter Salary",
+        backgroundColor: CRMColors.error,
+        colorText: CRMColors.textWhite,
+      );
+    } else if (employeeFormController.phoneController.text.isEmpty) {
+      Get.snackbar(
+        "Message",
+        "Enter Phone Number",
+        backgroundColor: CRMColors.error,
+        colorText: CRMColors.textWhite,
+      );
+    } else if (employeeFormController.shiftStart.value == null) {
+      Get.snackbar(
+        "Message",
+        "Enter Shift Start Time",
+        backgroundColor: CRMColors.error,
+        colorText: CRMColors.textWhite,
+      );
+    } else if (employeeFormController.shiftEnd.value == null) {
+      Get.snackbar(
+        "Message",
+        "Enter Shift End Time",
+        backgroundColor: CRMColors.error,
+        colorText: CRMColors.textWhite,
+      );
+    } else if (employeeListcontroller.employeeList.length >= 5) {
+      _showUpgradeDialog();
+    } else {
+      employeeFormController.inviteemployeeFunction();
+    }
+  }
+
   Widget _buildTextField(
     String label, {
-    required TextEditingController controller, // Make controller required
+    required TextEditingController controller,
     String? hint,
     IconData? suffixIcon,
     TextInputType? keyboardType,
@@ -796,44 +644,13 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
         CustomText(text: label),
         const SizedBox(height: 8),
         TextField(
-          controller: controller, // This binds the controller
-          onChanged: (value) {
-            // Add this to verify the controller is updating
-            print('$label field updated: $value');
-          },
+          controller: controller,
           keyboardType: keyboardType,
           maxLength: maxLength,
           decoration: InputDecoration(
             hintText: hint,
             suffixIcon: suffixIcon != null ? Icon(suffixIcon) : null,
             border: const OutlineInputBorder(),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget designation(
-    String label, {
-    required List<String> items,
-    required RxString selected,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CustomText(text: label),
-        const SizedBox(height: 8),
-        Obx(
-          () => DropdownButtonFormField<String>(
-            decoration: const InputDecoration(border: OutlineInputBorder()),
-            value: selected.value.isEmpty ? null : selected.value,
-            items:
-                items
-                    .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                    .toList(),
-            onChanged: (value) {
-              if (value != null) selected.value = value;
-            },
           ),
         ),
       ],
@@ -855,10 +672,7 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
             readOnly: true,
             onTap: onTap,
             decoration: InputDecoration(
-              hintText:
-                  time.value != null
-                      ? time.value!.format(Get.context!)
-                      : "hh:mm aa",
+              hintText: time.value != null ? time.value!.format(Get.context!) : "hh:mm aa",
               suffixIcon: const Icon(Icons.access_time),
               border: const OutlineInputBorder(),
             ),
@@ -906,7 +720,7 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
               ),
               const SizedBox(height: 12),
               const Text(
-                "You’ve reached the maximum number of employees. Upgrade your plan to continue adding more.",
+                "You've reached the maximum number of employees. Upgrade your plan to continue adding more.",
                 style: TextStyle(fontSize: 16, color: Colors.black54),
                 textAlign: TextAlign.center,
               ),
@@ -941,7 +755,7 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                       ),
                       child: ElevatedButton(
                         onPressed: () {
-                          Get.back(); // Close the dialog
+                          Get.back();
                           _openUpgradeBottomSheet();
                         },
                         style: ElevatedButton.styleFrom(
@@ -974,13 +788,6 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
   }
 
   void _openUpgradeBottomSheet() {
-    final createOrderController = Get.find<Createordercontroller>();
-    final verifyPaymentController =
-        Get.find<VerifyPaymentController>(); // ✅ changed
-    final upgradeController = Get.find<UpgradeController>(); // ✅ changed
-    final employeeFormController =
-        Get.find<AddEmployeeController>(); // ✅ changed
-
     Get.bottomSheet(
       SingleChildScrollView(
         child: Container(
@@ -1018,19 +825,15 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                 },
               ),
 
-              // Real-time amount calculation display
               Obx(() {
-                final count =
-                    int.tryParse(createOrderController.employeeCount.value) ??
-                    0;
+                final count = int.tryParse(createOrderController.employeeCount.value) ?? 0;
                 if (count > 0 && count <= 9) {
                   final base = count * 100;
-                  final total = (base * 1.18).round(); // ✅ Unified GST calc
+                  final total = (base * 1.18).round();
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Text(
-                      'Total Amount: ₹${total.toStringAsFixed(2)} '
-                      '(₹$base + 18% GST)',
+                      'Total Amount: ₹${total.toStringAsFixed(2)} (₹$base + 18% GST)',
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -1045,7 +848,6 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
 
               Row(
                 children: [
-                  // Cancel button
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Get.back(),
@@ -1064,11 +866,9 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
 
                   const SizedBox(width: 16),
 
-                  // Submit button
                   Expanded(
                     child: Obx(() {
-                      final isLoading =
-                          createOrderController.isLoading.value ||
+                      final isLoading = createOrderController.isLoading.value ||
                           verifyPaymentController.isLoading.value ||
                           upgradeController.isLoading.value;
 
@@ -1082,15 +882,9 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: ElevatedButton(
-                          onPressed:
-                              isLoading
-                                  ? null
-                                  : () => _handleUpgradePayment(
-                                    createOrderController,
-                                    verifyPaymentController,
-                                    upgradeController,
-                                    employeeFormController,
-                                  ),
+                          onPressed: isLoading
+                              ? null
+                              : () => _handleUpgradePayment(),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
                             shadowColor: Colors.transparent,
@@ -1099,26 +893,25 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                          child:
-                              isLoading
-                                  ? const SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white,
-                                      ),
-                                    ),
-                                  )
-                                  : const Text(
-                                    "Add Employees",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
+                          child: isLoading
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
                                     ),
                                   ),
+                                )
+                              : const Text(
+                                  "Add Employees",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                         ),
                       );
                     }),
@@ -1135,18 +928,9 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
     );
   }
 
-  Future<void> _handleUpgradePayment(
-    Createordercontroller createOrderController,
-    VerifyPaymentController verifyPaymentController,
-    UpgradeController upgradeController,
-    AddEmployeeController employeeFormController,
-  ) async {
+  Future<void> _handleUpgradePayment() async {
     try {
-      final count =
-          int.tryParse(
-            createOrderController.employeeCountController.text.trim(),
-          ) ??
-          0;
+      final count = int.tryParse(createOrderController.employeeCountController.text.trim()) ?? 0;
 
       if (count < 1 || count > 9) {
         Get.snackbar(
@@ -1160,8 +944,7 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
 
       // 1️⃣ Upgrade to get usageId
       final upgradeSuccess = await upgradeController.upgradeFunction(count);
-      if (!upgradeSuccess ||
-          upgradeController.upgradeModel.value?.data?.usageId?.id == null) {
+      if (!upgradeSuccess || upgradeController.upgradeModel.value?.data?.usageId?.id == null) {
         throw Exception('Failed to upgrade or get usage ID');
       }
       final usageId = upgradeController.upgradeModel.value!.data!.usageId!.id;
@@ -1171,12 +954,6 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
       if (createOrderController.orderId.value.isEmpty) {
         throw Exception('Failed to create order');
       }
-
-      // ✅ Reset bottom sheet fields
-      createOrderController.employeeCountController.clear();
-      employeeFormController.emailController.clear();
-      employeeFormController.nameController.clear();
-      Get.back();
 
       // 3️⃣ Calculate total amount (base + GST)
       final total = (count * 100 * 1.18).round();
@@ -1188,8 +965,12 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
       RazorpayService.makePayment(
         amount: total,
         name: 'Employee Upgrade',
-        email: 'test@gmail.com', // from profile
-        contact: '9898989898', // from profile
+        email: employeeFormController.emailController.text.isNotEmpty 
+            ? employeeFormController.emailController.text 
+            : 'test@gmail.com',
+        contact: employeeFormController.phoneController.text.isNotEmpty
+            ? employeeFormController.phoneController.text
+            : '9898989898',
         description: "Adding $count employees",
         orderId: createOrderController.orderId.value,
         onSuccess: (res) async {
@@ -1204,6 +985,10 @@ class _AddemployeeScreenState extends State<AddemployeeScreen> {
           if (verifySuccess) {
             // 6️⃣ Add employee
             await employeeFormController.inviteemployeeFunction();
+            
+            // Clear fields only after successful addition
+            createOrderController.employeeCountController.clear();
+            
             Get.snackbar(
               "Success",
               "Employee added successfully!",

@@ -388,7 +388,7 @@ class AddEmployeeController extends GetxController {
           showSuccessMessage(
             jsonResponse['message'] ?? "Employee added successfully",
           );
-          resetForm();
+          // resetForm();
         } else {
           print('API returned success: false');
           showErrorMessage(jsonResponse['message'] ?? "Failed to add employee");
@@ -409,46 +409,46 @@ class AddEmployeeController extends GetxController {
   }
 
   // Reset form
-  void resetForm() {
-    print('resetForm called');
-    nameController.clear();
-    // print('nameController cleared');
-    emailController.clear();
-    // print('emailController cleared');
-    phoneController.clear();
-    // print('phoneController cleared');
-    salaryController.clear();
-    // print('salaryController cleared');
-    emergencyContactController.clear();
-    // print('emergencyContactController cleared');
-    addressController.clear();
-    // print('addressController cleared');
-    bankNameController.clear();
-    // print('bankNameController cleared');
-    accountNumberController.clear();
-    // print('accountNumberController cleared');
-    ifscController.clear();
-    // print('ifscController cleared');
+  // void resetForm() {
+  //   print('resetForm called');
+  //   nameController.clear();
+  //   // print('nameController cleared');
+  //   emailController.clear();
+  //   // print('emailController cleared');
+  //   phoneController.clear();
+  //   // print('phoneController cleared');
+  //   salaryController.clear();
+  //   // print('salaryController cleared');
+  //   emergencyContactController.clear();
+  //   // print('emergencyContactController cleared');
+  //   addressController.clear();
+  //   // print('addressController cleared');
+  //   bankNameController.clear();
+  //   // print('bankNameController cleared');
+  //   accountNumberController.clear();
+  //   // print('accountNumberController cleared');
+  //   ifscController.clear();
+  //   // print('ifscController cleared');
 
-    department.value = '';
-    // print('department reset');
-    designation.value = '';
-    // print('designation reset');
+  //   department.value = '';
+  //   // print('department reset');
+  //   designation.value = '';
+  //   // print('designation reset');
 
-    shiftStart.value = null;
-    // print('shiftStart reset');
-    shiftEnd.value = null;
-    // print('shiftEnd reset');
-    joinDate.value = null;
-    // print('joinDate reset');
+  //   shiftStart.value = null;
+  //   // print('shiftStart reset');
+  //   shiftEnd.value = null;
+  //   // print('shiftEnd reset');
+  //   joinDate.value = null;
+  //   // print('joinDate reset');
 
-    profileImage.value = null;
-    // print('profileImage reset');
-    panCardFile.value = null;
-    // print('panCardFile reset');
-    aadhaarCardFile.value = null;
-    // print('aadhaarCardFile reset');
-  }
+  //   profileImage.value = null;
+  //   // print('profileImage reset');
+  //   panCardFile.value = null;
+  //   // print('panCardFile reset');
+  //   aadhaarCardFile.value = null;
+  //   // print('aadhaarCardFile reset');
+  // }
 
   // Validation before submission
   void submitAllData() {
