@@ -5,8 +5,8 @@ import 'dart:io';
 
 import 'package:crm_milan_creations/API%20Services/BaseURL_&_EndPoints.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
@@ -88,11 +88,83 @@ class AddEmployeeController extends GetxController {
   }
 
   // Pick profile image with validation
-  Future<void> pickFileImage({ImageSource source = ImageSource.gallery}) async {
-    print('pickFileImage called - source: $source');
+  // Future<void> pickFileImage({ImageSource source = ImageSource.gallery}) async {
+  //   print('pickFileImage called - source: $source');
+  //   try {
+  //     final picker = ImagePicker();
+  //     print('Creating ImagePicker instance');
+  //     final picked = await picker.pickImage(source: source, imageQuality: 20);
+  //     if (picked != null) {
+  //       print('Image picked at path: ${picked.path}');
+  //       final file = File(picked.path);
+  //       print('File created from path');
+  //       final extension = picked.path.split('.').last.toLowerCase();
+  //       print('File extension: $extension');
+
+  //       if (!allowedExtensions.contains(extension)) {
+  //         print('Invalid file extension: $extension');
+  //         Get.snackbar(
+  //           "Error",
+  //           "Only .png, .jpg, .gif formats are allowed for profile image",
+  //           backgroundColor: CRMColors.error,
+  //           colorText: CRMColors.textWhite,
+  //         );
+  //         return;
+  //       }
+
+  //       profileImage.value = file;
+  //       print('profileImage set to: ${file.path}');
+  //     } else {
+  //       print('Image picking was cancelled');
+  //     }
+  //   } catch (e) {
+  //     print('Error in pickFileImage: $e');
+  //     Get.snackbar(
+  //       "Error",
+  //       "Failed to pick image: ${e.toString()}",
+  //       backgroundColor: CRMColors.error,
+  //       colorText: CRMColors.textWhite,
+  //     );
+  //   }
+  // }
+
+  Future<void> pickFileImage() async {
+    print('pickFileImage called');
+
     try {
+      // Show bottom sheet for user to pick source
+      final ImageSource? source = await showModalBottomSheet<ImageSource>(
+        context: Get.context!,
+        builder: (context) {
+          return SafeArea(
+            child: Wrap(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.photo_library),
+                  title: const Text('Gallery'),
+                  onTap: () => Navigator.of(context).pop(ImageSource.gallery),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.camera_alt),
+                  title: const Text('Camera'),
+                  onTap: () => Navigator.of(context).pop(ImageSource.camera),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+
+      print('User selected source: $source');
+
+      if (source == null) {
+        print('No image source selected (bottom sheet dismissed)');
+        return;
+      }
+
       final picker = ImagePicker();
-      print('Creating ImagePicker instance');
+      print('ImagePicker instance created');
+
       final picked = await picker.pickImage(source: source, imageQuality: 20);
       if (picked != null) {
         print('Image picked at path: ${picked.path}');
@@ -130,44 +202,131 @@ class AddEmployeeController extends GetxController {
 
   // Pick documents with validation
   Future<void> pickFile(bool isPan) async {
-    print('pickFile called - isPan: $isPan');
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles();
-      if (result != null) {
-        print('File picked: ${result.files.single.path}');
-        final file = File(result.files.single.path!);
-        print('File created from path');
-        final extension =
-            result.files.single.extension?.toLowerCase() ??
-            result.files.single.path!.split('.').last.toLowerCase();
-        print('File extension: $extension');
+      // Show option dialog to choose camera or gallery
+      final source = await Get.bottomSheet<ImageSource>(
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Select Image Source',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Column(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.camera_alt, size: 40),
+                          onPressed: () => Get.back(result: ImageSource.camera),
+                        ),
+                        const Text('Camera'),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.photo_library, size: 40),
+                          onPressed:
+                              () => Get.back(result: ImageSource.gallery),
+                        ),
+                        const Text('Gallery'),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                TextButton(
+                  onPressed: () => Get.back(),
+                  child: const Text('Cancel'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
 
-        if (!allowedExtensions.contains(extension)) {
-          print('Invalid file extension: $extension');
-          Get.snackbar(
-            "Error",
-            "Only .png, .jpg, .gif, .pdf formats are allowed",
-            backgroundColor: CRMColors.error,
-            colorText: CRMColors.textWhite,
-          );
-          return;
-        }
+      if (source == null) return; // User cancelled
 
-        if (isPan) {
-          panCardFile.value = file;
-          print('panCardFile set to: ${file.path}');
-        } else {
-          aadhaarCardFile.value = file;
-          print('aadhaarCardFile set to: ${file.path}');
-        }
+      XFile? pickedFile;
+      if (source == ImageSource.camera) {
+        pickedFile = await ImagePicker().pickImage(
+          source: ImageSource.camera,
+          imageQuality: 80,
+          maxWidth: 800,
+        );
       } else {
-        print('File picking was cancelled');
+        pickedFile = await ImagePicker().pickImage(
+          source: ImageSource.gallery,
+          imageQuality: 80,
+          maxWidth: 800,
+        );
       }
-    } catch (e) {
-      print('Error in pickFile: $e');
+
+      if (pickedFile == null) return; // User cancelled
+
+      // Convert XFile to File
+      final file = File(pickedFile.path);
+      final fileName = pickedFile.path.split('/').last;
+      final extension = fileName.split('.').last.toLowerCase();
+
+      // Validate file extension
+      const allowedExtensions = ['png', 'jpg', 'jpeg', 'gif', 'pdf'];
+      if (!allowedExtensions.contains(extension)) {
+        Get.snackbar(
+          "Error",
+          "Only .png, .jpg, .gif, .pdf formats are allowed",
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+        return;
+      }
+
+      // Check file size (max 5MB)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (await file.length() > maxSize) {
+        Get.snackbar(
+          "Error",
+          "File size should be less than 5MB",
+          backgroundColor: CRMColors.error,
+          colorText: CRMColors.textWhite,
+        );
+        return;
+      }
+
+      // Set the appropriate file
+      if (isPan) {
+        panCardFile.value = file;
+      } else {
+        aadhaarCardFile.value = file;
+      }
+
+      Get.snackbar(
+        "Success",
+        "File selected successfully",
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+    } on PlatformException catch (e) {
       Get.snackbar(
         "Error",
-        "Failed to pick file: ${e.toString()}",
+        "Failed to pick image: ${e.message}",
+        backgroundColor: CRMColors.error,
+        colorText: CRMColors.textWhite,
+      );
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        "An error occurred: ${e.toString()}",
         backgroundColor: CRMColors.error,
         colorText: CRMColors.textWhite,
       );

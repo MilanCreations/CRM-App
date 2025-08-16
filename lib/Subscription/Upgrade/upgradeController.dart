@@ -13,15 +13,30 @@ class UpgradeController extends GetxController {
   final errorMessage = ''.obs;
 
   Future<bool> upgradeFunction(int extraEmployees) async {
+    print(
+      '[UpgradeController] Starting upgradeFunction with $extraEmployees extra employees',
+    );
     try {
+      print('[UpgradeController] Setting loading state to true');
       isLoading.value = true;
       errorMessage.value = '';
 
+      print('[UpgradeController] Getting token from SharedPreferences');
       final token = await _getToken();
       if (token == null) {
+        print(
+          '[UpgradeController] Token is null - clearing SharedPreferences and redirecting to login',
+        );
         await clearSharedPreferences();
         return false;
       }
+
+      print(
+        '[UpgradeController] Making API request to ${ApiConstants.upgrade}',
+      );
+      print(
+        '[UpgradeController] Request body: {"extraEmployees": $extraEmployees}',
+      );
 
       final response = await http.post(
         Uri.parse(ApiConstants.upgrade),
@@ -32,8 +47,18 @@ class UpgradeController extends GetxController {
         body: jsonEncode({'extraEmployees': extraEmployees}),
       );
 
+      print(
+        '[UpgradeController] Received response with status code: ${response.statusCode}',
+      );
+      print('[UpgradeController] Response body: ${response.body}');
+
       if (response.statusCode == 200) {
+        print('[UpgradeController] Parsing successful response');
         upgradeModel.value = upgeademodelFromJson(response.body);
+
+        print(
+          '[UpgradeController] Upgrade successful. Message: ${upgradeModel.value?.message}',
+        );
         Get.snackbar(
           'Success',
           upgradeModel.value?.message ?? 'Upgrade initiated',
@@ -42,8 +67,11 @@ class UpgradeController extends GetxController {
         );
         return true;
       } else {
+        print('[UpgradeController] Handling error response');
         final error = jsonDecode(response.body);
         errorMessage.value = error['message'] ?? 'Upgrade failed';
+
+        print('[UpgradeController] Error message: ${errorMessage.value}');
         Get.snackbar(
           'Error',
           errorMessage.value,
@@ -52,8 +80,11 @@ class UpgradeController extends GetxController {
         );
         return false;
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('[UpgradeController] Exception occurred: $e');
+      print('[UpgradeController] Stack trace: $stackTrace');
       errorMessage.value = e.toString();
+
       Get.snackbar(
         'Error',
         errorMessage.value,
@@ -62,18 +93,36 @@ class UpgradeController extends GetxController {
       );
       return false;
     } finally {
+      print('[UpgradeController] Setting loading state to false');
       isLoading.value = false;
     }
   }
 
   Future<String?> _getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('token');
+    print('[UpgradeController] _getToken() called');
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+      print(
+        '[UpgradeController] Retrieved token from SharedPreferences: ${token != null ? "[exists]" : "null"}',
+      );
+      return token;
+    } catch (e) {
+      print('[UpgradeController] Error getting token: $e');
+      return null;
+    }
   }
 
   static Future<void> clearSharedPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
-    Get.offAll(LoginScreen());
+    print('[UpgradeController] clearSharedPreferences() called');
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      print('[UpgradeController] Clearing all SharedPreferences data');
+      await prefs.clear();
+      print('[UpgradeController] Redirecting to LoginScreen');
+      Get.offAll(LoginScreen());
+    } catch (e) {
+      print('[UpgradeController] Error clearing SharedPreferences: $e');
+    }
   }
 }

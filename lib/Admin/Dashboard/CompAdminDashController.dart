@@ -1,10 +1,10 @@
+import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 import 'package:crm_milan_creations/API%20Services/BaseURL_&_EndPoints.dart';
 import 'package:crm_milan_creations/Admin/Dashboard/CompanyAdminDashboardModel.dart';
 import 'package:crm_milan_creations/Auth/Login/loginScreen.dart';
 import 'package:crm_milan_creations/utils/colors.dart';
-import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class CompanyAdminDashboardController extends GetxController {
   var isLoading = false.obs;
@@ -17,17 +17,15 @@ class CompanyAdminDashboardController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    companyAdminDashboardFunction();
+    fetchDashboardData();
   }
 
-  Future<void> companyAdminDashboardFunction() async {
-    print('Fetching company admin dashboard data...');
+  Future<void> fetchDashboardData() async {
     if (isLoading.value) return;
+    isLoading.value = true;
     try {
-      isLoading.value = true;
       final prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
-
       if (token == null) {
         isLoading.value = false;
         clearSharedPreferences();
@@ -41,16 +39,13 @@ class CompanyAdminDashboardController extends GetxController {
       );
 
       if (response.statusCode == 200) {
-        var hrDashboardModel = companyAdminDashboardModelFromJson(
-          response.body,
-        );
-
-        todayAttendanceCount.value =
-            hrDashboardModel.data.todayAttendanceCount.toString();
-        todayLeaves.value = hrDashboardModel.data.todayLeaves.toString();
-        pendingLeaves.value = hrDashboardModel.data.pendingLeaves.toString();
-        approvedLeaves.value = hrDashboardModel.data.approvedLeaves.toString();
-        totalEmployees.value = hrDashboardModel.data.totalEmployees.toString();
+        var model = companyAdminDashboardModelFromJson(response.body);
+        print("Admin dashboard dataResponse: ${response.body}");
+        todayAttendanceCount.value = model.data.todayAttendanceCount.toString();
+        todayLeaves.value = model.data.todayLeaves.toString();
+        pendingLeaves.value = model.data.pendingLeaves.toString();
+        approvedLeaves.value = model.data.approvedLeaves.toString();
+        totalEmployees.value = model.data.totalEmployees.toString();
       } else if (response.statusCode == 401) {
         Get.snackbar(
           'Session Expired',
@@ -60,23 +55,15 @@ class CompanyAdminDashboardController extends GetxController {
         );
         clearSharedPreferences();
       }
-      // } else {
-      //   Get.snackbar(
-      //     "Error",
-      //     "Failed to fetch dashboard data",
-      //     backgroundColor: CRMColors.error,
-      //     colorText: CRMColors.textWhite,
-      //   );
-      // }
-    } catch (error) {
-      print("Dashboard error: $error");
+    } catch (e) {
+      print("Dashboard error: $e");
     } finally {
       isLoading.value = false;
     }
   }
 
   static Future<void> clearSharedPreferences() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
     Get.offAll(LoginScreen());
   }
